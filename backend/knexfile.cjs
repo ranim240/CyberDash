@@ -1,6 +1,6 @@
-import 'dotenv/config';
+require('dotenv').config();
 
-export default {
+module.exports = {
   client: 'pg',
   connection: {
     host:     process.env.DB_HOST,
@@ -13,12 +13,12 @@ export default {
     directory: './src/migrations',
   },
 };
-```
+// ```
 
----
+// ---
 
-**2. Ordre des migrations** (respecte les dépendances entre tables)
-```
+// **2. Ordre des migrations** (respecte les dépendances entre tables)
+// ```
 // 001_create_users.js
 // 002_create_learners.js
 // 003_create_instructors.js
