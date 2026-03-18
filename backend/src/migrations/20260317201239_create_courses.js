@@ -1,4 +1,4 @@
-export const up = (knex) => knex.schema.createTable('courses', (t) => {
+export const up = (knex) => knex.schema.createTable('course', (t) => {
   t.string('course_id').primary();
   t.string('title').notNullable();
   t.string('description');
@@ -9,4 +9,4 @@ export const up = (knex) => knex.schema.createTable('courses', (t) => {
   t.string('instructor_id').references('user_id').inTable('instructors').onDelete('SET NULL');
 });
 
-export const down = (knex) => knex.schema.dropTable('courses');
+export const down = (knex) => knex.schema.dropTable('course');

@@ -6,8 +6,7 @@ export const up = (knex) => knex.schema.createTable('badges', (t) => {
   t.string('condition_type');
   t.integer('condition_value');
   t.integer('xp_bonus').defaultTo(0);
-  t.string('created_by').references('user_id').inTable('users').onDelete('SET NULL'); // ← admin qui a créé le badge
-  t.string('created_by').references('user_id').inTable('users').onDelete('SET NULL');
+  t.string('administrator_id').references('user_id').inTable('users').onDelete('SET NULL'); // ← admin qui a créé le badge
 });
 
 export const down = (knex) => knex.schema.dropTable('badges');
