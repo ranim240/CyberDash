@@ -6,7 +6,7 @@ export const up = (knex) => knex.schema.createTable('course', (t) => {
   t.string('level');
   t.boolean('is_published').defaultTo(false);
   t.timestamp('created_at').defaultTo(knex.fn.now());
-  t.string('instructor_id').references('user_id').inTable('instructors').onDelete('SET NULL');
+  t.string('instructor_id').references('user_id').inTable('instructor').onDelete('SET NULL');
 });
 
 export const down = (knex) => knex.schema.dropTable('course');
