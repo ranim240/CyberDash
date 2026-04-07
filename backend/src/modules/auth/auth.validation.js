@@ -19,3 +19,19 @@ export const validateLogin = (data) => {
   if (!data.password) errors.push("Password is required");
   return errors;
 };
+
+export const validateForgotPassword = (data) => {
+  const errors = [];
+  if (!data.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) {
+    errors.push("Invalid email address");
+  }
+  return errors;
+};
+
+export const validateResetPassword = (data) => {
+  const errors = [];
+  if (!data.newPassword || data.newPassword.length < 8) {
+    errors.push("Password must be at least 8 characters long");
+  }
+  return errors;
+};

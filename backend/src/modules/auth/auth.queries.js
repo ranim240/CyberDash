@@ -25,7 +25,17 @@ export const createUser = async (userData) => {
             await trx('learner').insert({ user_id });
         }
 
-        return { user_id, username: userData.username, email: userData.email, role };
+        return { user_id, 
+                username: userData.username, 
+                email: userData.email, 
+                role };
     });
 };
 
+export const findUserById = (user_id) => {
+    return db('user').where({ user_id }).first();
+};
+
+export const updateUserPassword = (user_id, password_hash) => {
+    return db('user').where({ user_id }).update({ password_hash });
+};
