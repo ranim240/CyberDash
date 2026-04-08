@@ -1,6 +1,6 @@
 import db from '../../config/db.js';
 export const getLearnerProfile = (user_id) =>
-db('learners').where({ user_id }).first();
+db('learner').where({ user_id }).first();
 export const getLearnerBadges = (learner_id) =>
 db('learner_badges as lb')
 .join('badges as b', 'b.badge_id', 'lb.badge_id')
