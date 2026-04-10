@@ -4,7 +4,7 @@ import helmet from 'helmet';
 import 'dotenv/config';
 
 // import authRouter        from './src/modules/auth/auth.routes.js';
-import learnerRouter     from './src/modules/learner/learner.routes.js';
+//import learnerRouter     from './src/modules/learner/learner.routes.js';
 // import instructorRouter  from './src/modules/instructor/instructor.routes.js';
 // import courseRouter      from './src/modules/course/course.routes.js';
 // import challengeRouter   from './src/modules/challenge/challenge.routes.js';
@@ -13,7 +13,7 @@ import learnerRouter     from './src/modules/learner/learner.routes.js';
 // import badgeRouter       from './src/modules/badge/badge.routes.js';
 // import leaderboardRouter from './src/modules/leaderboard/leaderboard.routes.js';
 // import incidentRouter    from './src/modules/incident/incident.routes.js';
-// import adminRouter       from './src/modules/admin/admin.routes.js';
+//import adminRouter       from './src/modules/admin/admin.routes.js';
 
 const app = express();
 
@@ -25,7 +25,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // Routes
 // app.use('/api/auth',        authRouter);
-app.use('/api/learner',learnerRouter);
+//app.use('/api/learner',learnerRouter);
 // app.use('/api/instructor',  instructorRouter);
 // app.use('/api/courses',     courseRouter);
 // app.use('/api/challenges',  challengeRouter);
@@ -34,7 +34,7 @@ app.use('/api/learner',learnerRouter);
 // app.use('/api/badges',      badgeRouter);
 // app.use('/api/leaderboard', leaderboardRouter);
 // app.use('/api/incidents',   incidentRouter);
-// app.use('/api/admin',       adminRouter);
+//app.use('/api/admin',       adminRouter);
 
 // Route de test
 app.get('/api/health', (req, res) => {
