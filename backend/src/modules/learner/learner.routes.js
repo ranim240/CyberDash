@@ -1,7 +1,9 @@
 import { Router } from 'express';
 import { getDashboard, getProfile, getBadges, getEnrollments, enrollCourse }
 from './learner.controller.js';
-import { authenticate, authorize } from '../../middlewares/auth.js';
+import { authenticate } from '../../middlewares/auth.js';
+import { authorize } from '../../middlewares/role.js';
+
 const router = Router();
 router.use(authenticate, authorize('learner'));
 router.get('/dashboard', getDashboard);
