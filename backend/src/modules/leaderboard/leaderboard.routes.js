@@ -5,3 +5,7 @@ const leaderboardRouter = express.Router();
 leaderboardRouter.get("/leaderboard",getLeaderboard);
 
 export default leaderboardRouter;
+// global leaderboard 
+// weekly 
+// monthly 
+// per category 

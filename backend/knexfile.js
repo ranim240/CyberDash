@@ -11,7 +11,7 @@ export default {
   },
   migrations: {
     directory: './src/migrations',
-    loadExtensions: ['.js','.cjd']
+    loadExtensions: ['.js','.cjs']
   },
   seeds: {
       directory: './src/seeds'

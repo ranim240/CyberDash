@@ -1,11 +1,13 @@
-import express from 'express';
-import getProfile from './learner.controller.js';
-import updateProfile from './learner.controller.js';
-const learnerRouter = express.Router();
-
-// to get all of learner's info from DB
-learnerRouter.get("/profile",getProfile);
-// to modify learner's info
-learnerRouter.post("/updateProfile",updateProfile);
-export default learnerRouter;
-s
+import { Router } from 'express';
+import { getDashboard, getProfile, getBadges, getEnrollments, enrollCourse }
+from './learner.controller.js';
+import { isAuthenticated } from '../../middlewares/auth.js';
+import { authorize } from '../../middlewares/role.js';
+const router = Router();
+router.use(isAuthenticated, authorize(['learner']));
+router.get('/dashboard', getDashboard);
+router.get('/profile', getProfile);
+router.get('/badges', getBadges);
+router.get('/enrollments', getEnrollments);
+router.post('/enroll/:courseId', enrollCourse);
+export default router;
