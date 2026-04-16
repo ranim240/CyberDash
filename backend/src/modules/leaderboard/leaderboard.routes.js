@@ -1,11 +1,18 @@
 import express from 'express';
-import getLeaderboard from './leaderboard.controller.js';
+import {getLeaderboard,getLeaderboardByCategory,getMonthlyLeaderboard,getWeeklyLeaderboard} from './leaderboard.controller.js';
+
 const leaderboardRouter = express.Router();
 
-leaderboardRouter.get("/leaderboard",getLeaderboard);
-
-export default leaderboardRouter;
 // global leaderboard 
+leaderboardRouter.get("/leaderboard",getLeaderboard);
 // weekly 
+leaderboardRouter.get("/leaderboard/weekly",getWeeklyLeaderboard);
 // monthly 
-// per category 
+leaderboardRouter.get("/leaderboard/monthly",getMonthlyLeaderboard) ;
+// per category
+leaderboardRouter.get("/leaderboard/:category_id",getLeaderboardByCategory) ;
+export default leaderboardRouter;
+
+
+
+ 

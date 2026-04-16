@@ -14,3 +14,4 @@ db('enrollment as e')
 export const enroll = (data) => db('enrollment').insert(data);
 export const isEnrolled = (learner_id, course_id) =>
 db('enrollment').where({ learner_id, course_id }).first();
+
