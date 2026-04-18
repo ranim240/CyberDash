@@ -5,6 +5,7 @@ import { validateRegister, validateLogin, validateForgotPassword, validateResetP
 import jwt from 'jsonwebtoken';
 import { JWT_SECRET } from '../../config/env.js';
 
+
 export const register = async (req, res, next) => {
   try {
     const { username, email, password, role } = req.body;
@@ -23,7 +24,7 @@ export const register = async (req, res, next) => {
 
     // 2. Hash the password
     const password_hash = await hashPassword(password);
-
+    
     // 3. Create user
     await queries.createUser({ username, email, password_hash, role });
 
@@ -46,13 +47,12 @@ export const login = async (req, res, next) => {
     // 1. Find user
     const user = await queries.findUserByEmail(email);
     if (!user) {
-      return res.status(401).json({ success: false, message: 'Invalid credentials' });
+      return res.status(401).json({ success: false, message: 'Invalid credentials email' });
     }
-
     // 2. Verify password
     const isMatch = await comparePassword(password, user.password_hash);
     if (!isMatch) {
-      return res.status(401).json({ success: false, message: 'Invalid credentials' });
+      return res.status(401).json({ success: false, message: 'Invalid credentials password' });
     }
 
     // 3. Generate JWT Token
@@ -69,6 +69,7 @@ export const login = async (req, res, next) => {
       }
     });
   } catch (error) {
+    console.log(error);
     next(error);
   }
 };
@@ -134,7 +135,7 @@ export const resetPassword = async (req, res, next) => {
     // 1. Fetch user
     const user = await queries.findUserById(userId);
     if (!user) {
-      return res.status(400).json({ success: false, message: 'Invalid or expired link' });
+      return res.status(400).json({ success: false, message: 'Invalid or expired link' });//comm asma: user not found
     }
 
     // 2. Verify token

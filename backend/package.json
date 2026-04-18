@@ -8,11 +8,7 @@
     "dev": "nodemon server.js",
     "migrate": "knex migrate:latest --knexfile knexfile.cjs",
     "migrate:rollback": "knex migrate:rollback --knexfile knexfile.cjs",
-    "test": "mocha tests/**/*.test.js",
-    "test:admin": "mocha tests/admin.test.js",
-    "test:reports": "mocha tests/incident_report.test.js",
-    "test:watch": "mocha --watch tests/**/*.test.js",
-    "test:coverage": "nyc mocha tests/**/*.test.js"
+    "seed:all": "node src/seeds/runSeeds.js"
   },
   "keywords": [],
   "author": "",
