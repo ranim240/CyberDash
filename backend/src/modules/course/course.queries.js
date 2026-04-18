@@ -1,6 +1,6 @@
 import db from '../../config/db.js';
 
-class CourseRepository {
+class Course {
     // Fetch all courses that are marked as published
     getAllPublished = () => {
         return db('course').where({ is_published: true });
@@ -73,4 +73,4 @@ class CourseRepository {
     };
 }
 
-export default new CourseRepository();
+export default new Course();
