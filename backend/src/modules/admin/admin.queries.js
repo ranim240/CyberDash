@@ -1,10 +1,12 @@
-import knex from "../../../src/config/db.js";
+import db from '../../config/db.js';
 
-async function getGlobalStats() {
+// ============ STATS & ANALYTICS ============
+
+export const getGlobalStats = async () => {
   const [users, challenges, submissions] = await Promise.all([
-    knex('user').count('user_id as count').first(),
-    knex('challenge').count('challenge_id as count').first(),
-    knex('submission').count('submission_id as count').first(),
+    db('user').count('user_id as count').first(),
+    db('challenge').count('challenge_id as count').first(),
+    db('submission').count('submission_id as count').first(),
   ]);
 
   return {
@@ -12,71 +14,75 @@ async function getGlobalStats() {
     challenges: Number(challenges.count),
     submissions: Number(submissions.count),
   };
-}
+};
 
-async function getPendingChallenges() {
-  return await knex('challenge')
-    .where({ status: 'pending' })
-    .orderBy('created_at', 'desc');
-}
-
-async function getActiveUsers() {
-  const activeUsers = await knex('user')
+export const getActiveUsers = async () => {
+  const result = await db('user')
     .where({ is_active: '1' })
     .count('user_id as count')
     .first();
 
-  return {
-    activeUsers: Number(activeUsers.count)
-  };
-}
+  return Number(result.count);
+};
 
-async function getIncidentReports({ status, page = 1, limit = 10 }) {
+// Note: Challenge and Incident Report management has been moved to their respective modules
+// Use /api/challenges routes for challenge operations
+// Use /api/reports routes for incident report operations
+
+// ============ USER MANAGEMENT ============
+
+export const getAllUsers = async ({ role, is_active, page = 1, limit = 20 }) => {
   const offset = (page - 1) * limit;
 
-  let query = knex('incident_report');
-
-  if (status) {
-    query = query.where({ status });
+  let query = db('user').select('user_id', 'username', 'email', 'role', 'is_active', 'created_at');
+  
+  if (role) {
+    query = query.where({ role });
+  }
+  
+  if (is_active !== undefined) {
+    query = query.where({ is_active });
   }
 
   const data = await query
-    .orderBy('reported_at', 'desc')
+    .orderBy('created_at', 'desc')
     .limit(limit)
     .offset(offset);
 
-  // total count for pagination
-  let totalQuery = knex('incident_report').count('reported_id as count').first();
-
-  if (status) {
-    totalQuery = totalQuery.where({ status });
+  // Get total count
+  let totalQuery = db('user').count('user_id as count').first();
+  
+  if (role) {
+    totalQuery = totalQuery.where({ role });
+  }
+  
+  if (is_active !== undefined) {
+    totalQuery = totalQuery.where({ is_active });
   }
 
   const total = await totalQuery;
 
   return {
     data,
-    pagination: {
-      total: Number(total.count),
-      page,
-      limit,
-    },
+    total: Number(total.count),
   };
-}
+};
 
-async function updateReportStatus(id, status) {
-  const updated = await knex('incident_report')
-    .where({ reported_id: id })
-    .update({ status })
-    .returning('*');
+export const updateUserStatus = async (user_id, is_active) => {
+  const updated = await db('user')
+    .where({ user_id })
+    .update({ is_active })
+    .returning(['user_id', 'username', 'email', 'is_active']);
 
   return updated[0];
-}
+};
 
-export {
-  getGlobalStats,
-  getActiveUsers,
-  getPendingChallenges,
-  getIncidentReports,
-  updateReportStatus
+export const deleteUser = async (user_id) => {
+  // This should handle cascade deletion or use a transaction
+  const deleted = await db('user')
+    .where({ user_id })
+    .del()
+    .returning(['user_id', 'username', 'email']);
+
+  return deleted[0];
 };
