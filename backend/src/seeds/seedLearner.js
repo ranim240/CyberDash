@@ -1,23 +1,3 @@
-
-const users = [
-    {
-      user_id: 'user_1',
-      username: 'john_doe',
-      email: 'john@example.com',
-      password_hash: 'hashedpassword123',
-      role: 'learner',
-      is_active: true,
-    },
-    {
-      user_id: 'user_2',
-      username: 'jane_doe',
-      email: 'jane@example.com',
-      password_hash: 'hashedpassword456',
-      role: 'learner',
-      is_active: true,
-    },
-  ];
-
 const learners = 
 [
     {
@@ -32,14 +12,16 @@ const learners =
       current_level: 1,
       streak: 2,
     },
+    {
+      user_id: 'user_4',
+      xp_points: 500,
+      current_level: 7,
+      streak: 23,
+    },
   ];
 export const seed = async (knex) => {
   // delete learners first, then users (because learner references user)
   await knex('learner').del();
-  await knex('user').del();
-
-  // insert users first (because learner depends on user)
-  await knex('user').insert(users);
 
   // then insert learners
   await knex('learner').insert(learners);
