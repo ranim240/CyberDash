@@ -1,6 +1,6 @@
 import db from '../../config/db.js'
 
-class CategoryRepository {
+class Category {
     // Get all categories
     getAllCategories = () => {
         return db('category')
@@ -55,4 +55,4 @@ class CategoryRepository {
     }
 }
 
-export default new CategoryRepository();
+export default new Category();
