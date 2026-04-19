@@ -1,6 +1,6 @@
 import db from '../../config/db.js';
 
-class LearnerRepository {
+class Learner {
     // Fetch a learner's basic profile information
     getLearnerProfile = (user_id) => {
         return db('learner').where({ user_id }).first();
@@ -55,4 +55,4 @@ class LearnerRepository {
     };
 }
 
-export default new LearnerRepository();
+export default new Learner();
