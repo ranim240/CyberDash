@@ -50,18 +50,19 @@ export const getBadgeById = async (badge_id) => {
 };
 
 export const createBadge = async (badgeData) => {
-  const [created] = await db('badge')
-    .insert(badgeData)
-    .returning([
-      'badge_id',
-      'name',
-      'description',
-      'icon_url',
-      'condition_type',
-      'condition_value',
-      'xp_bonus',
-      'administrator_id'
-    ]);
+    const badge_id = crypto.randomUUID();
+    const [created] = await db('badge')
+    .insert({
+        badge_id,
+        name: badgeData.name,
+        description: badgeData.description,
+        icon_url: badgeData.icon_url,
+        condition_type: badgeData.condition_type,
+        condition_value: badgeData.condition_value,
+        xp_bonus: badgeData.xp_bonus,
+        administrator_id: badgeData.administrator_id
+    })
+    .returning('*');
 
   return created;
 };

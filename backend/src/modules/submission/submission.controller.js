@@ -11,7 +11,7 @@ submission_id: uuid(), session_id, answer, is_correct
 });
 // Met a jour XP si correct
 if (is_correct) {
-await db('learners')
+await db('learner')
 .where({ user_id: req.user.userId })
 .increment('xp_points', challenge.points);
 await sessionQ.updateSession(session_id, { ended_at: new Date() });
