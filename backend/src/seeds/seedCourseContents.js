@@ -13,10 +13,10 @@ export const seed = async (knex) => {
   await knex('course_content').del();
 
   // Reference course IDs - update these to match seedCourses
-  const COURSE_1_ID = 'course_001'; // Update this - Web Security
-  const COURSE_2_ID = 'course_002'; // Update this - Cryptography
-  const COURSE_3_ID = 'course_003'; // Update this - Network Security
-  const COURSE_4_ID = 'course_004'; // Update this - Linux Hardening
+  const COURSE_1_ID = 'course_001_6cbd9a1b'; // Update this - Web Security
+  const COURSE_2_ID = 'course_002_54f09a59'; // Update this - Cryptography
+  const COURSE_3_ID = 'course_003_31329622'; // Update this - Network Security
+  const COURSE_4_ID = 'course_004_09fa5c57'; // Update this - Linux Hardening
 
   const content1Id = generateContentId(1);
   const content2Id = generateContentId(2);

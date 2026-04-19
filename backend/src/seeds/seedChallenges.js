@@ -15,11 +15,11 @@ export const seed = async (knex) => {
 
   // These IDs should match those created in seedUsers and seedCategories
   // For now using placeholder format - update with actual IDs
-  const INSTRUCTOR_1_ID = 'user_003_41f2c6ee'; // Update this
-  const INSTRUCTOR_2_ID = 'user_004_584e2d29'; // Update this
-  const CATEGORY_WEB_ID = 'category_001_0a1a1834'; // Update this
-  const CATEGORY_CRYPTO_ID = 'category_002_9e074361'; // Update this
-  const CATEGORY_NETWORK_ID = 'category_003_7ef1ee45'; // Update this
+  const INSTRUCTOR_1_ID = 'user_003_4bca26cc'; // Update this
+  const INSTRUCTOR_2_ID = 'user_004_74060255'; // Update this
+  const CATEGORY_WEB_ID = 'category_001_b50b1042'; // Update this
+  const CATEGORY_CRYPTO_ID = 'category_002_815d909d'; // Update this
+  const CATEGORY_NETWORK_ID = 'category_003_18b6519e'; // Update this
 
   // Challenge IDs
   const challenge1Id = generateChallengeId(1);

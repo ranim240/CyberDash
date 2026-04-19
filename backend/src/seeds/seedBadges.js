@@ -12,7 +12,7 @@ export const seed = async (knex) => {
   await knex('badge').del();
 
   // Reference admin IDs - update these to match seedUsers
-  const ADMIN_1_ID = 'admin_001'; // Update this
+  const ADMIN_1_ID = 'user_001_c772c1c1'; // Update this
 
   const badge1Id = generateBadgeId(1);
   const badge2Id = generateBadgeId(2);
