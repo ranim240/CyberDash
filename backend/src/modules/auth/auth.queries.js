@@ -25,6 +25,11 @@ export const createUser = async (userData) => {
             await trx('learner').insert({ user_id });
         }
 
+        // If role is instructor, create instructor profile
+        if (role === 'instructor') {
+            await trx('instructor').insert({ user_id });
+        }
+
         return { user_id, 
                 username: userData.username, 
                 email: userData.email, 

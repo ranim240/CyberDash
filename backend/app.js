@@ -5,8 +5,9 @@ import 'dotenv/config';
 
 import authRouter    from './src/modules/auth/auth.routes.js';
 import learnerRouter from './src/modules/learner/learner.routes.js';
+import categoryRouter from './src/modules/category/category.routes.js';
 // import instructorRouter  from './src/modules/instructor/instructor.routes.js';
-// import courseRouter      from './src/modules/course/course.routes.js';
+import courseRouter      from './src/modules/course/course.routes.js';
 // import challengeRouter   from './src/modules/challenge/challenge.routes.js';
 // import submissionRouter  from './src/modules/submission/submission.routes.js';
 // import aiRouter          from './src/modules/ai/ai.routes.js';
@@ -26,6 +27,7 @@ app.use(express.urlencoded({ extended: true }));
 // Routes
 app.use('/api/auth',    authRouter);
 app.use('/api/learner', learnerRouter);
+app.use('/api/categories', categoryRouter);
 // app.use('/api/instructor',  instructorRouter);
 // app.use('/api/courses',     courseRouter);
 // app.use('/api/challenges',  challengeRouter);

@@ -2,6 +2,7 @@ import { Router } from 'express';
 import learnerController from './learner.controller.js';
 import { isAuthenticated } from '../../middlewares/auth.js';
 import { authorize } from '../../middlewares/role.js';
+
 const router = Router();
 
 // DEFAULT MIDDLEWARE: All learner routes require authentication and learner role
