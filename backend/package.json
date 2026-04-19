@@ -8,7 +8,8 @@
     "dev": "nodemon server.js",
     "migrate": "knex migrate:latest --knexfile knexfile.cjs",
     "migrate:rollback": "knex migrate:rollback --knexfile knexfile.cjs",
-    "seed:all": "node src/seeds/runSeeds.js"
+    "seed:all": "node src/seeds/runSeeds.js",
+    
   },
   "keywords": [],
   "author": "",
@@ -27,6 +28,9 @@
     "uuid": "^13.0.0"
   },
   "devDependencies": {
-    "nodemon": "^3.1.14"
+    "@jest/globals": "^30.3.0",
+    "jest": "^30.3.0",
+    "nodemon": "^3.1.14",
+    "supertest": "^7.2.2"
   }
 }

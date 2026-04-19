@@ -13,16 +13,16 @@ export const seed = async (knex) => {
   await knex('xp_history').del();
 
   // Reference IDs - update these to match your seeded data
-  const LEARNER_1_ID = 'user_005_acf34ed8'; // Update this
-  const LEARNER_2_ID = 'user_006_dfd58f46'; // Update this
-  const LEARNER_3_ID = 'user_007_e5e11d54'; // Update this
-  const LEARNER_4_ID = 'user_008_cba52ffc'; // Update this
+  const LEARNER_1_ID = 'user_005_f955ff27'; // Update this
+  const LEARNER_2_ID = 'user_006_a1879425'; // Update this
+  const LEARNER_3_ID = 'user_007_d767ca36'; // Update this
+  const LEARNER_4_ID = 'user_008_83666694'; // Update this
 
-  const CHALLENGE_1_ID = 'challenge_001_0edb6364'; // Update this - SQL Injection (50 XP)
-  const CHALLENGE_2_ID = 'challenge_002_68fed79a'; // Update this - XSS (100 XP)
-  const CHALLENGE_3_ID = 'challenge_003_9a5b571a'; // Update this - Caesar Cipher (30 XP)
-  const CHALLENGE_4_ID = 'challenge_004_4147c0e7'; // Update this - RSA (200 XP)
-  const CHALLENGE_5_ID = 'challenge_005_359ef301'; // Update this - ARP Spoofing (120 XP)
+  const CHALLENGE_1_ID = 'challenge_001_0b6c79f9'; // Update this - SQL Injection (50 XP)
+  const CHALLENGE_2_ID = 'challenge_002_74a1ebd1'; // Update this - XSS (100 XP)
+  const CHALLENGE_3_ID = 'challenge_003_6d6c8114'; // Update this - Caesar Cipher (30 XP)
+  const CHALLENGE_4_ID = 'challenge_004_d3da69e0'; // Update this - RSA (200 XP)
+  const CHALLENGE_5_ID = 'challenge_005_66daf26e'; // Update this - ARP Spoofing (120 XP)
 
   await knex('xp_history').insert([
     // Learner 1 XP history
