@@ -26,10 +26,10 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     const status  = error.response?.status;
-    const message = error.response?.data?.message || 'Erreur serveur';
+    const message = error.response?.data?.message || 'Server Error';
 
-    // Token expiré ou invalide → déconnexion automatique
-    if (status === 401) {
+    // Token expiré ou invalide → déconnexion automatique (sauf si on est déjà sur le login)
+    if (status === 401 && !window.location.pathname.includes('/login')) {
       localStorage.removeItem('token');
       localStorage.removeItem('user');
       window.location.href = '/login';
