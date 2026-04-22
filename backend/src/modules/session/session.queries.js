@@ -1,36 +1,60 @@
 import db from '../../config/db.js';
 
 class SessionRepository {
-    // Fetch all active sessions for a specific learner and challenge
-    getActiveSessions = (learner_id, challenge_id) => {
-        db('challenge_session')
-.where({ learner_id, challenge_id })
-.whereNull('ended_at').first();
+
+    // ==========================
+    // 📌 Get active session
+    // ==========================
+    getActiveSession = (learner_id, challenge_id) => {
+        return db('challenge_session')
+            .where({ learner_id, challenge_id })
+            .whereNull('ended_at')
+            .first();
     };
 
-    // Create a new session record
+
+    // ==========================
+    // 📌 Create session
+    // ==========================
     createSession = (data) => {
-        return db('challenge_session').insert(data).returning('*');
+        return db('challenge_session')
+            .insert(data)
+            .returning('*');
     };
 
+
+    // ==========================
+    // 📌 Get session by ID
+    // ==========================
     getSessionById = (session_id) => {
-        return db('challenge_session').where({ session_id }).first();
+        return db('challenge_session')
+            .where({ session_id })
+            .first();
     };
-    // Update an existing session record
+
+
+    // ==========================
+    // 📌 Update session
+    // ==========================
     updateSession = (session_id, data) => {
-        return db('challenge_session').where({ session_id }).update(data).returning('*');
+        return db('challenge_session')
+            .where({ session_id })
+            .update(data)
+            .returning('*');
     };
-    // End a session by setting the ended_at timestamp
+
+
+    // ==========================
+    // 📌 End session
+    // ==========================
     endSession = (session_id) => {
         return db('challenge_session')
             .where({ session_id })
-            .update({ ended_at: new Date() });
+            .update({
+                ended_at: new Date()
+            })
+            .returning('*');
     };
 }
 
 export default new SessionRepository();
-
-
-
-
-

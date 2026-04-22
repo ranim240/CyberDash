@@ -5,28 +5,42 @@ import { authorize } from '../../middlewares/role.js';
 
 const router = express.Router();
 
-// ============ AUTHENTICATED LEARNER ROUTES ============
+// ==========================
+// 🔐 ALL ROUTES REQUIRE AUTH
+// ==========================
 router.use(isAuthenticated);
 
-// Get my own badges and stats
+
+// ==========================
+// 👤 MY BADGES (LEARNER)
+// ==========================
 router.get('/me', learnerBadgeController.getMyBadges);
 router.get('/me/stats', learnerBadgeController.getMyBadgeStats);
 
-// View other learners' badges (public)
+
+// ==========================
+// 🌍 PUBLIC / VIEW OTHER LEARNERS
+// ==========================
 router.get('/learner/:learner_id', learnerBadgeController.getLearnerBadges);
 router.get('/learner/:learner_id/stats', learnerBadgeController.getLearnerBadgeStats);
-router.get('/learner/:learner_id/badge/:badge_id/check', learnerBadgeController.checkLearnerHasBadge);
+router.get(
+  '/learner/:learner_id/badge/:badge_id/check',
+  learnerBadgeController.checkLearnerHasBadge
+);
 
-// View learners who have a specific badge
+
+// ==========================
+// 🏅 BADGE INSIGHTS
+// ==========================
 router.get('/badge/:badge_id/learners', learnerBadgeController.getBadgeLearners);
-
-// Recently awarded badges (public feed)
 router.get('/recent', learnerBadgeController.getRecentlyAwardedBadges);
 
-// ============ ADMIN/INSTRUCTOR ROUTES ============
+
+// ==========================
+// 🔐 ADMIN / INSTRUCTOR ONLY
+// ==========================
 router.use(authorize(['admin', 'instructor']));
 
-// Award and revoke badges
 router.post('/award', learnerBadgeController.awardBadge);
 router.delete('/learner/:learner_id/badge/:badge_id', learnerBadgeController.revokeBadge);
 router.delete('/learner/:learner_id/all', learnerBadgeController.revokeAllBadgesFromLearner);

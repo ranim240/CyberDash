@@ -1,25 +1,54 @@
 import { Router } from 'express';
 import learnerController from './learner.controller.js';
+import { startSession, abandonSession } from '../session/session.controller.js';
+import { submitFlag } from '../submission/submission.controller.js';
 import { isAuthenticated } from '../../middlewares/auth.js';
 import { authorize } from '../../middlewares/role.js';
 
 const router = Router();
 
-// DEFAULT MIDDLEWARE: All learner routes require authentication and learner role
 router.use(isAuthenticated, authorize(['learner']));
 
-// learner profile and dashboard
-router.get('/dashboard',           learnerController.getDashboard);
-router.get('/profile',             learnerController.getProfile);
-router.get('/badges',              learnerController.getBadges);
 
-// enrolment mangement
-router.get('/enrollments',         learnerController.getEnrollments);
-router.post('/enroll/:courseId',   learnerController.enrollCourse);
-router.delete('/enroll/:courseId', learnerController.unenrollCourse);
+// ==========================
+// 📊 DASHBOARD
+// ==========================
+router.get('/dashboard', learnerController.getDashboard);
+router.get('/stats', learnerController.getStats); // NEW
 
-// course progress 
-router.get('/courses/:courseId/progress',      learnerController.getProgress);
-router.put('/courses/:courseId/progress',      learnerController.updateProgress);
+
+// ==========================
+// 👤 PROFILE
+// ==========================
+router.get('/profile', learnerController.getProfile);
+router.get('/badges', learnerController.getBadges);
+
+
+// ==========================
+// 📚 COURSES
+// ==========================
+router.get('/enrollments', learnerController.getEnrollments);
+router.post('/courses/:courseId/enroll', learnerController.enrollCourse);
+router.delete('/courses/:courseId/enroll', learnerController.unenrollCourse);
+
+
+// ==========================
+// 📈 COURSE PROGRESS
+// ==========================
+router.get('/courses/:courseId/progress', learnerController.getProgress);
+router.put('/courses/:courseId/progress', learnerController.updateProgress);
+
+
+// ==========================
+// 🎯 CHALLENGE SESSIONS
+// ==========================
+router.post('/challenges/:challengeId/start', startSession);
+router.post('/sessions/:id/abandon', abandonSession);
+
+
+// ==========================
+// 🚀 SUBMISSIONS
+// ==========================
+router.post('/submissions', submitFlag);
 
 export default router;

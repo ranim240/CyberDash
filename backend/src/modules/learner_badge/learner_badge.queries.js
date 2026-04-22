@@ -3,7 +3,7 @@ import db from '../../config/db.js';
 // ============ LEARNER BADGE OPERATIONS ============
 
 export const getLearnerBadges = async (learner_id) => {
-  const badges = await db('learner_badge')
+  return db('learner_badge')
     .join('badge', 'learner_badge.badge_id', 'badge.badge_id')
     .where({ learner_id })
     .select(
@@ -16,10 +16,11 @@ export const getLearnerBadges = async (learner_id) => {
       'badge.xp_bonus'
     )
     .orderBy('learner_badge.awarded_at', 'desc');
-
-  return badges;
 };
 
+// ==========================
+// 📌 BADGE LEARNERS (PAGINATED)
+// ==========================
 export const getBadgeLearners = async (badge_id, { page = 1, limit = 20 }) => {
   const offset = (page - 1) * limit;
 
@@ -38,17 +39,22 @@ export const getBadgeLearners = async (badge_id, { page = 1, limit = 20 }) => {
     .limit(limit)
     .offset(offset);
 
-  // Get total count
-  const [total] = await db('learner_badge')
+  const totalResult = await db('learner_badge')
     .where({ badge_id })
-    .count('learner_id as count');
+    .count('learner_id as count')
+    .first();
+
+  const total = Number(totalResult?.count || 0);
 
   return {
     data,
-    total: Number(total.count),
+    total,
   };
 };
 
+// ==========================
+// 📌 CHECK BADGE
+// ==========================
 export const checkLearnerHasBadge = async (learner_id, badge_id) => {
   const badge = await db('learner_badge')
     .where({ learner_id, badge_id })
@@ -57,6 +63,9 @@ export const checkLearnerHasBadge = async (learner_id, badge_id) => {
   return !!badge;
 };
 
+// ==========================
+// 📌 AWARD BADGE
+// ==========================
 export const awardBadge = async (learner_id, badge_id) => {
   const [awarded] = await db('learner_badge')
     .insert({ learner_id, badge_id })
@@ -65,6 +74,9 @@ export const awardBadge = async (learner_id, badge_id) => {
   return awarded;
 };
 
+// ==========================
+// 📌 REVOKE BADGE
+// ==========================
 export const revokeBadge = async (learner_id, badge_id) => {
   const [revoked] = await db('learner_badge')
     .where({ learner_id, badge_id })
@@ -74,45 +86,53 @@ export const revokeBadge = async (learner_id, badge_id) => {
   return revoked;
 };
 
+// ==========================
+// 📌 REVOKE ALL (LEARNER)
+// ==========================
 export const revokeAllBadgesFromLearner = async (learner_id) => {
-  const revoked = await db('learner_badge')
+  return db('learner_badge')
     .where({ learner_id })
     .del()
     .returning(['learner_id', 'badge_id']);
-
-  return revoked;
 };
 
+// ==========================
+// 📌 REVOKE ALL (BADGE)
+// ==========================
 export const revokeAllLearnersFromBadge = async (badge_id) => {
-  const revoked = await db('learner_badge')
+  return db('learner_badge')
     .where({ badge_id })
     .del()
     .returning(['learner_id', 'badge_id']);
-
-  return revoked;
 };
 
-// ============ LEARNER BADGE STATISTICS ============
-
+// ==========================
+// 📊 STATS
+// ==========================
 export const getLearnerBadgeCount = async (learner_id) => {
-  const [result] = await db('learner_badge')
+  const result = await db('learner_badge')
     .where({ learner_id })
-    .count('badge_id as count');
+    .count('badge_id as count')
+    .first();
 
-  return Number(result.count);
+  return Number(result?.count || 0);
 };
 
 export const getTotalXPFromBadges = async (learner_id) => {
-  const [result] = await db('learner_badge')
+  const result = await db('learner_badge')
     .join('badge', 'learner_badge.badge_id', 'badge.badge_id')
     .where({ learner_id })
-    .sum('badge.xp_bonus as total_xp');
+    .sum('badge.xp_bonus as total_xp')
+    .first();
 
-  return Number(result.total_xp || 0);
+  return Number(result?.total_xp || 0);
 };
 
+// ==========================
+// 📌 RECENT BADGES
+// ==========================
 export const getRecentlyAwardedBadges = async ({ limit = 10 }) => {
-  const badges = await db('learner_badge')
+  return db('learner_badge')
     .join('badge', 'learner_badge.badge_id', 'badge.badge_id')
     .join('learner', 'learner_badge.learner_id', 'learner.user_id')
     .join('user', 'learner.user_id', 'user.user_id')
@@ -126,6 +146,4 @@ export const getRecentlyAwardedBadges = async ({ limit = 10 }) => {
     )
     .orderBy('learner_badge.awarded_at', 'desc')
     .limit(limit);
-
-  return badges;
 };

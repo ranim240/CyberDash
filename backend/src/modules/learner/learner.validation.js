@@ -12,5 +12,5 @@ export const validateUpdateProgress = (data) => {
     errors.push(`completion_status must be one of: ${allowedStatus.join(', ')}`);
   }
 
-  return { errors };
+  return  errors ;
 };

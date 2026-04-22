@@ -5,21 +5,37 @@ import { authorize } from '../../middlewares/role.js';
 
 const router = express.Router();
 
-// ============ PUBLIC ROUTES (view files) ============
-router.get('/challenge/:challenge_id', challengeFileController.getFilesByChallenge);
-router.get('/:id', challengeFileController.getFileById);
-router.get('/challenge/:challenge_id/stats', challengeFileController.getChallengeFileStats);
 
-// ============ ADMIN/INSTRUCTOR ROUTES ============
+// ==========================
+// 📌 PUBLIC ROUTES
+// ==========================
+router.get('/challenge/:challenge_id/stats', challengeFileController.getChallengeFileStats);
+router.get('/challenge/:challenge_id', challengeFileController.getFilesByChallenge);
+router.get('/file/:id', challengeFileController.getFileById);
+
+
+// ==========================
+// 🔐 INSTRUCTOR + ADMIN ROUTES
+// ==========================
 router.use(isAuthenticated, authorize(['admin', 'instructor']));
 
 router.post('/', challengeFileController.createChallengeFile);
 router.post('/bulk', challengeFileController.createMultipleChallengeFiles);
-router.patch('/:id', challengeFileController.updateChallengeFile);
-router.delete('/:id', challengeFileController.deleteChallengeFile);
+
+router.patch('/file/:id', challengeFileController.updateChallengeFile);
+router.delete('/file/:id', challengeFileController.deleteChallengeFile);
+
 router.delete('/challenge/:challenge_id', challengeFileController.deleteFilesByChallenge);
 
-// ============ ADMIN ONLY ROUTES ============
-router.get('/storage/stats', isAuthenticated, authorize(['admin']), challengeFileController.getTotalStorageUsed);
+
+// ==========================
+// 📊 ADMIN ONLY ROUTES
+// ==========================
+router.get(
+  '/storage/stats',
+  isAuthenticated,
+  authorize(['admin']),
+  challengeFileController.getTotalStorageUsed
+);
 
 export default router;

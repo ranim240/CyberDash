@@ -1,57 +1,104 @@
-// Challenge validation schemas
+import {
+  CHALLENGE_STATUS_LIST,
+  CHALLENGE_DIFFICULTY
+} from '../../constants/challengeStatus.js';
+
+
+// ==========================
+// 📌 CREATE CHALLENGE
+// ==========================
+
 export const validateCreateChallenge = (data) => {
-    const errors = [];
-    
-    if (!data.title || typeof data.title !== 'string' || data.title.trim().length === 0) {
-        errors.push('Title is required and must be a non-empty string');
-    }
-    
-    if (!data.description || typeof data.description !== 'string' || data.description.trim().length === 0) {
-        errors.push('Description is required and must be a non-empty string');
-    }
-    
-    if (!data.difficulty || !['easy', 'medium', 'hard'].includes(data.difficulty)) {
-        errors.push('Difficulty must be one of: easy, medium, hard');
-    }
-    
-    if (data.points && (typeof data.points !== 'number' || data.points < 0)) {
-        errors.push('Points must be a non-negative number');
-    }
-    
-    return errors;
+  const errors = [];
+
+  // Title
+  if (!data.title || typeof data.title !== 'string' || !data.title.trim()) {
+    errors.push('Title is required and must be a non-empty string');
+  }
+
+  // Description
+  if (!data.description || typeof data.description !== 'string' || !data.description.trim()) {
+    errors.push('Description is required and must be a non-empty string');
+  }
+
+  // Difficulty
+  if (!data.difficulty || !CHALLENGE_DIFFICULTY.includes(data.difficulty)) {
+    errors.push(`Difficulty must be one of: ${CHALLENGE_DIFFICULTY.join(', ')}`);
+  }
+
+  // Points (allow 0)
+  if (
+    data.points === undefined ||
+    data.points === null ||
+    isNaN(Number(data.points)) ||
+    Number(data.points) < 0
+  ) {
+    errors.push('Points must be a non-negative number');
+  }
+
+  // Flag
+  if (!data.flag || typeof data.flag !== 'string' || !data.flag.trim()) {
+    errors.push('Flag is required and must be a non-empty string');
+  }
+
+  // Category
+  if (!data.category_id) {
+    errors.push('Category is required');
+  }
+
+  return errors;
 };
+
+
+// ==========================
+// 📌 UPDATE CHALLENGE
+// ==========================
 
 export const validateUpdateChallenge = (data) => {
-    const errors = [];
-    
-    if (data.title && (typeof data.title !== 'string' || data.title.trim().length === 0)) {
-        errors.push('Title must be a non-empty string');
+  const errors = [];
+
+  if (data.title !== undefined) {
+    if (typeof data.title !== 'string' || !data.title.trim()) {
+      errors.push('Title must be a non-empty string');
     }
-    
-    if (data.description && (typeof data.description !== 'string' || data.description.trim().length === 0)) {
-        errors.push('Description must be a non-empty string');
+  }
+
+  if (data.description !== undefined) {
+    if (typeof data.description !== 'string' || !data.description.trim()) {
+      errors.push('Description must be a non-empty string');
     }
-    
-    if (data.difficulty && !['easy', 'medium', 'hard'].includes(data.difficulty)) {
-        errors.push('Difficulty must be one of: easy, medium, hard');
+  }
+
+  if (data.difficulty !== undefined) {
+    if (!CHALLENGE_DIFFICULTY.includes(data.difficulty)) {
+      errors.push(`Difficulty must be one of: ${CHALLENGE_DIFFICULTY.join(', ')}`);
     }
-    
-    if (data.points && (typeof data.points !== 'number' || data.points < 0)) {
-        errors.push('Points must be a non-negative number');
+  }
+
+  if (data.points !== undefined) {
+    if (isNaN(Number(data.points)) || Number(data.points) < 0) {
+      errors.push('Points must be a non-negative number');
     }
-    
-    return errors;
+  }
+
+  return errors;
 };
 
-const VALID_CHALLENGE_STATUSES = ['pending', 'approved', 'rejected'];
+
+// ==========================
+// 📌 STATUS UPDATE
+// ==========================
+
 export const validateUpdateChallengeStatus = (data) => {
   const errors = [];
-  
+
   if (!data.status) {
-    errors.push("Status is required");
-  } else if (!VALID_CHALLENGE_STATUSES.includes(data.status)) {
-    errors.push(`Status must be one of: ${VALID_CHALLENGE_STATUSES.join(', ')}`);
+    errors.push('Status is required');
+  } else if (!CHALLENGE_STATUS_LIST.includes(data.status)) {
+    errors.push(
+      `Status must be one of: ${CHALLENGE_STATUS_LIST.join(', ')}`
+    );
   }
-  
+
   return errors;
 };
