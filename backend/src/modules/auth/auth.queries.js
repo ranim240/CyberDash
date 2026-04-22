@@ -1,6 +1,8 @@
 import db from '../../config/db.js'
 import crypto from 'node:crypto';
 
+// ── User Queries ─────────────────────────────────────────────────
+
 export const findUserByEmail = (email) => {
     return db('user').where({ email }).first();
 };
