@@ -3,39 +3,39 @@ import * as challengeFileController from './challenge_file.controller.js';
 import { isAuthenticated } from '../../middlewares/auth.js';
 import { authorize } from '../../middlewares/role.js';
 
-const router = express.Router();
+const challengeFileRoutes = express.Router();
 
 
 // ==========================
 // 📌 PUBLIC ROUTES
 // ==========================
-router.get('/challenge/:challenge_id/stats', challengeFileController.getChallengeFileStats);
-router.get('/challenge/:challenge_id', challengeFileController.getFilesByChallenge);
-router.get('/file/:id', challengeFileController.getFileById);
+challengeFileRoutes.get('/challenge/:challenge_id/stats', challengeFileController.getChallengeFileStats);
+challengeFileRoutes.get('/challenge/:challenge_id', challengeFileController.getFilesByChallenge);
+challengeFileRoutes.get('/file/:id', challengeFileController.getFileById);
 
 
 // ==========================
 // 🔐 INSTRUCTOR + ADMIN ROUTES
 // ==========================
-router.use(isAuthenticated, authorize(['admin', 'instructor']));
+challengeFileRoutes.use(isAuthenticated, authorize(['admin', 'instructor']));
 
-router.post('/', challengeFileController.createChallengeFile);
-router.post('/bulk', challengeFileController.createMultipleChallengeFiles);
+challengeFileRoutes.post('/', challengeFileController.createChallengeFile);
+challengeFileRoutes.post('/bulk', challengeFileController.createMultipleChallengeFiles);
 
-router.patch('/file/:id', challengeFileController.updateChallengeFile);
-router.delete('/file/:id', challengeFileController.deleteChallengeFile);
+challengeFileRoutes.patch('/file/:id', challengeFileController.updateChallengeFile);
+challengeFileRoutes.delete('/file/:id', challengeFileController.deleteChallengeFile);
 
-router.delete('/challenge/:challenge_id', challengeFileController.deleteFilesByChallenge);
+challengeFileRoutes.delete('/challenge/:challenge_id', challengeFileController.deleteFilesByChallenge);
 
 
 // ==========================
 // 📊 ADMIN ONLY ROUTES
 // ==========================
-router.get(
+challengeFileRoutes.get(
   '/storage/stats',
   isAuthenticated,
   authorize(['admin']),
   challengeFileController.getTotalStorageUsed
 );
 
-export default router;
+export default challengeFileRoutes;

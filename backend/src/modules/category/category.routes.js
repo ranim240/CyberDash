@@ -3,23 +3,23 @@ import categoryController from './category.controller.js';
 import { isAuthenticated } from '../../middlewares/auth.js';
 import { authorize } from '../../middlewares/role.js';
 
-const router = express.Router();
+const categoryRouter = express.Router();
 
 // ================= PUBLIC ROUTES =================
 
 // ⚠️ specific route FIRST
-router.get('/:id/challenges', categoryController.getChallengesByCategory);
+categoryRouter.get('/:id/challenges', categoryController.getChallengesByCategory);
 
-router.get('/', categoryController.getAllCategories);
-router.get('/:id', categoryController.getCategoryById);
+categoryRouter.get('/', categoryController.getAllCategories);
+categoryRouter.get('/:id', categoryController.getCategoryById);
 
 
 // ================= ADMIN ROUTES =================
 
-router.use(isAuthenticated, authorize(['admin']));
+categoryRouter.use(isAuthenticated, authorize(['admin']));
 
-router.post('/', categoryController.createCategory);
-router.put('/:id', categoryController.updateCategory);
-router.delete('/:id', categoryController.deleteCategory);
+categoryRouter.post('/', categoryController.createCategory);
+categoryRouter.put('/:id', categoryController.updateCategory);
+categoryRouter.delete('/:id', categoryController.deleteCategory);
 
-export default router;
+export default categoryRouter;

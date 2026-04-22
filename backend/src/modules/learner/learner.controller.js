@@ -185,6 +185,23 @@ export const getProgress = async (req, res, next) => {
 };
 
 
+  // ==========================
+// 📊 STATS
+// ==========================
+export const getStats = async (req, res, next) => {
+  try {
+    const userId = req.user.userId;
+
+    const stats = await Learner.getStats(userId);
+
+    return success(res, stats);
+  } catch (err) {
+    next(err);
+  }
+};
+
+
+
 export default {
   getDashboard,
   getProfile,
@@ -193,5 +210,7 @@ export default {
   enrollCourse,
   unenrollCourse,
   updateProgress,
-  getProgress
+  getProgress,
+  getStats
+
 };

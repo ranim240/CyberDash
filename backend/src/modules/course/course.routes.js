@@ -1,29 +1,29 @@
-import { Router } from 'express';
+import express from 'express';
 import courseController from './course.controller.js';
 import { isAuthenticated } from '../../middlewares/auth.js';
 import { authorize } from '../../middlewares/role.js';
 
-const router = Router();
+const courseRouter = express.Router();
 
 // Public routes
-router.get('/', courseController.getAll);
-router.get('/:id', courseController.getOne);
+courseRouter.get('/', courseController.getAll);
+courseRouter.get('/:id', courseController.getOne);
 
 // Protected routes
-router.use(isAuthenticated);
+courseRouter.use(isAuthenticated);
 
 // Content access
-router.get('/:id/contents', authorize(['instructor', 'learner']), courseController.getContents);
+courseRouter.get('/:id/contents', authorize(['instructor', 'learner']), courseController.getContents);
 
 // Instructor routes
-router.post('/', authorize(['instructor']), courseController.createCourse);
-router.put('/:id', authorize(['instructor']), courseController.updateCourse);
-router.delete('/:id', authorize(['instructor']), courseController.deleteCourse);
+courseRouter.post('/', authorize(['instructor']), courseController.createCourse);
+courseRouter.put('/:id', authorize(['instructor']), courseController.updateCourse);
+courseRouter.delete('/:id', authorize(['instructor']), courseController.deleteCourse);
 
 // ✅ SINGLE publish route (clean)
-router.patch('/:id/publish', authorize(['instructor']), courseController.togglePublish);
+courseRouter.patch('/:id/publish', authorize(['instructor']), courseController.togglePublish);
 
 // Course content
-router.post('/:id/contents', authorize(['instructor']), courseController.addContent);
+courseRouter.post('/:id/contents', authorize(['instructor']), courseController.addContent);
 
-export default router;
+export default courseRouter;

@@ -3,27 +3,27 @@ import * as learnerBadgeController from './learner_badge.controller.js';
 import { isAuthenticated } from '../../middlewares/auth.js';
 import { authorize } from '../../middlewares/role.js';
 
-const router = express.Router();
+const learnerBadgeRoutes = express.Router();
 
 // ==========================
 // 🔐 ALL ROUTES REQUIRE AUTH
 // ==========================
-router.use(isAuthenticated);
+learnerBadgeRoutes.use(isAuthenticated);
 
 
 // ==========================
 // 👤 MY BADGES (LEARNER)
 // ==========================
-router.get('/me', learnerBadgeController.getMyBadges);
-router.get('/me/stats', learnerBadgeController.getMyBadgeStats);
+learnerBadgeRoutes.get('/me', learnerBadgeController.getMyBadges);
+learnerBadgeRoutes.get('/me/stats', learnerBadgeController.getMyBadgeStats);
 
 
 // ==========================
 // 🌍 PUBLIC / VIEW OTHER LEARNERS
 // ==========================
-router.get('/learner/:learner_id', learnerBadgeController.getLearnerBadges);
-router.get('/learner/:learner_id/stats', learnerBadgeController.getLearnerBadgeStats);
-router.get(
+learnerBadgeRoutes.get('/learner/:learner_id', learnerBadgeController.getLearnerBadges);
+learnerBadgeRoutes.get('/learner/:learner_id/stats', learnerBadgeController.getLearnerBadgeStats);
+learnerBadgeRoutes.get(
   '/learner/:learner_id/badge/:badge_id/check',
   learnerBadgeController.checkLearnerHasBadge
 );
@@ -32,18 +32,18 @@ router.get(
 // ==========================
 // 🏅 BADGE INSIGHTS
 // ==========================
-router.get('/badge/:badge_id/learners', learnerBadgeController.getBadgeLearners);
-router.get('/recent', learnerBadgeController.getRecentlyAwardedBadges);
+learnerBadgeRoutes.get('/badge/:badge_id/learners', learnerBadgeController.getBadgeLearners);
+learnerBadgeRoutes.get('/recent', learnerBadgeController.getRecentlyAwardedBadges);
 
 
 // ==========================
 // 🔐 ADMIN / INSTRUCTOR ONLY
 // ==========================
-router.use(authorize(['admin', 'instructor']));
+learnerBadgeRoutes.use(authorize(['admin', 'instructor']));
 
-router.post('/award', learnerBadgeController.awardBadge);
-router.delete('/learner/:learner_id/badge/:badge_id', learnerBadgeController.revokeBadge);
-router.delete('/learner/:learner_id/all', learnerBadgeController.revokeAllBadgesFromLearner);
-router.delete('/badge/:badge_id/all', learnerBadgeController.revokeAllLearnersFromBadge);
+learnerBadgeRoutes.post('/award', learnerBadgeController.awardBadge);
+learnerBadgeRoutes.delete('/learner/:learner_id/badge/:badge_id', learnerBadgeController.revokeBadge);
+learnerBadgeRoutes.delete('/learner/:learner_id/all', learnerBadgeController.revokeAllBadgesFromLearner);
+learnerBadgeRoutes.delete('/badge/:badge_id/all', learnerBadgeController.revokeAllLearnersFromBadge);
 
-export default router;
+export default learnerBadgeRoutes;

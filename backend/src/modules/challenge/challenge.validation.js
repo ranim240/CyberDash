@@ -1,7 +1,7 @@
 import {
   CHALLENGE_STATUS_LIST,
   CHALLENGE_DIFFICULTY
-} from '../../constants/challengeStatus.js';
+} from '../constants/challengeStatus.js';
 
 
 // ==========================

@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import express from 'express';
 import {
     getAll,
     getOne,
@@ -18,7 +18,7 @@ import {
 import { isAuthenticated } from '../../middlewares/auth.js';
 import { authorize } from '../../middlewares/role.js';
 
-const challengeRouter = Router();
+const challengeRouter = express.Router();
 
 
 // ==========================
