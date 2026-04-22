@@ -17,6 +17,7 @@ import incidentRouter    from './src/modules/incident_report/incident_report.rou
 import adminRouter       from './src/modules/admin/admin.routes.js';
 import challengeFileRoutes from './src/modules/challenge_file/challenge_file.routes.js';
 import learnerBadgeRoutes from './src/modules/learner_badge/learner_badge.routes.js';
+import sessionRouter from './src/modules/session/session.routes.js';
 
 const app = express();
 
@@ -41,6 +42,7 @@ app.use('/api/incidents',   incidentRouter);
 app.use('/api/admin',       adminRouter);
 app.use('/api/challenge-files', challengeFileRoutes);
 app.use('/api/learner-badges', learnerBadgeRoutes);
+app.use('/api/sessions', sessionRouter);
 
 // Route de test
 app.get('/api/health', (req, res) => {

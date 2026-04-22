@@ -3,19 +3,30 @@ import * as badgeController from './badge.controller.js';
 import { isAuthenticated } from '../../middlewares/auth.js';
 import { authorize } from '../../middlewares/role.js';
 
-const router = express.Router();
+const badgeRouter = express.Router();
 
-// ============ PUBLIC ROUTES (view badges) ============
-router.get('/', badgeController.getAllBadges);
-router.get('/:id', badgeController.getBadgeById);
-router.get('/:id/stats', badgeController.getBadgeStats);
 
-// ============ ADMIN ONLY ROUTES ============
-router.use(isAuthenticated, authorize(['admin']));
+// ==========================
+// 📌 PUBLIC ROUTES
+// ==========================
+badgeRouter.get('/', badgeController.getAllBadges);
+badgeRouter.get('/:id/stats', badgeController.getBadgeStats);
+badgeRouter.get('/:id', badgeController.getBadgeById);
 
-router.post('/', badgeController.createBadge);
-router.patch('/:id', badgeController.updateBadge);
-router.delete('/:id', badgeController.deleteBadge);
-router.get('/admin/my-badges', badgeController.getMyBadges);
 
-export default router;
+// ==========================
+// 🔐 ADMIN ONLY ROUTES
+// ==========================
+badgeRouter.use(isAuthenticated, authorize(['admin']));
+
+badgeRouter.post('/', badgeController.createBadge);
+badgeRouter.patch('/:id', badgeController.updateBadge);
+badgeRouter.delete('/:id', badgeController.deleteBadge);
+
+
+// ==========================
+// 📌 ADMIN OWN BADGES
+// ==========================
+badgeRouter.get('/admin/my-badges', badgeController.getMyBadges);
+
+export default badgeRouter;

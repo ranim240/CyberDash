@@ -10,9 +10,16 @@ export const getLearnerBadges = async (req, res, next) => {
   try {
     const { learner_id } = req.params;
 
+    if (!learner_id) {
+      return res.status(400).json({
+        success: false,
+        message: 'learner_id is required'
+      });
+    }
+
     const badges = await queries.getLearnerBadges(learner_id);
 
-    res.json({
+    return res.json({
       success: true,
       data: badges
     });
@@ -23,11 +30,11 @@ export const getLearnerBadges = async (req, res, next) => {
 
 export const getMyBadges = async (req, res, next) => {
   try {
-    const learner_id = req.user.user_id; // Assuming authenticated user
+    const learner_id = req.user.userId; // ✅ FIXED
 
     const badges = await queries.getLearnerBadges(learner_id);
 
-    res.json({
+    return res.json({
       success: true,
       data: badges
     });
@@ -41,7 +48,6 @@ export const getBadgeLearners = async (req, res, next) => {
     const { badge_id } = req.params;
     const { page = 1, limit = 20 } = req.query;
 
-    // Validate query parameters
     const errors = validateGetBadgeLearners(req.query);
     if (errors.length > 0) {
       return res.status(400).json({ success: false, errors });
@@ -52,7 +58,7 @@ export const getBadgeLearners = async (req, res, next) => {
       limit: Number(limit)
     });
 
-    res.json({
+    return res.json({
       success: true,
       data: result.data,
       pagination: {
@@ -73,7 +79,7 @@ export const checkLearnerHasBadge = async (req, res, next) => {
 
     const hasBadge = await queries.checkLearnerHasBadge(learner_id, badge_id);
 
-    res.json({
+    return res.json({
       success: true,
       data: { hasBadge }
     });
@@ -86,13 +92,11 @@ export const awardBadge = async (req, res, next) => {
   try {
     const { learner_id, badge_id } = req.body;
 
-    // Validate input
     const errors = validateAwardBadge(req.body);
     if (errors.length > 0) {
       return res.status(400).json({ success: false, errors });
     }
 
-    // Check if badge already awarded
     const alreadyHas = await queries.checkLearnerHasBadge(learner_id, badge_id);
     if (alreadyHas) {
       return res.status(400).json({
@@ -103,7 +107,7 @@ export const awardBadge = async (req, res, next) => {
 
     const awarded = await queries.awardBadge(learner_id, badge_id);
 
-    res.status(201).json({
+    return res.status(201).json({
       success: true,
       message: 'Badge awarded successfully',
       data: awarded
@@ -126,7 +130,7 @@ export const revokeBadge = async (req, res, next) => {
       });
     }
 
-    res.json({
+    return res.json({
       success: true,
       message: 'Badge revoked successfully',
       data: revoked
@@ -142,7 +146,7 @@ export const revokeAllBadgesFromLearner = async (req, res, next) => {
 
     const revoked = await queries.revokeAllBadgesFromLearner(learner_id);
 
-    res.json({
+    return res.json({
       success: true,
       message: `${revoked.length} badge(s) revoked successfully`,
       data: revoked
@@ -158,7 +162,7 @@ export const revokeAllLearnersFromBadge = async (req, res, next) => {
 
     const revoked = await queries.revokeAllLearnersFromBadge(badge_id);
 
-    res.json({
+    return res.json({
       success: true,
       message: `Badge revoked from ${revoked.length} learner(s)`,
       data: revoked
@@ -179,7 +183,7 @@ export const getLearnerBadgeStats = async (req, res, next) => {
       queries.getTotalXPFromBadges(learner_id)
     ]);
 
-    res.json({
+    return res.json({
       success: true,
       data: {
         badge_count: badgeCount,
@@ -193,14 +197,14 @@ export const getLearnerBadgeStats = async (req, res, next) => {
 
 export const getMyBadgeStats = async (req, res, next) => {
   try {
-    const learner_id = req.user.user_id;
+    const learner_id = req.user.userId; // ✅ FIXED
 
     const [badgeCount, totalXP] = await Promise.all([
       queries.getLearnerBadgeCount(learner_id),
       queries.getTotalXPFromBadges(learner_id)
     ]);
 
-    res.json({
+    return res.json({
       success: true,
       data: {
         badge_count: badgeCount,
@@ -220,7 +224,7 @@ export const getRecentlyAwardedBadges = async (req, res, next) => {
       limit: Number(limit)
     });
 
-    res.json({
+    return res.json({
       success: true,
       data: badges
     });

@@ -25,7 +25,7 @@ export const register = async (req, res, next) => {
 
     // 2. Hash the password
     const password_hash = await hashPassword(password);
-    
+
     // 3. Create user
     await queries.createUser({ username, email, password_hash, role });
 
@@ -107,7 +107,7 @@ export const forgotPassword = async (req, res, next) => {
 
     // 3. Build reset link pointing to FRONTEND (React page)
     const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
-    const resetLink = `${frontendUrl}/reset-password?userId=${user.user_id}&token=${resetToken}`;
+    const resetLink = `${frontendUrl}/reset-password/${user.user_id}/${resetToken}`;
 
     // 4. Send email
     await sendResetEmail(user.email, user.username, resetLink);

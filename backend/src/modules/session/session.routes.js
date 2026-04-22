@@ -1,13 +1,24 @@
-import { Router } from 'express';
+import express from 'express';
 import { startSession, abandonSession } from './session.controller.js';
-import { authenticate } from '../../middlewares/auth.js';
-import { authorize } from '../../middlewares/role.js';
+import { isAuthenticated } from '../../middlewares/auth.js';
 
-const router = Router();
+const sessionRouter = express.Router();
 
-router.use(authenticate, authorize('learner'));
+// ==========================
+// 🔐 AUTH ONLY (NO ROLE LIMIT HERE)
+// ==========================
+sessionRouter.use(isAuthenticated);
 
-router.post('/:challengeId/start', startSession);
-router.post('/:id/abandon', abandonSession);
 
-export default router;
+// ==========================
+// 📌 START SESSION
+// ==========================
+sessionRouter.post('/:challengeId/start', startSession);
+
+
+// ==========================
+// 📌 ABANDON SESSION
+// ==========================
+sessionRouter.post('/:id/abandon', abandonSession);
+
+export default sessionRouter;

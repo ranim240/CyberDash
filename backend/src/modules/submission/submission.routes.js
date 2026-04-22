@@ -1,12 +1,17 @@
-import { Router } from 'express';
+import express from 'express';
 import { submitFlag } from './submission.controller.js';
 import { isAuthenticated } from '../../middlewares/auth.js';
-import { authorize } from '../../middlewares/role.js';
 
-const router = Router();
+const submissionRouter = express.Router();
 
-router.use(isAuthenticated, authorize('learner'));
+// ==========================
+// 🔐 AUTH ONLY (no global role lock)
+// ==========================
+submissionRouter.use(isAuthenticated);
 
-router.post('/submit', submitFlag);
+// ==========================
+// 📌 SUBMIT FLAG
+// ==========================
+submissionRouter.post('/submit', submitFlag);
 
-export default router;
+export default submissionRouter;

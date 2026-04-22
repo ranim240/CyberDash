@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { useNavigate, Link, useSearchParams } from 'react-router-dom';
-import * as authService from '../../services/auth.service';
+import { useNavigate, Link, useParams } from 'react-router-dom';
+import * as authService from '../../api/auth';
 import '../../styles/auth.css';
 
 const ResetPassword = () => {
@@ -11,11 +11,9 @@ const ResetPassword = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
+  const { userId, token } = useParams();
 
-  // Read from URL query params (from the email link)
-  const userId = searchParams.get('userId');
-  const token = searchParams.get('token');
+  // Read from URL path params (from the email link)
 
   const handleResetPassword = async (e) => {
     e.preventDefault();

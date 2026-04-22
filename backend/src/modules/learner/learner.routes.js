@@ -1,25 +1,65 @@
-import { Router } from 'express';
+import express from 'express';
+
 import learnerController from './learner.controller.js';
+import { startSession, abandonSession } from '../session/session.controller.js';
+import { submitFlag } from '../submission/submission.controller.js';
+
 import { isAuthenticated } from '../../middlewares/auth.js';
 import { authorize } from '../../middlewares/role.js';
 
-const router = Router();
+// ✅ création correcte du router
+const learnerRouter = express.Router();
 
-// DEFAULT MIDDLEWARE: All learner routes require authentication and learner role
-router.use(isAuthenticated, authorize(['learner']));
 
-// learner profile and dashboard
-router.get('/dashboard',           learnerController.getDashboard);
-router.get('/profile',             learnerController.getProfile);
-router.get('/badges',              learnerController.getBadges);
+// ==========================
+// 🔒 GLOBAL MIDDLEWARE (learner only)
+// ==========================
+learnerRouter.use(isAuthenticated, authorize(['learner']));
 
-// enrolment mangement
-router.get('/enrollments',         learnerController.getEnrollments);
-router.post('/enroll/:courseId',   learnerController.enrollCourse);
-router.delete('/enroll/:courseId', learnerController.unenrollCourse);
 
-// course progress 
-router.get('/courses/:courseId/progress',      learnerController.getProgress);
-router.put('/courses/:courseId/progress',      learnerController.updateProgress);
+// ==========================
+// 📊 DASHBOARD
+// ==========================
+learnerRouter.get('/dashboard', learnerController.getDashboard);
+learnerRouter.get('/stats', learnerController.getStats);
 
-export default router;
+
+// ==========================
+// 👤 PROFILE + BADGES
+// ==========================
+learnerRouter.get('/profile', learnerController.getProfile);
+learnerRouter.get('/badges', learnerController.getBadges);
+
+
+// ==========================
+// 📚 COURSES
+// ==========================
+learnerRouter.get('/enrollments', learnerController.getEnrollments);
+learnerRouter.post('/courses/:courseId/enroll', learnerController.enrollCourse);
+learnerRouter.delete('/courses/:courseId/enroll', learnerController.unenrollCourse);
+
+
+// ==========================
+// 📈 PROGRESS
+// ==========================
+learnerRouter.get('/courses/:courseId/progress', learnerController.getProgress);
+learnerRouter.put('/courses/:courseId/progress', learnerController.updateProgress);
+
+
+// ==========================
+// 🎯 CHALLENGE SESSIONS
+// ==========================
+learnerRouter.post('/challenges/:challengeId/start', startSession);
+learnerRouter.post('/sessions/:sessionId/abandon', abandonSession);
+
+
+// ==========================
+// 🚀 SUBMISSIONS
+// ==========================
+learnerRouter.post('/submissions', submitFlag);
+
+
+// ==========================
+// 📤 EXPORT ROUTER (IMPORTANT)
+// ==========================
+export default learnerRouter;

@@ -4,23 +4,29 @@ import {
   validateUpdateChallengeFile
 } from './challenge_file.validation.js';
 
-// ============ CHALLENGE FILE CRUD OPERATIONS ============
+import { success, error } from '../../utils/response.js';
 
+
+// ==========================
+// 📌 GET FILES BY CHALLENGE
+// ==========================
 export const getFilesByChallenge = async (req, res, next) => {
   try {
     const { challenge_id } = req.params;
 
     const files = await queries.getFilesByChallenge(challenge_id);
 
-    res.json({
-      success: true,
-      data: files
-    });
-  } catch (error) {
-    next(error);
+    return success(res, files);
+
+  } catch (err) {
+    next(err);
   }
 };
 
+
+// ==========================
+// 📌 GET FILE BY ID
+// ==========================
 export const getFileById = async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -28,106 +34,100 @@ export const getFileById = async (req, res, next) => {
     const file = await queries.getFileById(id);
 
     if (!file) {
-      return res.status(404).json({
-        success: false,
-        message: 'File not found'
-      });
+      return error(res, 'File not found', 404);
     }
 
-    res.json({
-      success: true,
-      data: file
-    });
-  } catch (error) {
-    next(error);
+    return success(res, file);
+
+  } catch (err) {
+    next(err);
   }
 };
 
+
+// ==========================
+// 📌 CREATE SINGLE FILE
+// ==========================
 export const createChallengeFile = async (req, res, next) => {
   try {
-    // Validate input
     const errors = validateCreateChallengeFile(req.body);
     if (errors.length > 0) {
-      return res.status(400).json({ success: false, errors });
+      return error(res, errors, 400);
     }
 
     const created = await queries.createChallengeFile(req.body);
 
-    res.status(201).json({
-      success: true,
-      message: 'Challenge file created successfully',
-      data: created
-    });
-  } catch (error) {
-    next(error);
+    return success(res, created, 'File created successfully', null, 201);
+
+  } catch (err) {
+    next(err);
   }
 };
 
+
+// ==========================
+// 📌 CREATE MULTIPLE FILES
+// ==========================
 export const createMultipleChallengeFiles = async (req, res, next) => {
   try {
     const { files } = req.body;
 
     if (!Array.isArray(files) || files.length === 0) {
-      return res.status(400).json({
-        success: false,
-        errors: ['files must be a non-empty array']
-      });
+      return error(res, ['files must be a non-empty array'], 400);
     }
 
-    // Validate each file
     const allErrors = [];
+
     files.forEach((file, index) => {
       const errors = validateCreateChallengeFile(file);
       if (errors.length > 0) {
-        allErrors.push(`File ${index}: ${errors.join(', ')}`);
+        allErrors.push(`File ${index + 1}: ${errors.join(', ')}`);
       }
     });
 
     if (allErrors.length > 0) {
-      return res.status(400).json({ success: false, errors: allErrors });
+      return error(res, allErrors, 400);
     }
 
     const created = await queries.createMultipleChallengeFiles(files);
 
-    res.status(201).json({
-      success: true,
-      message: `${created.length} files created successfully`,
-      data: created
-    });
-  } catch (error) {
-    next(error);
+    return success(res, created, `${created.length} files created`, null, 201);
+
+  } catch (err) {
+    next(err);
   }
 };
 
+
+// ==========================
+// 📌 UPDATE FILE
+// ==========================
 export const updateChallengeFile = async (req, res, next) => {
   try {
     const { id } = req.params;
 
-    // Validate input
     const errors = validateUpdateChallengeFile(req.body);
     if (errors.length > 0) {
-      return res.status(400).json({ success: false, errors });
+      return error(res, errors, 400);
     }
 
     const updated = await queries.updateChallengeFile(id, req.body);
 
     if (!updated) {
-      return res.status(404).json({
-        success: false,
-        message: 'File not found'
-      });
+      return error(res, 'File not found', 404);
     }
 
-    res.json({
-      success: true,
-      message: 'File updated successfully',
-      data: updated
-    });
-  } catch (error) {
-    next(error);
+    return success(res, updated, 'File updated successfully');
+
+  } catch (err) {
+    next(err);
   }
 };
 
+
+// ==========================
+// 📌 DELETE FILE
+// ==========================
 export const deleteChallengeFile = async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -135,64 +135,61 @@ export const deleteChallengeFile = async (req, res, next) => {
     const deleted = await queries.deleteChallengeFile(id);
 
     if (!deleted) {
-      return res.status(404).json({
-        success: false,
-        message: 'File not found'
-      });
+      return error(res, 'File not found', 404);
     }
 
-    res.json({
-      success: true,
-      message: 'File deleted successfully',
-      data: deleted
-    });
-  } catch (error) {
-    next(error);
+    return success(res, deleted, 'File deleted successfully');
+
+  } catch (err) {
+    next(err);
   }
 };
 
+
+// ==========================
+// 📌 DELETE ALL FILES BY CHALLENGE
+// ==========================
 export const deleteFilesByChallenge = async (req, res, next) => {
   try {
     const { challenge_id } = req.params;
 
     const deleted = await queries.deleteFilesByChallenge(challenge_id);
 
-    res.json({
-      success: true,
-      message: `${deleted.length} file(s) deleted successfully`,
-      data: deleted
-    });
-  } catch (error) {
-    next(error);
+    return success(res, deleted, `${deleted.length} files deleted`);
+
+  } catch (err) {
+    next(err);
   }
 };
 
-// ============ CHALLENGE FILE STATISTICS ============
 
+// ==========================
+// 📌 FILE STATS
+// ==========================
 export const getChallengeFileStats = async (req, res, next) => {
   try {
     const { challenge_id } = req.params;
 
     const stats = await queries.getChallengeFileStats(challenge_id);
 
-    res.json({
-      success: true,
-      data: stats
-    });
-  } catch (error) {
-    next(error);
+    return success(res, stats);
+
+  } catch (err) {
+    next(err);
   }
 };
 
+
+// ==========================
+// 📌 STORAGE STATS
+// ==========================
 export const getTotalStorageUsed = async (req, res, next) => {
   try {
     const stats = await queries.getTotalStorageUsed();
 
-    res.json({
-      success: true,
-      data: stats
-    });
-  } catch (error) {
-    next(error);
+    return success(res, stats);
+
+  } catch (err) {
+    next(err);
   }
 };

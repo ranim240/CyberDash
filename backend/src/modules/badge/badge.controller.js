@@ -5,16 +5,19 @@ import {
   validateGetBadges
 } from './badge.validation.js';
 
-// ============ BADGE CRUD OPERATIONS ============
+import { success, error } from '../../utils/response.js';
 
+
+// ==========================
+// 📌 GET ALL BADGES
+// ==========================
 export const getAllBadges = async (req, res, next) => {
   try {
     const { page = 1, limit = 20, condition_type } = req.query;
 
-    // Validate query parameters
     const errors = validateGetBadges(req.query);
     if (errors.length > 0) {
-      return res.status(400).json({ success: false, errors });
+      return error(res, errors, 400);
     }
 
     const result = await queries.getAllBadges({
@@ -23,21 +26,22 @@ export const getAllBadges = async (req, res, next) => {
       condition_type
     });
 
-    res.json({
-      success: true,
-      data: result.data,
-      pagination: {
-        total: result.total,
-        page: Number(page),
-        limit: Number(limit),
-        totalPages: Math.ceil(result.total / Number(limit))
-      }
+    return success(res, result.data, null, {
+      total: result.total,
+      page: Number(page),
+      limit: Number(limit),
+      totalPages: Math.ceil(result.total / Number(limit))
     });
-  } catch (error) {
-    next(error);
+
+  } catch (err) {
+    next(err);
   }
 };
 
+
+// ==========================
+// 📌 GET BADGE BY ID
+// ==========================
 export const getBadgeById = async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -45,75 +49,71 @@ export const getBadgeById = async (req, res, next) => {
     const badge = await queries.getBadgeById(id);
 
     if (!badge) {
-      return res.status(404).json({
-        success: false,
-        message: 'Badge not found'
-      });
+      return error(res, 'Badge not found', 404);
     }
 
-    res.json({
-      success: true,
-      data: badge
-    });
-  } catch (error) {
-    next(error);
+    return success(res, badge);
+
+  } catch (err) {
+    next(err);
   }
 };
 
+
+// ==========================
+// 📌 CREATE BADGE (ADMIN ONLY)
+// ==========================
 export const createBadge = async (req, res, next) => {
   try {
     const badgeData = {
       ...req.body,
-      administrator_id: req.user.user_id // Assuming user is attached via auth middleware
+      administrator_id: req.user.userId // FIXED consistency
     };
 
-    // Validate input
     const errors = validateCreateBadge(badgeData);
     if (errors.length > 0) {
-      return res.status(400).json({ success: false, errors });
+      return error(res, errors, 400);
     }
 
     const created = await queries.createBadge(badgeData);
 
-    res.status(201).json({
-      success: true,
-      message: 'Badge created successfully',
-      data: created
-    });
-  } catch (error) {
-    next(error);
+    return success(res, created, 'Badge created successfully', null, 201);
+
+  } catch (err) {
+    next(err);
   }
 };
 
+
+// ==========================
+// 📌 UPDATE BADGE
+// ==========================
 export const updateBadge = async (req, res, next) => {
   try {
     const { id } = req.params;
 
-    // Validate input
     const errors = validateUpdateBadge(req.body);
     if (errors.length > 0) {
-      return res.status(400).json({ success: false, errors });
+      return error(res, errors, 400);
     }
 
     const updated = await queries.updateBadge(id, req.body);
 
     if (!updated) {
-      return res.status(404).json({
-        success: false,
-        message: 'Badge not found'
-      });
+      return error(res, 'Badge not found', 404);
     }
 
-    res.json({
-      success: true,
-      message: 'Badge updated successfully',
-      data: updated
-    });
-  } catch (error) {
-    next(error);
+    return success(res, updated, 'Badge updated successfully');
+
+  } catch (err) {
+    next(err);
   }
 };
 
+
+// ==========================
+// 📌 DELETE BADGE
+// ==========================
 export const deleteBadge = async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -121,50 +121,46 @@ export const deleteBadge = async (req, res, next) => {
     const deleted = await queries.deleteBadge(id);
 
     if (!deleted) {
-      return res.status(404).json({
-        success: false,
-        message: 'Badge not found'
-      });
+      return error(res, 'Badge not found', 404);
     }
 
-    res.json({
-      success: true,
-      message: 'Badge deleted successfully',
-      data: deleted
-    });
-  } catch (error) {
-    next(error);
+    return success(res, deleted, 'Badge deleted successfully');
+
+  } catch (err) {
+    next(err);
   }
 };
 
-// ============ BADGE STATISTICS ============
 
+// ==========================
+// 📌 BADGE STATS
+// ==========================
 export const getBadgeStats = async (req, res, next) => {
   try {
     const { id } = req.params;
 
     const stats = await queries.getBadgeStats(id);
 
-    res.json({
-      success: true,
-      data: stats
-    });
-  } catch (error) {
-    next(error);
+    return success(res, stats);
+
+  } catch (err) {
+    next(err);
   }
 };
 
+
+// ==========================
+// 📌 MY BADGES (CREATED BY ADMIN)
+// ==========================
 export const getMyBadges = async (req, res, next) => {
   try {
-    const administrator_id = req.user.user_id;
+    const administrator_id = req.user.userId;
 
     const badges = await queries.getBadgesCreatedByAdmin(administrator_id);
 
-    res.json({
-      success: true,
-      data: badges
-    });
-  } catch (error) {
-    next(error);
+    return success(res, badges);
+
+  } catch (err) {
+    next(err);
   }
 };

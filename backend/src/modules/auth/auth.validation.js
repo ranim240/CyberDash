@@ -30,20 +30,8 @@ export const validateForgotPassword = (data) => {
 
 export const validateResetPassword = (data) => {
   const errors = [];
-  if (!data.userId) {
-    errors.push("User ID is required");
-  }
-  if (!data.token) {
-    errors.push("Token is required");
-  }
   if (!data.newPassword || data.newPassword.length < 8) {
     errors.push("Password must be at least 8 characters long");
-  }
-  if (!data.confirmPassword) {
-    errors.push("Password confirmation is required");
-  }
-  if (data.newPassword && data.confirmPassword && data.newPassword !== data.confirmPassword) {
-    errors.push("Passwords do not match");
   }
   return errors;
 };

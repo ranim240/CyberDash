@@ -1,7 +1,10 @@
 import db from '../../config/db.js';
+import crypto from 'crypto';
 
-// ============ BADGE CRUD OPERATIONS ============
 
+// ==========================
+// 📌 GET ALL BADGES
+// ==========================
 export const getAllBadges = async ({ page = 1, limit = 20, condition_type }) => {
   const offset = (page - 1) * limit;
 
@@ -26,92 +29,113 @@ export const getAllBadges = async ({ page = 1, limit = 20, condition_type }) => 
     .limit(limit)
     .offset(offset);
 
-  // Get total count
-  let totalQuery = db('badge').count('badge_id as count').first();
+  // ==========================
+  // 📌 SAFE COUNT
+  // ==========================
+  let countQuery = db('badge').count('* as count').first();
 
   if (condition_type) {
-    totalQuery = totalQuery.where({ condition_type });
+    countQuery = countQuery.where({ condition_type });
   }
 
-  const total = await totalQuery;
+  const totalResult = await countQuery;
+  const total = Number(totalResult?.count || 0);
 
   return {
     data,
-    total: Number(total.count),
+    total
   };
 };
 
+
+// ==========================
+// 📌 GET BADGE BY ID
+// ==========================
 export const getBadgeById = async (badge_id) => {
-  const badge = await db('badge')
+  return db('badge')
     .where({ badge_id })
     .first();
-
-  return badge;
 };
 
+
+// ==========================
+// 📌 CREATE BADGE
+// ==========================
 export const createBadge = async (badgeData) => {
-    const badge_id = crypto.randomUUID();
-    const [created] = await db('badge')
+  const badge_id = crypto.randomUUID();
+
+  const [created] = await db('badge')
     .insert({
-        badge_id,
-        name: badgeData.name,
-        description: badgeData.description,
-        icon_url: badgeData.icon_url,
-        condition_type: badgeData.condition_type,
-        condition_value: badgeData.condition_value,
-        xp_bonus: badgeData.xp_bonus,
-        administrator_id: badgeData.administrator_id
+      badge_id,
+      name: badgeData.name,
+      description: badgeData.description,
+      icon_url: badgeData.icon_url,
+      condition_type: badgeData.condition_type,
+      condition_value: badgeData.condition_value,
+      xp_bonus: badgeData.xp_bonus,
+      administrator_id: badgeData.administrator_id
     })
     .returning('*');
 
   return created;
 };
 
+
+// ==========================
+// 📌 UPDATE BADGE
+// ==========================
 export const updateBadge = async (badge_id, badgeData) => {
   const [updated] = await db('badge')
     .where({ badge_id })
-    .update(badgeData)
-    .returning([
-      'badge_id',
-      'name',
-      'description',
-      'icon_url',
-      'condition_type',
-      'condition_value',
-      'xp_bonus',
-      'administrator_id'
-    ]);
+    .update({
+      ...badgeData,
+      updated_at: new Date()
+    })
+    .returning('*');
 
   return updated;
 };
 
-export const deleteBadge = async (badge_id) => {
-  const [deleted] = await db('badge')
-    .where({ badge_id })
-    .del()
-    .returning(['badge_id', 'name']);
 
-  return deleted;
+// ==========================
+// 📌 DELETE BADGE
+// ==========================
+export const deleteBadge = async (badge_id) => {
+  const deleted = await db('badge')
+    .where({ badge_id })
+    .del();
+
+  return deleted; // returns 1 or 0 (safer than returning row)
 };
 
-// ============ BADGE STATISTICS ============
 
+// ==========================
+// 📌 BADGE STATISTICS
+// ==========================
 export const getBadgeStats = async (badge_id) => {
-  const [stats] = await db('learner_badge')
+  const stats = await db('learner_badge')
     .where({ badge_id })
     .count('learner_id as count')
-    .select(db.raw('MAX(awarded_at) as last_awarded'));
+    .first();
 
   return {
-    total_awarded: Number(stats.count),
-    last_awarded: stats.last_awarded,
+    total_awarded: Number(stats?.count || 0),
+    last_awarded: stats?.last_awarded || null
   };
 };
 
-export const getBadgesCreatedByAdmin = async (administrator_id) => {
-  const badges = await db('badge')
-    .where({ administrator_id })
-    .select('badge_id', 'name', 'description', 'condition_type', 'xp_bonus');
 
-  return badges;
+// ==========================
+// 📌 BADGES BY ADMIN
+// ==========================
+export const getBadgesCreatedByAdmin = async (administrator_id) => {
+  return db('badge')
+    .where({ administrator_id })
+    .select(
+      'badge_id',
+      'name',
+      'description',
+      'condition_type',
+      'xp_bonus'
+    );
 };
