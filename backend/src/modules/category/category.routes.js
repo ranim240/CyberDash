@@ -5,14 +5,21 @@ import { authorize } from '../../middlewares/role.js';
 
 const router = express.Router();
 
-// Public routes
-router.get('/',               categoryController.getAllCategories);
-router.get('/:id',            categoryController.getCategoryById);
+// ================= PUBLIC ROUTES =================
+
+// ⚠️ specific route FIRST
 router.get('/:id/challenges', categoryController.getChallengesByCategory);
 
-// Protected routes (admin)
-router.post('/',      isAuthenticated, authorize(['admin']), categoryController.createCategory);
-router.put('/:id',    isAuthenticated, authorize(['admin']), categoryController.updateCategory);
-router.delete('/:id', isAuthenticated, authorize(['admin']), categoryController.deleteCategory);
+router.get('/', categoryController.getAllCategories);
+router.get('/:id', categoryController.getCategoryById);
+
+
+// ================= ADMIN ROUTES =================
+
+router.use(isAuthenticated, authorize(['admin']));
+
+router.post('/', categoryController.createCategory);
+router.put('/:id', categoryController.updateCategory);
+router.delete('/:id', categoryController.deleteCategory);
 
 export default router;
