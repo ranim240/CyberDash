@@ -22,5 +22,7 @@ router.delete('/:id',          authorize(['instructor']), courseController.delet
 router.patch('/:id/publish',   authorize(['instructor']), courseController.publishCourse);
 router.patch('/:id/unpublish', authorize(['instructor']), courseController.unpublishCourse);
 router.post('/:id/contents',   authorize(['instructor']), courseController.addContent);
+router.put('/:id/contents/:contentId',        authorize(['instructor']), courseController.updateContent);    // ← new
+router.delete('/:id/contents/:contentId',     authorize(['instructor']), courseController.removeContent);
 
 export default router;
