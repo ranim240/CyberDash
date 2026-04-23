@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 // import LearnerDashboard from "../pages/learner/Dashboard.jsx";
+import Home from "../pages/Home";
 import Login from "../pages/auth/login";
 import Register from "../pages/auth/register";
 import ForgotPassword from "../pages/auth/forgotPassword";
@@ -11,7 +12,7 @@ const AppRouter = () => {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Navigate to="/login" replace />} />
+        <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
