@@ -1,18 +1,29 @@
 import db from '../../config/db.js';
 
+// ─── helper (utilisé aussi côté frontend en fallback) ────────────────────────
+export const getLevelTitle = (level) => {
+  if (level >= 10) return 'Elite Hacker';
+  if (level >= 7)  return 'Senior Hacker';
+  if (level >= 4)  return 'Junior Hacker';
+  return 'Novice';
+};
+
 class Learner {
 
   // ==========================
   // 👤 PROFILE
   // ==========================
   getLearnerProfile = async (user_id) => {
-    const profile = await db('learner')
-      .where({ user_id })
+    const profile = await db('learner as l')
+      .join('user as u', 'u.user_id', 'l.user_id')
+      .where('l.user_id', user_id)
       .select(
-        'user_id',
-        'username',
-        'xp_points',
-        'created_at'
+        'l.user_id',
+        'u.username',
+        'l.xp_points',
+        'l.current_level',
+        'l.streak',
+        'u.created_at'
       )
       .first();
 
@@ -118,19 +129,44 @@ class Learner {
 
 
   // ==========================
-  // 🔥 BONUS: DASHBOARD STATS
+  // 🔥 STATS (avec successRate + title)
   // ==========================
   getStats = async (learner_id) => {
-    const [solved] = await db('submission as s')
+
+    // nombre de soumissions correctes
+    const [correct] = await db('submission as s')
       .join('challenge_session as cs', 'cs.session_id', 's.session_id')
-      .where({
-        'cs.learner_id': learner_id,
-        's.is_correct': true
-      })
+      .where({ 'cs.learner_id': learner_id, 's.is_correct': true })
       .count('s.submission_id as count');
 
+    // total de soumissions
+    const [total] = await db('submission as s')
+      .join('challenge_session as cs', 'cs.session_id', 's.session_id')
+      .where('cs.learner_id', learner_id)
+      .count('s.submission_id as count');
+
+    // infos learner (xp, level, streak)
+    const learner = await db('learner')
+      .where({ user_id: learner_id })
+      .select('xp_points', 'current_level', 'streak')
+      .first();
+
+    const solvedCount  = Number(correct.count || 0);
+    const totalCount   = Number(total.count   || 0);
+    const successRate  = totalCount > 0
+      ? Math.round((solvedCount / totalCount) * 100)
+      : 0;
+
+    const level = learner?.current_level ?? 1;
+
     return {
-      solved_challenges: Number(solved.count || 0)
+      solved_challenges : solvedCount,
+      total_submissions : totalCount,
+      success_rate      : successRate,          // ✅ calculé
+      xp_points         : learner?.xp_points  ?? 0,
+      current_level     : level,
+      streak            : learner?.streak     ?? 0,
+      title             : getLevelTitle(level), // ✅ calculé
     };
   };
 

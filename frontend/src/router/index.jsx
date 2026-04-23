@@ -19,6 +19,7 @@ const AppRouter = () => {
         
         {/* Learner Routes */}
         {/* <Route path="/learner/dashboard" element={<LearnerDashboard />} /> */}
+        <Route path="/learner/dashboard" element={<Navigate to="/challenges" replace />} />
         <Route path="/challenges" element={<BrowseChallenges />} />
         <Route path="/challenges/:id" element={<ChallengeDetailPage />} />
       </Routes>
