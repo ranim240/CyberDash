@@ -13,8 +13,8 @@ export const seed = async (knex) => {
   await knex('course').del();
 
   // Reference instructor IDs - update these to match seedUsers
-  const INSTRUCTOR_1_ID = 'instructor_001'; // Update this
-  const INSTRUCTOR_2_ID = 'instructor_002'; // Update this
+  const INSTRUCTOR_1_ID = 'user_003_4bca26cc'; // Update this
+  const INSTRUCTOR_2_ID = 'user_004_74060255'; // Update this
 
   const course1Id = generateCourseId(1);
   const course2Id = generateCourseId(2);

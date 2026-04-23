@@ -10,18 +10,6 @@ import { spawn } from 'child_process';
 
 // Seeds to run in order
 const SEEDS_IN_ORDER = [
-  'seedUsers',
-  'seedCategories',
-  'seedChallenges',
-  'seedCourses',
-  'seedCourseContents',
-  'seedEnrollments',
-  'seedChallengeSessions',
-  'seedSubmissions',
-  'seedXpHistory',
-  'seedIncidentReports',
-  'seedAiFeedback',
-  'seedBadges',
   'seedLearnerBadges',
 ];
 

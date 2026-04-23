@@ -1,6 +1,6 @@
 import db from '../../config/db.js'
 
-class CategoryRepository {
+class Category {
     // Get all categories
     getAllCategories = () => {
         return db('category')
@@ -17,7 +17,7 @@ class CategoryRepository {
     // Check if a category with this name already exists
     getCategoryByName = (name) => {
         return db('category')
-            .whereRaw('LOWER(name) = ?', [name.toLowerCase()])
+            .whereILike('name', name)
             .first();
     }
 
@@ -48,11 +48,27 @@ class CategoryRepository {
         return db('challenge')
             .where({
                 category_id: categoryId,
-                status: 'active'
+                status: 'approved'
             })
             .select('challenge_id', 'title', 'description', 'difficulty', 'points', 'created_at')
             .orderBy('created_at', 'desc');
     }
+    // Count challenges per category
+    getCategoriesWithStats = () => {
+    return db('category as c')
+        .leftJoin('challenge as ch', function () {
+            this.on('c.category_id', '=', 'ch.category_id')
+                .andOn('ch.status', '=', db.raw('?', ['approved']));
+        })
+        .groupBy('c.category_id')
+        .select(
+            'c.category_id',
+            'c.name',
+            'c.description',
+            db.raw('COUNT(ch.challenge_id) as total_challenges')
+        )
+        .orderBy('c.name', 'asc');
+};
 }
 
-export default new CategoryRepository();
+export default new Category();

@@ -14,15 +14,15 @@ export const seed = async (knex) => {
 
   // These session IDs should match those created in seedChallengeSessions
   // For now using placeholder format - update with actual IDs
-  const SESSION_1_ID = 'session_001'; // Update this
-  const SESSION_2_ID = 'session_002'; // Update this
-  const SESSION_3_ID = 'session_003'; // Update this
-  const SESSION_4_ID = 'session_004'; // Update this
-  const SESSION_5_ID = 'session_005'; // Update this
-  const SESSION_7_ID = 'session_007'; // Update this
-  const SESSION_8_ID = 'session_008'; // Update this
-  const SESSION_9_ID = 'session_009'; // Update this
-  const SESSION_10_ID = 'session_010'; // Update this
+  const SESSION_1_ID = 'session_001_f3b7b065'; // Update this
+  const SESSION_2_ID = 'session_002_95785f70'; // Update this
+  const SESSION_3_ID = 'session_003_0aa24155'; // Update this
+  const SESSION_4_ID = 'session_004_36ea19ae'; // Update this
+  const SESSION_5_ID = 'session_005_617d2dd5'; // Update this
+  const SESSION_7_ID = 'session_007_d7c21d08'; // Update this
+  const SESSION_8_ID = 'session_008_82a0e2eb'; // Update this
+  const SESSION_9_ID = 'session_009_0a6e3d17'; // Update this
+  const SESSION_10_ID = 'session_010_8c3e0bef'; // Update this
 
   const baseDate = new Date('2026-03-01');
 

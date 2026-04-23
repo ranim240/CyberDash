@@ -14,17 +14,17 @@ export const seed = async (knex) => {
 
   // These submission IDs should match those created in seedSubmissions
   // For now using placeholder format - update with actual IDs
-  const SUBMISSION_1_ID = 'submission_001'; // Update this - incorrect SQL injection
-  const SUBMISSION_2_ID = 'submission_002'; // Update this - incorrect SQL injection
-  const SUBMISSION_3_ID = 'submission_003'; // Update this - correct SQL injection
-  const SUBMISSION_4_ID = 'submission_004'; // Update this - incorrect XSS
-  const SUBMISSION_5_ID = 'submission_005'; // Update this - incorrect XSS
-  const SUBMISSION_8_ID = 'submission_008'; // Update this - correct XSS
-  const SUBMISSION_9_ID = 'submission_009'; // Update this - correct Caesar cipher
-  const SUBMISSION_14_ID = 'submission_014'; // Update this - correct SQL injection
-  const SUBMISSION_16_ID = 'submission_016'; // Update this - correct XSS
-  const SUBMISSION_17_ID = 'submission_017'; // Update this - correct Caesar cipher
-  const SUBMISSION_20_ID = 'submission_020'; // Update this - correct RSA
+  const SUBMISSION_1_ID = 'submission_001_62e57ca3'; // Update this - incorrect SQL injection
+  const SUBMISSION_2_ID = 'submission_002_d4d203f6'; // Update this - incorrect SQL injection
+  const SUBMISSION_3_ID = 'submission_003_a016c741'; // Update this - correct SQL injection
+  const SUBMISSION_4_ID = 'submission_004_f7800caa'; // Update this - incorrect XSS
+  const SUBMISSION_5_ID = 'submission_005_d77bc788'; // Update this - incorrect XSS
+  const SUBMISSION_8_ID = 'submission_008_b461df72'; // Update this - correct XSS
+  const SUBMISSION_9_ID = 'submission_009_ec371cbd'; // Update this - correct Caesar cipher
+  const SUBMISSION_14_ID = 'submission_014_f183cbbb'; // Update this - correct SQL injection
+  const SUBMISSION_16_ID = 'submission_016_e1d977b6'; // Update this - correct XSS
+  const SUBMISSION_17_ID = 'submission_017_a7f1e3a5'; // Update this - correct Caesar cipher
+  const SUBMISSION_20_ID = 'submission_020_9d5569aa'; // Update this - correct RSA
 
   const baseDate = new Date('2026-03-01');
 
