@@ -92,7 +92,7 @@
  * For automated ID linking, create a master seed file:
  * 
  * // seedMaster.js
- * exports.seed = async (knex) => {
+ * export const seed = async (knex) => {
  *   // Run seedUsers first to get actual IDs
  *   // Then extract IDs and inject into other seeds
  * };

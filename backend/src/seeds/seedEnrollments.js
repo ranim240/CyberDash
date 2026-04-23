@@ -5,22 +5,23 @@
  *
  * NOTE: Update learner and course IDs to match those created in seedUsers and seedCourses
  */
-
+import {course1Id,course2Id,course3Id,course4Id} from './seedCourses.js'
+import {learnerUser1Id , learnerUser2Id,learnerUser3Id,learnerUser4Id,learnerUser5Id} from './seedUsers.js'
 export const seed = async (knex) => {
   // Delete existing data
   await knex('enrollment').del();
 
   // Reference IDs - update these to match your seeded data
-  const LEARNER_1_ID = 'learner_001'; // Update this
-  const LEARNER_2_ID = 'learner_002'; // Update this
-  const LEARNER_3_ID = 'learner_003'; // Update this
-  const LEARNER_4_ID = 'learner_004'; // Update this
-  const LEARNER_5_ID = 'learner_005'; // Update this
+  const LEARNER_1_ID = learnerUser1Id; // Update this
+  const LEARNER_2_ID = learnerUser2Id // Update this
+  const LEARNER_3_ID = learnerUser3Id; // Update this
+  const LEARNER_4_ID = learnerUser4Id; // Update this
+  const LEARNER_5_ID = learnerUser5Id; // Update this
 
-  const COURSE_1_ID = 'course_001'; // Update this
-  const COURSE_2_ID = 'course_002'; // Update this
-  const COURSE_3_ID = 'course_003'; // Update this
-  const COURSE_4_ID = 'course_004'; // Update this
+  const COURSE_1_ID = course1Id; // Update this
+  const COURSE_2_ID = course2Id; // Update this
+  const COURSE_3_ID = course3Id; // Update this
+  const COURSE_4_ID = course4Id; // Update this
 
   await knex('enrollment').insert([
     // Learner 1 enrollments

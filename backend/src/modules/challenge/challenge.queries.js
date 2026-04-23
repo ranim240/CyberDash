@@ -1,106 +1,161 @@
 import db from '../../config/db.js';
+const PUBLIC_FIELDS = [
+  "challenge_id",
+  "title",
+  "description",
+  "difficulty",
+  "points",
+  "category_id",
+  "created_at"
+];
+class ChallengeModel {
 
-export const getActiveChallenges = () => db('challenge').where({ status: 'active' });
+  // READ 
 
-export const getAll = () => db('challenge');
-
-export const getById = (challenge_id) => db('challenge').where({ challenge_id }).first();
-
-export const getFiles = (challenge_id) => db('challenge_files').where({ challenge_id });
-
-export const create = (data) => db('challenge').insert(data).returning('*');
-
-export const update = (challenge_id, data) => db('challenge').where({ challenge_id }).update(data).returning('*');
-
-export const remove = (challenge_id) => db('challenge').where({ challenge_id }).delete();
-
-export const setStatus = (challenge_id, status) => db('challenge').where({ challenge_id }).update({ status });
-
-export const addFile = (data) => db('challenge_files').insert(data).returning('*');
-
-export const removeFile = (file_id) => db('challenge_files').where({ file_id }).delete();
-
-export const getByInstructor = (instructor_id) => db('challenge').where({ instructor_id });
-
-export const getByCategory = (category_id) => db('challenge').where({ category_id });
-
-export const getByDifficulty = (difficulty) => db('challenge').where({ difficulty  });
-
-
-export const getPendingChallenges = async () => {
-  const pending =  await db('challenge')
-    .where({ status: 'pending' })
-    .orderBy('created_at', 'desc');
-    return pending;
-};
-
-export const updateChallengeStatus = async (challenge_id, status) => {
-  const updated = await db('challenge')
-    .where({ challenge_id })
-    .update({status})
-    .returning('*');
-
-  return updated[0];
-};
-
-export const getChallenges = async (filters) => {
-  const {
-    difficulty,
-    category_id,
-    status,
-    minPoints,
-    maxPoints,
-    sortBy = "created_at",
-    order = "desc",
-    page = 1,
-    limit = 10
-  } = filters;
-
-  // base query
-  const baseQuery = db("challenge");
-
-  // 🔎 Filters
-  if (difficulty) baseQuery.where("difficulty", difficulty);
-  if (category_id) baseQuery.where("category_id", category_id);
-  if (status) baseQuery.where("status", status);
-
-  if (minPoints !== null && minPoints !== undefined) {
-    baseQuery.where("points", ">=", minPoints);
+  static getActiveChallenges() {
+    return db('challenge').select(PUBLIC_FIELDS).where({ status: 'active' });
   }
 
-  if (maxPoints !== null && maxPoints !== undefined) {
-    baseQuery.where("points", "<=", maxPoints);
+  static getAll() {
+    return db('challenge').select(PUBLIC_FIELDS);
   }
 
-  // 🧮 Clone query for count
-  const countQuery = baseQuery.clone().count("* as total").first();
+  static getById(challenge_id) {
+    return db('challenge').select(PUBLIC_FIELDS).where({ challenge_id }).first();
+  }
 
-  // 🔃 Sorting (safe)
-  const allowedSort = ["points", "created_at", "difficulty"];
-  const sortField = allowedSort.includes(sortBy) ? sortBy : "created_at";
+  static getFiles(challenge_id) {
+    return db('challenge_files').where({ challenge_id });
+  }
 
-  baseQuery.orderBy(sortField, order === "asc" ? "asc" : "desc");
+  // CREATE : RETURNS EVERYTHING INCLUDING THE FLAG
 
-  // 📄 Pagination
-  const offset = (page - 1) * limit;
-  baseQuery.limit(limit).offset(offset);
+  static create(data) {
+    return db('challenge').insert(data).returning('*');
+  }
 
-  // 🚀 Execute
-  const [data, countResult] = await Promise.all([
-    baseQuery,
-    countQuery
-  ]);
+  // UPDATE : RETURNS EVERYTHING INCLUDING THE FLAG
 
-  const total = Number(countResult.total);
-  const totalPages = Math.ceil(total / limit);
+  static update(challenge_id, data) {
+    return db('challenge')
+      .where({ challenge_id })
+      .update(data)
+      .returning('*');
+  }
+ 
+  // DELETE
 
-  return {
-    data,
-    pagination: {
-      total,
-      totalPages,
-      currentPage: page,
-      limit
+  static remove(challenge_id) {
+    return db('challenge').where({ challenge_id }).delete();
+  }
+
+  static setStatus(challenge_id, status) {
+    return db('challenge').select(PUBLIC_FIELDS)
+      .where({ challenge_id })
+      .update({ status });
+  }
+
+  static addFile(data) {
+    return db('challenge_files').insert(data).returning('*');
+  }
+
+  static removeFile(file_id) {
+    return db('challenge_files').where({ file_id }).delete();
+  }
+  
+  static getByInstructor(instructor_id) {
+    /*if ( requesting_user.userId != instructor_id )
+     return db('challenge').select(PUBLIC_FIELDS).where({ instructor_id });
+    else {
+      if (requesting_user.role == 'instructor'){ 
+        return db('challenge').where({ instructor_id });
+      }
+    }*/
+   return db('challenge').select(PUBLIC_FIELDS).where({ instructor_id });
+  }
+
+  static getByCategory(category_id) {
+    return db('challenge').select(PUBLIC_FIELDS).where({ category_id });
+  }
+
+  static getByDifficulty(difficulty) {
+    return db('challenge').select(PUBLIC_FIELDS).where({ difficulty });
+  }
+
+  static async getPendingChallenges() {
+    return await db('challenge').select(PUBLIC_FIELDS)
+      .where({ status: 'pending' })
+      .orderBy('created_at', 'desc');
+  }
+
+  static async updateChallengeStatus(challenge_id, status) {
+    const updated = await db('challenge').select(PUBLIC_FIELDS)
+      .where({ challenge_id })
+      .update({ status })
+      .returning('*');
+
+    return updated[0];
+  }
+
+  static async getChallenges(filters) {
+    const {
+      difficulty,
+      category_id,
+      status,
+      minPoints,
+      maxPoints,
+      sortBy = "created_at",
+      order = "desc",
+      page = 1,
+      limit = 10
+    } = filters;
+
+    const baseQuery = db("challenge").select(PUBLIC_FIELDS);
+
+    // Filters
+    if (difficulty) baseQuery.where("difficulty", difficulty);
+    if (category_id) baseQuery.where("category_id", category_id);
+    if (status) baseQuery.where("status", status);
+
+    if (minPoints !== null && minPoints !== undefined) {
+      baseQuery.where("points", ">=", minPoints);
     }
-  };
-};
+
+    if (maxPoints !== null && maxPoints !== undefined) {
+      baseQuery.where("points", "<=", maxPoints);
+    }
+
+    // Count query
+    const countQuery = baseQuery.clone().count("* as total").first();
+
+    // Sorting
+    const allowedSort = ["points", "created_at", "difficulty"];
+    const sortField = allowedSort.includes(sortBy) ? sortBy : "created_at";
+
+    baseQuery.orderBy(sortField, order === "asc" ? "asc" : "desc");
+
+    // Pagination
+    const offset = (page - 1) * limit;
+    baseQuery.limit(limit).offset(offset);
+
+    const [data, countResult] = await Promise.all([
+      baseQuery,
+      countQuery
+    ]);
+
+    const total = Number(countResult.total);
+    const totalPages = Math.ceil(total / limit);
+
+    return {
+      data,
+      pagination: {
+        total,
+        totalPages,
+        currentPage: page,
+        limit
+      }
+    };
+  }
+}
+
+export default ChallengeModel;

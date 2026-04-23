@@ -2,22 +2,20 @@
  * Seed Incident Reports
  * Creates incident/bug reports from learners
  * Run after seedUsers
- *
- * NOTE: Update learner and admin IDs to match those created in seedUsers
  */
 
-import { generateReportId } from './seedUtils.js';
+import { generateReportId } from '../scripts/seedUtils.js';
+import { learnerUser1Id, learnerUser2Id, adminUser1Id, adminUser2Id } from './seedUsers.js';
 
 export const seed = async (knex) => {
   // Delete existing data
   await knex('incident_report').del();
 
-  // Reference IDs - update these to match your seeded data
-  const LEARNER_1_ID = 'learner_001'; // Update this
-  const LEARNER_2_ID = 'learner_002'; // Update this
-
-  const ADMIN_1_ID = 'admin_001'; // Update this
-  const ADMIN_2_ID = 'admin_002'; // Update this
+  // Use imported IDs from seedUsers
+  const LEARNER_1_ID = learnerUser1Id;
+  const LEARNER_2_ID = learnerUser2Id;
+  const ADMIN_1_ID = adminUser1Id;
+  const ADMIN_2_ID = adminUser2Id;
 
   const baseDate = new Date('2026-03-01');
 

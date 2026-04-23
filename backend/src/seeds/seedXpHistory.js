@@ -2,27 +2,26 @@
  * Seed XP History
  * Creates XP earning history for learners solving challenges
  * Run after seedUsers and seedChallenges
- *
- * NOTE: Update learner and challenge IDs to match those created in seedUsers and seedChallenges
  */
 
-import { generateXpHistoryId } from './seedUtils.js';
+import { generateXpHistoryId } from '../scripts/seedUtils.js';
+import { learnerUser1Id, learnerUser2Id, learnerUser3Id, learnerUser4Id } from './seedUsers.js';
+import { challenge1Id, challenge2Id, challenge3Id, challenge4Id } from './seedChallenges.js';
 
 export const seed = async (knex) => {
   // Delete existing data
   await knex('xp_history').del();
 
-  // Reference IDs - update these to match your seeded data
-  const LEARNER_1_ID = 'user_005_acf34ed8'; // Update this
-  const LEARNER_2_ID = 'user_006_dfd58f46'; // Update this
-  const LEARNER_3_ID = 'user_007_e5e11d54'; // Update this
-  const LEARNER_4_ID = 'user_008_cba52ffc'; // Update this
+  // Use imported IDs from seedUsers and seedChallenges
+  const LEARNER_1_ID = learnerUser1Id;
+  const LEARNER_2_ID = learnerUser2Id;
+  const LEARNER_3_ID = learnerUser3Id;
+  const LEARNER_4_ID = learnerUser4Id;
 
-  const CHALLENGE_1_ID = 'challenge_001_0edb6364'; // Update this - SQL Injection (50 XP)
-  const CHALLENGE_2_ID = 'challenge_002_68fed79a'; // Update this - XSS (100 XP)
-  const CHALLENGE_3_ID = 'challenge_003_9a5b571a'; // Update this - Caesar Cipher (30 XP)
-  const CHALLENGE_4_ID = 'challenge_004_4147c0e7'; // Update this - RSA (200 XP)
-  const CHALLENGE_5_ID = 'challenge_005_359ef301'; // Update this - ARP Spoofing (120 XP)
+  const CHALLENGE_1_ID = challenge1Id; // SQL Injection (50 XP)
+  const CHALLENGE_2_ID = challenge2Id; // XSS (100 XP)
+  const CHALLENGE_3_ID = challenge3Id; // Caesar Cipher (30 XP)
+  const CHALLENGE_4_ID = challenge4Id; // RSA (200 XP)
 
   await knex('xp_history').insert([
     // Learner 1 XP history

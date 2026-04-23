@@ -4,22 +4,23 @@
  * Run after seedUsers
  */
 
+import { generateBadgeId } from '../scripts/seedUtils.js';
+import { adminUser1Id } from './seedUsers.js';
 
-import { generateBadgeId } from './seedUtils.js';
+// Export badge IDs for use in other seeds
+export const badge1Id = generateBadgeId(1);
+export const badge2Id = generateBadgeId(2);
+export const badge3Id = generateBadgeId(3);
+export const badge4Id = generateBadgeId(4);
+export const badge5Id = generateBadgeId(5);
+export const badge6Id = generateBadgeId(6);
 
 export const seed = async (knex) => {
   // Delete existing data
   await knex('badge').del();
 
-  // Reference admin IDs - update these to match seedUsers
-  const ADMIN_1_ID = 'admin_001'; // Update this
-
-  const badge1Id = generateBadgeId(1);
-  const badge2Id = generateBadgeId(2);
-  const badge3Id = generateBadgeId(3);
-  const badge4Id = generateBadgeId(4);
-  const badge5Id = generateBadgeId(5);
-  const badge6Id = generateBadgeId(6);
+  // Use imported admin ID from seedUsers
+  const ADMIN_1_ID = adminUser1Id;
 
   await knex('badge').insert([
     {
