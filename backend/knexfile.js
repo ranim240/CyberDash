@@ -14,6 +14,6 @@ export default {
     loadExtensions: ['.js','.cjs']
   },
   seeds: {
-      directory: './src/testOnlySeeds'
+      directory: './src/seeds'
     }
 };

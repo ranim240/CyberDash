@@ -2,10 +2,9 @@
  * Seed Learner Badges
  * Creates badge awards for learners
  * Run after seedUsers and seedBadges
+ *
+ * NOTE: Update learner and badge IDs to match those created in seedUsers and seedBadges
  */
-
-import { learnerUser1Id, learnerUser2Id, learnerUser4Id } from './seedUsers.js';
-import { badge1Id, badge2Id, badge3Id, badge4Id, badge5Id } from './seedBadges.js';
 
 export const seed = async (knex) => {
   // Delete existing data

@@ -4,16 +4,8 @@
  * Run after seedUsers
  */
 
-import { generateBadgeId } from '../scripts/seedUtils.js';
-import { adminUser1Id } from './seedUsers.js';
 
-// Export badge IDs for use in other seeds
-export const badge1Id = generateBadgeId(1);
-export const badge2Id = generateBadgeId(2);
-export const badge3Id = generateBadgeId(3);
-export const badge4Id = generateBadgeId(4);
-export const badge5Id = generateBadgeId(5);
-export const badge6Id = generateBadgeId(6);
+import { generateBadgeId } from './seedUtils.js';
 
 export const seed = async (knex) => {
   // Delete existing data

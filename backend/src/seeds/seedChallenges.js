@@ -2,32 +2,14 @@
  * Seed Challenges
  * Creates challenges with associated challenge files
  * Run after seedUsers and seedCategories
+ *
+ * NOTE: Update these instructor IDs and category IDs to match your seeded data
  */
 
-import {
-  instructorUser1Id,
-  instructorUser2Id,
-  category1Id,
-  category2Id,
-  category3Id,
-  challenge1Id,
-  challenge2Id,
-  challenge3Id,
-  challenge4Id,
-  challenge5Id,
-  file1Id,
-  file2Id,
-  file3Id,
-  file4Id,
-  file5Id,
-  file6Id,
-  file7Id,
-  file8Id,
-} from './seedIds.js';
+import { generateChallengeId, generateFileId } from './seedUtils.js';
 
 export const seed = async (knex) => {
   // Delete existing data (respecting foreign key constraints)
- 
   await knex('challenge_file').del();
   await knex('challenge').del();
 
@@ -115,56 +97,56 @@ export const seed = async (knex) => {
   // Insert challenge files
   const challengeFiles = [
     {
-      file_id: file1Id,
+      file_id: generateFileId(1),
       challenge_id: challenge1Id,
       file_name: 'database-schema.sql',
       file_path: '/challenges/sql-injection/database-schema.sql',
       file_size: 2048,
     },
     {
-      file_id: file2Id,
+      file_id: generateFileId(2),
       challenge_id: challenge1Id,
       file_name: 'application.jar',
       file_path: '/challenges/sql-injection/application.jar',
       file_size: 5242880,
     },
     {
-      file_id: file3Id,
+      file_id: generateFileId(3),
       challenge_id: challenge2Id,
       file_name: 'vulnerable-app.html',
       file_path: '/challenges/xss/vulnerable-app.html',
       file_size: 4096,
     },
     {
-      file_id: file4Id,
+      file_id: generateFileId(4),
       challenge_id: challenge2Id,
       file_name: 'server.js',
       file_path: '/challenges/xss/server.js',
       file_size: 6144,
     },
     {
-      file_id: file5Id,
+      file_id: generateFileId(5),
       challenge_id: challenge3Id,
       file_name: 'encrypted-message.txt',
       file_path: '/challenges/caesar/encrypted-message.txt',
       file_size: 512,
     },
     {
-      file_id: file6Id,
+      file_id: generateFileId(6),
       challenge_id: challenge4Id,
       file_name: 'public-key.pem',
       file_path: '/challenges/rsa/public-key.pem',
       file_size: 1024,
     },
     {
-      file_id: file7Id,
+      file_id: generateFileId(7),
       challenge_id: challenge4Id,
       file_name: 'encrypted-data.bin',
       file_path: '/challenges/rsa/encrypted-data.bin',
       file_size: 8192,
     },
     {
-      file_id: file8Id,
+      file_id: generateFileId(8),
       challenge_id: challenge5Id,
       file_name: 'network-simulation.pcap',
       file_path: '/challenges/arp-spoof/network.pcap',

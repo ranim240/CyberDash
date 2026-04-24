@@ -4,18 +4,18 @@
  * Run after seedUsers
  */
 
-import {
-  category1Id,
-  category2Id,
-  category3Id,
-  category4Id,
-  category5Id,
-} from './seedIds.js';
+import { generateCategoryId } from './seedUtils.js';
 
 export const seed = async (knex) => {
   // Delete existing data
   await knex('category').del();
-  console.log(category1Id);
+
+  const category1Id = generateCategoryId(1);
+  const category2Id = generateCategoryId(2);
+  const category3Id = generateCategoryId(3);
+  const category4Id = generateCategoryId(4);
+  const category5Id = generateCategoryId(5);
+
   await knex('category').insert([
     {
       category_id: category1Id,

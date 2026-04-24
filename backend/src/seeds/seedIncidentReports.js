@@ -2,10 +2,11 @@
  * Seed Incident Reports
  * Creates incident/bug reports from learners
  * Run after seedUsers
+ *
+ * NOTE: Update learner and admin IDs to match those created in seedUsers
  */
 
-import { generateReportId } from '../scripts/seedUtils.js';
-import { learnerUser1Id, learnerUser2Id, adminUser1Id, adminUser2Id } from './seedUsers.js';
+import { generateReportId } from './seedUtils.js';
 
 export const seed = async (knex) => {
   // Delete existing data
