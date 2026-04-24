@@ -2,11 +2,11 @@
  * Seed XP History
  * Creates XP earning history for learners solving challenges
  * Run after seedUsers and seedChallenges
- *
- * NOTE: Update learner and challenge IDs to match those created in seedUsers and seedChallenges
  */
 
-import { generateXpHistoryId } from './seedUtils.js';
+import { generateXpHistoryId } from '../scripts/seedUtils.js';
+import { learnerUser1Id, learnerUser2Id, learnerUser3Id, learnerUser4Id } from './seedUsers.js';
+import { challenge1Id, challenge2Id, challenge3Id, challenge4Id } from './seedChallenges.js';
 
 export const seed = async (knex) => {
   // Delete existing data

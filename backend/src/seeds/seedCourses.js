@@ -2,11 +2,16 @@
  * Seed Courses
  * Creates courses
  * Run after seedUsers
- *
- * NOTE: Update instructor IDs to match those created in seedUsers
  */
 
-import { generateCourseId } from './seedUtils.js';
+import { generateCourseId } from '../scripts/seedUtils.js';
+import { instructorUser1Id, instructorUser2Id } from './seedUsers.js';
+
+// Export course IDs for use in other seeds
+export const course1Id = generateCourseId(1);
+export const course2Id = generateCourseId(2);
+export const course3Id = generateCourseId(3);
+export const course4Id = generateCourseId(4);
 
 export const seed = async (knex) => {
   // Delete existing data

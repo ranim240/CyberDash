@@ -2,16 +2,29 @@
  * Seed AI Feedback
  * Creates AI-generated feedback for submissions
  * Run after seedSubmissions
- *
- * NOTE: Update submission IDs to match those created in seedSubmissions
  */
 
 import { generateFeedbackId } from './seedUtils.js';
+import { submission1Id, submission2Id, submission3Id, submission4Id, submission5Id, submission8Id, submission9Id, submission14Id, submission16Id, submission17Id, submission20Id } from './seedSubmissions.js';
 
 export const seed = async (knex) => {
   // Delete existing data
   await knex('ai_feedback').del();
 
+<<<<<<< HEAD:backend/src/scripts/seedAiFeedback.js
+  // Use imported submission IDs from seedSubmissions
+  const SUBMISSION_1_ID = submission1Id;
+  const SUBMISSION_2_ID = submission2Id;
+  const SUBMISSION_3_ID = submission3Id;
+  const SUBMISSION_4_ID = submission4Id;
+  const SUBMISSION_5_ID = submission5Id;
+  const SUBMISSION_8_ID = submission8Id;
+  const SUBMISSION_9_ID = submission9Id;
+  const SUBMISSION_14_ID = submission14Id;
+  const SUBMISSION_16_ID = submission16Id;
+  const SUBMISSION_17_ID = submission17Id;
+  const SUBMISSION_20_ID = submission20Id;
+=======
   // These submission IDs should match those created in seedSubmissions
   // For now using placeholder format - update with actual IDs
   const SUBMISSION_1_ID = 'submission_001_62e57ca3'; // Update this - incorrect SQL injection
@@ -25,6 +38,7 @@ export const seed = async (knex) => {
   const SUBMISSION_16_ID = 'submission_016_e1d977b6'; // Update this - correct XSS
   const SUBMISSION_17_ID = 'submission_017_a7f1e3a5'; // Update this - correct Caesar cipher
   const SUBMISSION_20_ID = 'submission_020_9d5569aa'; // Update this - correct RSA
+>>>>>>> 7512b3296289e9d1ccbc64e2630029ff7c215448:backend/src/seeds/seedAiFeedback.js
 
   const baseDate = new Date('2026-03-01');
 
@@ -148,6 +162,78 @@ export const seed = async (knex) => {
       feedback_id: generateFeedbackId(9),
       submission_id: SUBMISSION_9_ID,
       content: JSON.stringify({
+        status: 'correct',
+        message: 'Great! You decrypted the Caesar cipher correctly.',
+        achievement: '+30 XP earned',
+        explanation: 'Caesar cipher with shift of 7 was cracked by analyzing frequency patterns.',
+        nextSteps: [
+          'Learn about frequency analysis in cryptography',
+          'Try the harder encryption challenges',
+          'Read about cryptanalysis techniques',
+        ],
+      }),
+      generated_at: new Date(baseDate.getTime() + 10 * 60 * 60 * 1000),
+    },
+
+    // Correct SQL injection (Learner 4)
+    {
+      feedback_id: generateFeedbackId(14),
+      submission_id: SUBMISSION_14_ID,
+      content: JSON.stringify({
+        status: 'correct',
+        message: 'Excellent work! You demonstrated mastery of basic SQL injection.',
+        achievement: '+50 XP earned',
+        explanation: 'Direct approach - comment-based attack to bypass authentication.',
+        speedBonus: 'Solved faster than average!',
+      }),
+      generated_at: new Date(baseDate.getTime() + 30 * 60 * 60 * 1000),
+    },
+
+    // Correct XSS (Learner 4)
+    {
+      feedback_id: generateFeedbackId(16),
+      submission_id: SUBMISSION_16_ID,
+      content: JSON.stringify({
+        status: 'correct',
+        message: 'Outstanding! XSS challenge defeated.',
+        achievement: '+100 XP earned',
+        explanation: 'Correct usage of unsafe DOM manipulation combined with user input.',
+      }),
+      generated_at: new Date(baseDate.getTime() + 42 * 60 * 60 * 1000),
+    },
+
+    // Correct Caesar cipher (Learner 4)
+    {
+      feedback_id: generateFeedbackId(17),
+      submission_id: SUBMISSION_17_ID,
+      content: JSON.stringify({
+        status: 'correct',
+        message: 'Perfect! Caesar cipher decrypted successfully.',
+        achievement: '+30 XP earned',
+        explanation: 'Quick solution with correct decryption.',
+      }),
+      generated_at: new Date(baseDate.getTime() + 50 * 60 * 60 * 1000),
+    },
+
+    // Correct RSA (Learner 4)
+    {
+      feedback_id: generateFeedbackId(20),
+      submission_id: SUBMISSION_20_ID,
+      content: JSON.stringify({
+        status: 'correct',
+        message: 'Fantastic! You successfully cracked RSA encryption.',
+        achievement: '+200 XP earned + Level Up!',
+        explanation:
+          'You correctly factored the semiprime and recovered the private key, allowing decryption of the message.',
+        nextSteps: [
+          'You are now qualified for Advanced Cryptography course',
+          'Explore elliptic curve cryptography next',
+        ],
+      }),
+      generated_at: new Date(baseDate.getTime() + 63 * 60 * 60 * 1000),
+    },
+  ]);
+};
         status: 'correct',
         message: 'Great! You decrypted the Caesar cipher correctly.',
         achievement: '+30 XP earned',

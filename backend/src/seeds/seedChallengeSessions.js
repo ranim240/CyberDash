@@ -2,11 +2,24 @@
  * Seed Challenge Sessions
  * Creates challenge attempt sessions for learners
  * Run after seedUsers and seedChallenges
- *
- * NOTE: Update learner and challenge IDs to match those created in seedUsers and seedChallenges
  */
 
-import { generateSessionId, daysAgo, randomDate } from './seedUtils.js';
+import { generateSessionId, daysAgo, randomDate } from '../scripts/seedUtils.js';
+import { learnerUser1Id, learnerUser2Id, learnerUser3Id, learnerUser4Id, learnerUser5Id } from './seedUsers.js';
+import { challenge1Id, challenge2Id, challenge3Id, challenge4Id, challenge5Id } from './seedChallenges.js';
+
+// Export session IDs for use in other seeds
+export const session1Id = generateSessionId(1);
+export const session2Id = generateSessionId(2);
+export const session3Id = generateSessionId(3);
+export const session4Id = generateSessionId(4);
+export const session5Id = generateSessionId(5);
+export const session6Id = generateSessionId(6);
+export const session7Id = generateSessionId(7);
+export const session8Id = generateSessionId(8);
+export const session9Id = generateSessionId(9);
+export const session10Id = generateSessionId(10);
+export const session11Id = generateSessionId(11);
 
 export const seed = async (knex) => {
   // Delete existing data
@@ -30,7 +43,7 @@ export const seed = async (knex) => {
   await knex('challenge_session').insert([
     // Learner 1 sessions
     {
-      session_id: generateSessionId(1),
+      session_id: session1Id,
       learner_id: LEARNER_1_ID,
       challenge_id: CHALLENGE_1_ID,
       started_at: randomDate(startDate, endDate),
@@ -38,7 +51,7 @@ export const seed = async (knex) => {
       attempt_count: 3,
     },
     {
-      session_id: generateSessionId(2),
+      session_id: session2Id,
       learner_id: LEARNER_1_ID,
       challenge_id: CHALLENGE_2_ID,
       started_at: randomDate(startDate, endDate),
@@ -46,7 +59,7 @@ export const seed = async (knex) => {
       attempt_count: 5,
     },
     {
-      session_id: generateSessionId(3),
+      session_id: session3Id,
       learner_id: LEARNER_1_ID,
       challenge_id: CHALLENGE_3_ID,
       started_at: randomDate(startDate, endDate),
@@ -56,7 +69,7 @@ export const seed = async (knex) => {
 
     // Learner 2 sessions
     {
-      session_id: generateSessionId(4),
+      session_id: session4Id,
       learner_id: LEARNER_2_ID,
       challenge_id: CHALLENGE_1_ID,
       started_at: randomDate(startDate, endDate),
@@ -64,7 +77,7 @@ export const seed = async (knex) => {
       attempt_count: 2,
     },
     {
-      session_id: generateSessionId(5),
+      session_id: session5Id,
       learner_id: LEARNER_2_ID,
       challenge_id: CHALLENGE_3_ID,
       started_at: randomDate(startDate, endDate),
@@ -74,7 +87,7 @@ export const seed = async (knex) => {
 
     // Learner 3 sessions
     {
-      session_id: generateSessionId(6),
+      session_id: session6Id,
       learner_id: LEARNER_3_ID,
       challenge_id: CHALLENGE_5_ID,
       started_at: randomDate(startDate, endDate),
@@ -84,7 +97,7 @@ export const seed = async (knex) => {
 
     // Learner 4 sessions
     {
-      session_id: generateSessionId(7),
+      session_id: session7Id,
       learner_id: LEARNER_4_ID,
       challenge_id: CHALLENGE_1_ID,
       started_at: randomDate(startDate, endDate),
@@ -92,7 +105,7 @@ export const seed = async (knex) => {
       attempt_count: 1,
     },
     {
-      session_id: generateSessionId(8),
+      session_id: session8Id,
       learner_id: LEARNER_4_ID,
       challenge_id: CHALLENGE_2_ID,
       started_at: randomDate(startDate, endDate),
@@ -100,7 +113,7 @@ export const seed = async (knex) => {
       attempt_count: 2,
     },
     {
-      session_id: generateSessionId(9),
+      session_id: session9Id,
       learner_id: LEARNER_4_ID,
       challenge_id: CHALLENGE_3_ID,
       started_at: randomDate(startDate, endDate),
@@ -108,7 +121,7 @@ export const seed = async (knex) => {
       attempt_count: 1,
     },
     {
-      session_id: generateSessionId(10),
+      session_id: session10Id,
       learner_id: LEARNER_4_ID,
       challenge_id: CHALLENGE_4_ID,
       started_at: randomDate(startDate, endDate),
@@ -116,7 +129,7 @@ export const seed = async (knex) => {
       attempt_count: 3,
     },
     {
-      session_id: generateSessionId(11),
+      session_id: session11Id,
       learner_id: LEARNER_4_ID,
       challenge_id: CHALLENGE_5_ID,
       started_at: randomDate(startDate, endDate),

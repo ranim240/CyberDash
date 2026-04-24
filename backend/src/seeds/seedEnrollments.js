@@ -5,7 +5,8 @@
  *
  * NOTE: Update learner and course IDs to match those created in seedUsers and seedCourses
  */
-
+import {course1Id,course2Id,course3Id,course4Id} from './seedCourses.js'
+import {learnerUser1Id , learnerUser2Id,learnerUser3Id,learnerUser4Id,learnerUser5Id} from './seedUsers.js'
 export const seed = async (knex) => {
   // Delete existing data
   await knex('enrollment').del();
