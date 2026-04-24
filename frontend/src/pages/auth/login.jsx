@@ -1,0 +1,146 @@
+import React, { useState } from 'react';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
+import * as authService from '../../api/auth';
+import '../../styles/auth.css';
+
+const Login = () => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  // Show success message if redirected from registration
+  const successMessage = location.state?.message || null;
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setError(null);
+    setIsLoading(true);
+
+    try {
+      const data = await authService.login(email, password);
+
+      // Save token and user info
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('user', JSON.stringify(data.user));
+
+      // Redirect based on role
+      if (data.user.role === 'instructor') {
+        navigate('/instructor/dashboard');
+      } else {
+        navigate('/learner/dashboard');
+      }
+    } catch (err) {
+      const res = err.response?.data;
+      if (res?.errors && res.errors.length > 0) {
+        setError(res.errors[0]);
+      } else {
+        setError(res?.message || 'An error occurred while connecting to the server.');
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div className="auth-layout">
+      <div className="orb orb1"></div>
+      <div className="orb orb2"></div>
+
+      <div className="auth-container">
+        {/* Left panel */}
+        <div className="auth-left-panel">
+          <div className="auth-corner auth-corner-tl"></div>
+          <div className="auth-corner auth-corner-bl"></div>
+
+          <div className="auth-logo">
+            <div className="auth-logo-icon"></div>
+            <span className="auth-logo-text">CYBERDASH</span>
+          </div>
+
+          <div className="auth-left-content">
+            <div className="auth-badge">
+              <div className="auth-badge-dot"></div>
+              CTF PLATFORM ACTIVE
+            </div>
+            <div className="auth-left-title">Master<br />Cybersecurity</div>
+            <div className="auth-left-desc">
+              Learn by doing with real CTF challenges, an XP progression system, and an AI that guides you at every step.
+            </div>
+            <div className="auth-stats-row">
+              <div className="auth-stat">
+                <div className="auth-stat-num">248</div>
+                <div className="auth-stat-lbl">Challenges</div>
+              </div>
+              <div className="auth-stat">
+                <div className="auth-stat-num">1.2k</div>
+                <div className="auth-stat-lbl">Learners</div>
+              </div>
+              <div className="auth-stat">
+                <div className="auth-stat-num">94%</div>
+                <div className="auth-stat-lbl">Satisfaction</div>
+              </div>
+            </div>
+          </div>
+
+          <div className="auth-terminal-line">$ ./cyberdash --mode=learning --ai=enabled</div>
+        </div>
+
+        {/* Right panel */}
+        <div className="auth-right-panel">
+          <div className="auth-form-title">LOGIN</div>
+          <div className="auth-form-sub">// Secure access to the platform</div>
+
+          {successMessage && (
+            <div className="auth-success-msg" style={{ marginBottom: '16px' }}>{successMessage}</div>
+          )}
+
+          <form onSubmit={handleLogin} noValidate>
+            <div className="auth-field">
+              <label className="auth-field-label">Email</label>
+              <input
+                id="login-email"
+                className={`auth-field-input ${email ? 'active' : ''}`}
+                type="email"
+                placeholder="hacker@cyberdash.io"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </div>
+
+            <div className="auth-field">
+              <label className="auth-field-label">Password</label>
+              <input
+                id="login-password"
+                className={`auth-field-input ${password ? 'active' : ''}`}
+                type="password"
+                placeholder="••••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+            </div>
+
+            {error && <div className="auth-error-msg" style={{ marginBottom: '16px' }}>{error}</div>}
+
+            <button id="login-submit" type="submit" className="auth-btn-primary" disabled={isLoading} style={{ marginTop: '16px' }}>
+              {isLoading ? 'CONNECTING...' : 'LOGIN →'}
+            </button>
+          </form>
+
+          <div className="auth-form-footer">
+            <Link to="/forgot-password">Forgot password?</Link>
+            &nbsp;·&nbsp;
+            <Link to="/register">Create account</Link>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Login;

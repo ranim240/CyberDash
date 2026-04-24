@@ -12,11 +12,11 @@ export const seed = async (knex) => {
   // Delete existing data
   await knex('course_content').del();
 
-  // Reference course IDs - update these to match seedCourses  => UPDATED 
-  const COURSE_1_ID = course1Id; // Update this - Web Security => UPDATED 
-  const COURSE_2_ID = course2Id; // Update this - Cryptography
-  const COURSE_3_ID = course3Id; // Update this - Network Security
-  const COURSE_4_ID = course4Id; // Update this - Linux Hardening
+  // Reference course IDs - update these to match seedCourses
+  const COURSE_1_ID = 'course_001_6cbd9a1b'; // Update this - Web Security
+  const COURSE_2_ID = 'course_002_54f09a59'; // Update this - Cryptography
+  const COURSE_3_ID = 'course_003_31329622'; // Update this - Network Security
+  const COURSE_4_ID = 'course_004_09fa5c57'; // Update this - Linux Hardening
 
   const content1Id = generateContentId(1);
   const content2Id = generateContentId(2);

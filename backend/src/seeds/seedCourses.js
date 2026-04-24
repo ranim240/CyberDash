@@ -17,9 +17,14 @@ export const seed = async (knex) => {
   // Delete existing data
   await knex('course').del();
 
-  // Use imported instructor IDs
-  const INSTRUCTOR_1_ID = instructorUser1Id;
-  const INSTRUCTOR_2_ID = instructorUser2Id;
+  // Reference instructor IDs - update these to match seedUsers
+  const INSTRUCTOR_1_ID = 'user_003_4bca26cc'; // Update this
+  const INSTRUCTOR_2_ID = 'user_004_74060255'; // Update this
+
+  const course1Id = generateCourseId(1);
+  const course2Id = generateCourseId(2);
+  const course3Id = generateCourseId(3);
+  const course4Id = generateCourseId(4);
 
   await knex('course').insert([
     {

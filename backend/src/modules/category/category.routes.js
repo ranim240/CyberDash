@@ -3,16 +3,23 @@ import categoryController from './category.controller.js';
 import { isAuthenticated } from '../../middlewares/auth.js';
 import { authorize } from '../../middlewares/role.js';
 
-const router = express.Router();
+const categoryRouter = express.Router();
 
-// Public routes
-router.get('/',               categoryController.getAllCategories);
-router.get('/:id',            categoryController.getCategoryById);
-router.get('/:id/challenges', categoryController.getChallengesByCategory);
+// ================= PUBLIC ROUTES =================
 
-// Protected routes (admin)
-router.post('/',      isAuthenticated, authorize(['admin']), categoryController.createCategory);
-router.put('/:id',    isAuthenticated, authorize(['admin']), categoryController.updateCategory);
-router.delete('/:id', isAuthenticated, authorize(['admin']), categoryController.deleteCategory);
+// ⚠️ specific route FIRST
+categoryRouter.get('/:id/challenges', categoryController.getChallengesByCategory);
 
-export default router;
+categoryRouter.get('/', categoryController.getAllCategories);
+categoryRouter.get('/:id', categoryController.getCategoryById);
+
+
+// ================= ADMIN ROUTES =================
+
+categoryRouter.use(isAuthenticated, authorize(['admin']));
+
+categoryRouter.post('/', categoryController.createCategory);
+categoryRouter.put('/:id', categoryController.updateCategory);
+categoryRouter.delete('/:id', categoryController.deleteCategory);
+
+export default categoryRouter;

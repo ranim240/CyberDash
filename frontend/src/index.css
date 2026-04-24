@@ -55,11 +55,9 @@ body {
 }
 
 #root {
-  width: 100%;
-  max-width: 100%;
+  width: 100%; /* Changed from fixed 1126px to 100% for full-screen layout */
   margin: 0 auto;
   text-align: center;
-  border-inline: 1px solid var(--border);
   min-height: 100svh;
   display: flex;
   flex-direction: column;

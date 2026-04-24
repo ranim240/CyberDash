@@ -1,19 +1,19 @@
-import { Router } from 'express';
+import express from 'express';
 import courseController from './course.controller.js';
 import { isAuthenticated } from '../../middlewares/auth.js';
 import { authorize } from '../../middlewares/role.js';
 
-const router = Router();
+const courseRouter = express.Router();
 
-// Anyone can browse courses and see details
-router.get('/',    courseController.getAll);
-router.get('/:id', courseController.getOne);
+// Public routes
+courseRouter.get('/', courseController.getAll);
+courseRouter.get('/:id', courseController.getOne);
 
-// PROTECTED ROUTES : Authentication required for all routes below
-router.use(isAuthenticated);
+// Protected routes
+courseRouter.use(isAuthenticated);
 
-// Content access: Learners must be enrolled, Instructors must be owners
-router.get('/:id/contents', authorize(['instructor', 'learner']), courseController.getContents);
+// Content access
+courseRouter.get('/:id/contents', authorize(['instructor', 'learner']), courseController.getContents);
 
 // INSTRUCTOR ONLY ROUTES : Management of courses and their contents
 router.post('/',               authorize(['instructor']), courseController.createCourse);
@@ -25,4 +25,10 @@ router.post('/:id/contents',   authorize(['instructor']), courseController.addCo
 router.put('/:id/contents/:contentId',        authorize(['instructor']), courseController.updateContent);    // ← new
 router.delete('/:id/contents/:contentId',     authorize(['instructor']), courseController.removeContent);
 
-export default router;
+// ✅ SINGLE publish route (clean)
+courseRouter.patch('/:id/publish', authorize(['instructor']), courseController.togglePublish);
+
+// Course content
+courseRouter.post('/:id/contents', authorize(['instructor']), courseController.addContent);
+
+export default courseRouter;

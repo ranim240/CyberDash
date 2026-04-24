@@ -25,17 +25,17 @@ export const seed = async (knex) => {
   // Delete existing data
   await knex('challenge_session').del();
 
-  // Use imported IDs from seedUsers and seedChallenges
-  const LEARNER_1_ID = learnerUser1Id;
-  const LEARNER_2_ID = learnerUser2Id;
-  const LEARNER_3_ID = learnerUser3Id;
-  const LEARNER_4_ID = learnerUser4Id;
+  // Reference IDs - update these to match your seeded data
+  const LEARNER_1_ID = 'user_005_f955ff27'; // Update this
+  const LEARNER_2_ID = 'user_006_a1879425'; // Update this
+  const LEARNER_3_ID = 'user_007_d767ca36'; // Update this
+  const LEARNER_4_ID = 'user_008_83666694'; // Update this
 
-  const CHALLENGE_1_ID = challenge1Id; // SQL Injection
-  const CHALLENGE_2_ID = challenge2Id; // XSS
-  const CHALLENGE_3_ID = challenge3Id; // Caesar Cipher
-  const CHALLENGE_4_ID = challenge4Id; // RSA
-  const CHALLENGE_5_ID = challenge5Id; // ARP Spoofing
+  const CHALLENGE_1_ID = 'challenge_001_0b6c79f9'; // Update this - SQL Injection
+  const CHALLENGE_2_ID = 'challenge_002_74a1ebd1'; // Update this - XSS
+  const CHALLENGE_3_ID = 'challenge_003_6d6c8114'; // Update this - Caesar Cipher
+  const CHALLENGE_4_ID = 'challenge_004_d3da69e0'; // Update this - RSA
+  const CHALLENGE_5_ID = 'challenge_005_66daf26e'; // Update this - ARP Spoofing
 
   const startDate = new Date('2026-03-01');
   const endDate = new Date('2026-04-10');

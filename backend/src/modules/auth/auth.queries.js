@@ -1,6 +1,8 @@
 import db from '../../config/db.js'
 import crypto from 'node:crypto';
 
+// User Queries 
+
 export const findUserByEmail = (email) => {
     return db('user').where({ email }).first();
 };
@@ -23,6 +25,11 @@ export const createUser = async (userData) => {
         // If role is learner, create learner progression profile
         if (role === 'learner') {
             await trx('learner').insert({ user_id });
+        }
+
+        // If role is instructor, create instructor profile
+        if (role === 'instructor') {
+            await trx('instructor').insert({ user_id });
         }
 
         return { user_id, 

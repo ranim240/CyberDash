@@ -11,11 +11,12 @@ export const seed = async (knex) => {
   // Delete existing data
   await knex('incident_report').del();
 
-  // Use imported IDs from seedUsers
-  const LEARNER_1_ID = learnerUser1Id;
-  const LEARNER_2_ID = learnerUser2Id;
-  const ADMIN_1_ID = adminUser1Id;
-  const ADMIN_2_ID = adminUser2Id;
+  // Reference IDs - update these to match your seeded data
+  const LEARNER_1_ID = 'user_005_f955ff27'; // Update this
+  const LEARNER_2_ID = 'user_006_a1879425'; // Update this
+
+  const ADMIN_1_ID = 'user_001_c772c1c1'; // Update this
+  const ADMIN_2_ID = 'user_002_85379fa4'; // Update this
 
   const baseDate = new Date('2026-03-01');
 

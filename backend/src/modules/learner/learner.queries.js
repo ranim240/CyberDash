@@ -1,58 +1,175 @@
 import db from '../../config/db.js';
 
-class LearnerRepository {
-    // Fetch a learner's basic profile information
-    getLearnerProfile = (user_id) => {
-        return db('learner').where({ user_id }).first();
-    };
+// ─── helper (utilisé aussi côté frontend en fallback) ────────────────────────
+export const getLevelTitle = (level) => {
+  if (level >= 10) return 'Elite Hacker';
+  if (level >= 7)  return 'Senior Hacker';
+  if (level >= 4)  return 'Junior Hacker';
+  return 'Novice';
+};
 
-    // Fetch all badges earned by a specific learner
-    getLearnerBadges = (learner_id) => {
-        return db('learner_badge as lb')
-            .join('badge as b', 'b.badge_id', 'lb.badge_id')
-            .where('lb.learner_id', learner_id)
-            .select('b.*', 'lb.awarded_at');
-    };
+class Learner {
 
-    // Fetch all course enrollments for a specific learner
-    getEnrollments = (learner_id) => {
-        return db('enrollment as e')
-            .join('course as c', 'c.course_id', 'e.course_id')
-            .where('e.learner_id', learner_id)
-            .select('c.*', 'e.enrolled_at', 'e.completion_status');
-    };
+  // ==========================
+  // 👤 PROFILE
+  // ==========================
+  getLearnerProfile = async (user_id) => {
+    const profile = await db('learner as l')
+      .join('user as u', 'u.user_id', 'l.user_id')
+      .where('l.user_id', user_id)
+      .select(
+        'l.user_id',
+        'u.username',
+        'l.xp_points',
+        'l.current_level',
+        'l.streak',
+        'u.created_at'
+      )
+      .first();
 
-    // Insert a new enrollment record
-    enroll = (data) => {
-        return db('enrollment').insert(data);
-    };
+    return profile;
+  };
 
-    // Verify if a learner is enrolled in a specific course
-    isEnrolled = (learner_id, course_id) => {
-        return db('enrollment').where({ learner_id, course_id }).first();
-    };
 
-    // Delete an enrollment record (unenroll)
-    unenroll = (learner_id, course_id) => {
-        return db('enrollment')
-            .where({ learner_id, course_id })
-            .delete();
-    };
+  // ==========================
+  // 🏅 BADGES (ORDERED)
+  // ==========================
+  getLearnerBadges = async (learner_id) => {
+    return db('learner_badge as lb')
+      .join('badge as b', 'b.badge_id', 'lb.badge_id')
+      .where('lb.learner_id', learner_id)
+      .select(
+        'b.badge_id',
+        'b.name',
+        'b.description',
+        'b.icon_url',
+        'b.xp_bonus',
+        'lb.awarded_at'
+      )
+      .orderBy('lb.awarded_at', 'desc');
+  };
 
-    // Update the completion status of a course for a learner
-    updateProgress = (learner_id, course_id, completion_status) => {
-        return db('enrollment')
-            .where({ learner_id, course_id })
-            .update({ completion_status });
-    };
 
-    // Fetch progress details (enrollment date and status) for a specific course
-    getProgress = (learner_id, course_id) => {
-        return db('enrollment')
-            .where({ learner_id, course_id })
-            .select('enrolled_at', 'completion_status')
-            .first();
+  // ==========================
+  // 📚 ENROLLMENTS (STRUCTURED)
+  // ==========================
+  getEnrollments = async (learner_id) => {
+    return db('enrollment as e')
+      .join('course as c', 'c.course_id', 'e.course_id')
+      .where('e.learner_id', learner_id)
+      .select(
+        'c.course_id',
+        'c.title',
+        'c.description',
+        'e.enrolled_at',
+        'e.completion_status'
+      )
+      .orderBy('e.enrolled_at', 'desc');
+  };
+
+
+  // ==========================
+  // ➕ ENROLL
+  // ==========================
+  enroll = async (data) => {
+    return db('enrollment')
+      .insert({
+        ...data,
+        enrolled_at: new Date()
+      });
+  };
+
+
+  // ==========================
+  // 🔍 CHECK ENROLLMENT
+  // ==========================
+  isEnrolled = async (learner_id, course_id) => {
+    return db('enrollment')
+      .where({ learner_id, course_id })
+      .first();
+  };
+
+
+  // ==========================
+  // ➖ UNENROLL
+  // ==========================
+  unenroll = async (learner_id, course_id) => {
+    return db('enrollment')
+      .where({ learner_id, course_id })
+      .del();
+  };
+
+
+  // ==========================
+  // 📈 UPDATE PROGRESS
+  // ==========================
+  updateProgress = async (learner_id, course_id, completion_status) => {
+    return db('enrollment')
+      .where({ learner_id, course_id })
+      .update({
+        completion_status,
+        updated_at: new Date()
+      });
+  };
+
+
+  // ==========================
+  // 📊 GET PROGRESS
+  // ==========================
+  getProgress = async (learner_id, course_id) => {
+    return db('enrollment')
+      .where({ learner_id, course_id })
+      .select(
+        'enrolled_at',
+        'completion_status',
+        'updated_at'
+      )
+      .first();
+  };
+
+
+  // ==========================
+  // 🔥 STATS (avec successRate + title)
+  // ==========================
+  getStats = async (learner_id) => {
+
+    // nombre de soumissions correctes
+    const [correct] = await db('submission as s')
+      .join('challenge_session as cs', 'cs.session_id', 's.session_id')
+      .where({ 'cs.learner_id': learner_id, 's.is_correct': true })
+      .count('s.submission_id as count');
+
+    // total de soumissions
+    const [total] = await db('submission as s')
+      .join('challenge_session as cs', 'cs.session_id', 's.session_id')
+      .where('cs.learner_id', learner_id)
+      .count('s.submission_id as count');
+
+    // infos learner (xp, level, streak)
+    const learner = await db('learner')
+      .where({ user_id: learner_id })
+      .select('xp_points', 'current_level', 'streak')
+      .first();
+
+    const solvedCount  = Number(correct.count || 0);
+    const totalCount   = Number(total.count   || 0);
+    const successRate  = totalCount > 0
+      ? Math.round((solvedCount / totalCount) * 100)
+      : 0;
+
+    const level = learner?.current_level ?? 1;
+
+    return {
+      solved_challenges : solvedCount,
+      total_submissions : totalCount,
+      success_rate      : successRate,          // ✅ calculé
+      xp_points         : learner?.xp_points  ?? 0,
+      current_level     : level,
+      streak            : learner?.streak     ?? 0,
+      title             : getLevelTitle(level), // ✅ calculé
     };
+  };
+
 }
 
-export default new LearnerRepository();
+export default new Learner();

@@ -30,14 +30,22 @@ export const seed = async (knex) => {
  
   await knex('challenge_file').del();
   await knex('challenge').del();
-  console.log(category1Id);
-  // Use imported IDs from seedUsers and seedCategories
-  const INSTRUCTOR_1_ID = instructorUser1Id;
-  const INSTRUCTOR_2_ID = instructorUser2Id;
-  const CATEGORY_WEB_ID = category1Id;
-  const CATEGORY_CRYPTO_ID = category2Id;
-  const CATEGORY_NETWORK_ID = category3Id;
- 
+
+  // These IDs should match those created in seedUsers and seedCategories
+  // For now using placeholder format - update with actual IDs
+  const INSTRUCTOR_1_ID = 'user_003_4bca26cc'; // Update this
+  const INSTRUCTOR_2_ID = 'user_004_74060255'; // Update this
+  const CATEGORY_WEB_ID = 'category_001_b50b1042'; // Update this
+  const CATEGORY_CRYPTO_ID = 'category_002_815d909d'; // Update this
+  const CATEGORY_NETWORK_ID = 'category_003_18b6519e'; // Update this
+
+  // Challenge IDs
+  const challenge1Id = generateChallengeId(1);
+  const challenge2Id = generateChallengeId(2);
+  const challenge3Id = generateChallengeId(3);
+  const challenge4Id = generateChallengeId(4);
+  const challenge5Id = generateChallengeId(5);
+
   // Insert challenges
   const challenges = [
     {

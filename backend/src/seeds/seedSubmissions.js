@@ -24,16 +24,17 @@ export const seed = async (knex) => {
   // Delete existing data
   await knex('submission').del();
 
-  // Use imported session IDs from seedChallengeSessions
-  const SESSION_1_ID = session1Id;
-  const SESSION_2_ID = session2Id;
-  const SESSION_3_ID = session3Id;
-  const SESSION_4_ID = session4Id;
-  const SESSION_5_ID = session5Id;
-  const SESSION_7_ID = session7Id;
-  const SESSION_8_ID = session8Id;
-  const SESSION_9_ID = session9Id;
-  const SESSION_10_ID = session10Id;
+  // These session IDs should match those created in seedChallengeSessions
+  // For now using placeholder format - update with actual IDs
+  const SESSION_1_ID = 'session_001_f3b7b065'; // Update this
+  const SESSION_2_ID = 'session_002_95785f70'; // Update this
+  const SESSION_3_ID = 'session_003_0aa24155'; // Update this
+  const SESSION_4_ID = 'session_004_36ea19ae'; // Update this
+  const SESSION_5_ID = 'session_005_617d2dd5'; // Update this
+  const SESSION_7_ID = 'session_007_d7c21d08'; // Update this
+  const SESSION_8_ID = 'session_008_82a0e2eb'; // Update this
+  const SESSION_9_ID = 'session_009_0a6e3d17'; // Update this
+  const SESSION_10_ID = 'session_010_8c3e0bef'; // Update this
 
   const baseDate = new Date('2026-03-01');
 

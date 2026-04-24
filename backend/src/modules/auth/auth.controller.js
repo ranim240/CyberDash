@@ -2,6 +2,7 @@ import * as queries from './auth.queries.js';
 import { hashPassword, comparePassword } from '../../utils/hash.js';
 import { generateToken } from '../../utils/jwt.js';
 import { validateRegister, validateLogin, validateForgotPassword, validateResetPassword } from './auth.validation.js';
+import { sendResetEmail } from '../../utils/mailer.js';
 import jwt from 'jsonwebtoken';
 import { JWT_SECRET } from '../../config/env.js';
 
@@ -24,7 +25,7 @@ export const register = async (req, res, next) => {
 
     // 2. Hash the password
     const password_hash = await hashPassword(password);
-    
+
     // 3. Create user
     await queries.createUser({ username, email, password_hash, role });
 
@@ -47,12 +48,15 @@ export const login = async (req, res, next) => {
     // 1. Find user
     const user = await queries.findUserByEmail(email);
     if (!user) {
-      return res.status(401).json({ success: false, message: 'Invalid credentials email' });
+      // Generic message to prevent user enumeration
+      return res.status(401).json({ success: false, message: 'Invalid credentials' });
     }
+
     // 2. Verify password
     const isMatch = await comparePassword(password, user.password_hash);
     if (!isMatch) {
-      return res.status(401).json({ success: false, message: 'Invalid credentials password' });
+      // Same generic message — don't reveal which field is wrong
+      return res.status(401).json({ success: false, message: 'Invalid credentials' });
     }
 
     // 3. Generate JWT Token
@@ -69,7 +73,6 @@ export const login = async (req, res, next) => {
       }
     });
   } catch (error) {
-    console.log(error);
     next(error);
   }
 };
@@ -91,30 +94,27 @@ export const forgotPassword = async (req, res, next) => {
       return res.json({ success: true, message: 'If this email exists, a reset link has been sent.' });
     }
 
-    // 2. Generate a stateless reset token
-    // The secret uses the user's current password hash. If the password changes, this token becomes invalid.
+    // 2. Generate a stateless JWT reset token
+    // Secret = JWT_SECRET + user's current password_hash
+    // → If the password changes, this token automatically becomes invalid
+    // → This is the same approach used by Django's PasswordResetTokenGenerator
     const secret = JWT_SECRET + user.password_hash;
-    const payload = {
-      userId: user.user_id,
-      email: user.email
-    };
-    const token = jwt.sign(payload, secret, { expiresIn: '15m' });
+    const resetToken = jwt.sign(
+      { userId: user.user_id, email: user.email },
+      secret,
+      { expiresIn: '15m' }
+    );
 
-    // 3. Generate Link (you might pass the port from env)
-    const resetLink = `http://localhost:${process.env.PORT || 3000}/api/auth/reset-password/${user.user_id}/${token}`;
+    // 3. Build reset link pointing to FRONTEND (React page)
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+    const resetLink = `${frontendUrl}/reset-password/${user.user_id}/${resetToken}`;
 
-    // 4. Simulate sending an email
-    console.log('\n--- EMAIL SIMULATION ---');
-    console.log(`To: ${user.email}`);
-    console.log(`Subject: Password Reset Request`);
-    console.log(`Body: Click here to reset your password: ${resetLink}`);
-    console.log('------------------------\n');
+    // 4. Send email
+    await sendResetEmail(user.email, user.username, resetLink);
 
     res.json({
       success: true,
-      message: 'If this email exists, a reset link has been sent.',
-      // dev tool: keep this to copy test links easily during backend development
-      dev_reset_link: resetLink
+      message: 'If this email exists, a reset link has been sent.'
     });
   } catch (error) {
     next(error);
@@ -123,8 +123,7 @@ export const forgotPassword = async (req, res, next) => {
 
 export const resetPassword = async (req, res, next) => {
   try {
-    const { userId, token } = req.params;
-    const { newPassword } = req.body;
+    const { userId, token, newPassword, confirmPassword } = req.body;
 
     // 0. Validate data
     const errors = validateResetPassword(req.body);
@@ -135,10 +134,12 @@ export const resetPassword = async (req, res, next) => {
     // 1. Fetch user
     const user = await queries.findUserById(userId);
     if (!user) {
-      return res.status(400).json({ success: false, message: 'Invalid or expired link' });//comm asma: user not found
+      return res.status(400).json({ success: false, message: 'Invalid or expired link' });
     }
 
-    // 2. Verify token
+    // 2. Verify token using the same secret formula
+    // Secret = JWT_SECRET + current password_hash
+    // If password was already changed, this will fail automatically
     const secret = JWT_SECRET + user.password_hash;
     try {
       jwt.verify(token, secret);
@@ -149,6 +150,8 @@ export const resetPassword = async (req, res, next) => {
     // 3. Hash new password & update
     const password_hash = await hashPassword(newPassword);
     await queries.updateUserPassword(userId, password_hash);
+
+    // Token is now automatically invalid because password_hash changed → secret changed
 
     res.json({ success: true, message: 'Password has been successfully reset' });
   } catch (error) {
