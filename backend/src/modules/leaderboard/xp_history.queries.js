@@ -1,5 +1,5 @@
 import knex from '../../config/db.js';
-// REMINDER TO FIX : the names i chose don't serve well to the purpose i will fix them later 
+
 class LeaderboardService {
 
   // Global leaderboard

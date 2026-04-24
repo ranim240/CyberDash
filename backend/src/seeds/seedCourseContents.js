@@ -6,8 +6,8 @@
  * NOTE: Update course IDs to match those created in seedCourses
  */
 
-import { generateContentId } from '../scripts/seedUtils.js';
-import {course1Id,course2Id,course3Id,course4Id} from './seedCourses.js';
+import { generateContentId } from './seedUtils.js';
+
 export const seed = async (knex) => {
   // Delete existing data
   await knex('course_content').del();

@@ -4,7 +4,6 @@
  */
 
 import crypto from 'crypto';
-import bcrypt from 'bcrypt';
 
 /**
  * Generate a deterministic ID based on prefix and index
@@ -104,12 +103,12 @@ const generateXpHistoryId = (userId, challengeId) => {
 };
 
 /**
- * Hash password using bcrypt
+ * Hash password (simple example - use bcrypt in production)
  * @param {string} password
- * @returns {Promise<string>}
+ * @returns {string}
  */
-const hashPassword = async (password) => {
-  return await bcrypt.hash(password, 10);
+const hashPassword = (password) => {
+  return crypto.createHash('sha256').update(password).digest('hex');
 };
 
 /**

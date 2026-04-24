@@ -157,23 +157,9 @@ export const addContent = async (req, res, next) => {
         if (!title) {
             return error(res, 'Content title is required', 400);
         }
-                const [content] = await Course.addContent({
-            content_id: uuid(),
-            course_id: req.params.id,
-            title,
-            data,
-            is_published: is_published || false
-        });
-
-        return success(res, content, 201);
-    } catch (err) {
-        next(err);
-    }
-};
-
-    
+    };
 // Update a specific content item : Only the course owner
-export const updateContent = async (req, res, next) => {
+updateContent = async (req, res, next) => {
     try {
         const isOwner = await courseRepository.isOwner(req.user.userId, req.params.id);
         if (!isOwner) {
@@ -193,7 +179,7 @@ export const updateContent = async (req, res, next) => {
 };
 
 // Delete a specific content item : Only the course owner
-export const removeContent = async (req, res, next) => {
+removeContent = async (req, res, next) => {
     try {
         const isOwner = await courseRepository.isOwner(req.user.userId, req.params.id);
         if (!isOwner) {
@@ -207,8 +193,21 @@ export const removeContent = async (req, res, next) => {
         next(err);
     }
 };
+}
 
+        const [content] = await Course.addContent({
+            content_id: uuid(),
+            course_id: req.params.id,
+            title,
+            data,
+            is_published: is_published || false
+        });
 
+        return success(res, content, 201);
+    } catch (err) {
+        next(err);
+    }
+};
 
 export default {
     getAll,
@@ -218,5 +217,5 @@ export default {
     deleteCourse,
     togglePublish,
     getContents,
-    addContent,updateContent,removeContent
+    addContent
 };
