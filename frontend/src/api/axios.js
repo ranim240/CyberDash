@@ -7,7 +7,7 @@ const api = axios.create({
   },
 });
 
-// REQUEST INTERCEPTOR (JWT)
+// REQUEST INTERCEPTOR (JWT)  interceptor requête : injecte le token JWT automatiquement
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("token");
@@ -23,11 +23,8 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    const status = error.response?.status;
-    const message = error.response?.data?.message || 'Server Error';
-
     // Token expired or invalid -> automatic logout (except if on login page)
-    if (status === 401 && !window.location.pathname.includes('/login')) {
+    if (error.response?.status === 401 && !window.location.pathname.includes('/login')) {
       localStorage.removeItem('token');
       localStorage.removeItem('user');
       window.location.href = '/login';

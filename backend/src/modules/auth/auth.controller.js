@@ -158,3 +158,28 @@ export const resetPassword = async (req, res, next) => {
     next(error);
   }
 };
+// ==========================
+// 👤 GET /auth/me
+// ==========================
+// Retourne le profil de l'utilisateur connecté depuis le token JWT.
+// Utilisé par AuthContext au démarrage pour vérifier si le token est encore valide.
+export const getMe = async (req, res, next) => {
+  try {
+    // req.user est injecté par le middleware isAuthenticated
+    const user = await queries.findUserById(req.user.userId);
+ 
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+ 
+    // on retourne exactement la même structure que login
+    // pour que AuthContext puisse setUser sans adaptation
+    return res.json({
+      id      : user.user_id,
+      username: user.username,
+      role    : user.role,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
