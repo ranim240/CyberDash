@@ -157,8 +157,7 @@ export const addContent = async (req, res, next) => {
         if (!title) {
             return error(res, 'Content title is required', 400);
         }
-
-        const [content] = await Course.addContent({
+                const [content] = await Course.addContent({
             content_id: uuid(),
             course_id: req.params.id,
             title,
@@ -172,6 +171,45 @@ export const addContent = async (req, res, next) => {
     }
 };
 
+    
+// Update a specific content item : Only the course owner
+export const updateContent = async (req, res, next) => {
+    try {
+        const isOwner = await courseRepository.isOwner(req.user.userId, req.params.id);
+        if (!isOwner) {
+            return error(res, 'You do not own this course', 403);
+        }
+
+        const { title, data, is_published } = req.body;
+        const [content] = await courseRepository.updateContent(req.params.contentId, {
+            title, data, is_published
+        });
+
+        if (!content) return error(res, 'Content not found', 404);
+        return success(res, content);
+    } catch (err) {
+        next(err);
+    }
+};
+
+// Delete a specific content item : Only the course owner
+export const removeContent = async (req, res, next) => {
+    try {
+        const isOwner = await courseRepository.isOwner(req.user.userId, req.params.id);
+        if (!isOwner) {
+            return error(res, 'You do not own this course', 403);
+        }
+
+        const deleted = await courseRepository.removeContent(req.params.contentId);
+        if (!deleted) return error(res, 'Content not found', 404);
+        return success(res, { message: 'Content deleted successfully' });
+    } catch (err) {
+        next(err);
+    }
+};
+
+
+
 export default {
     getAll,
     getOne,
@@ -180,5 +218,4 @@ export default {
     deleteCourse,
     togglePublish,
     getContents,
-    addContent
-};
+    addContent,updateContent,removeContent};

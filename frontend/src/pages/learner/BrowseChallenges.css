@@ -1,0 +1,418 @@
+/* ══════════════════════════════════════════════════════
+   BrowseChallenges.css  —  CTF dark theme
+   ══════════════════════════════════════════════════════ */
+
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=DM+Sans:wght@400;500;600&display=swap');
+
+/* ── tokens (repris du Dashboard) ───────────────────────────────────────────── */
+:root {
+  --bg-base:    #0a0c10;
+  --bg-surface: #10141c;
+  --bg-raised:  #161b27;
+  --bg-hover:   #1c2233;
+
+  --neon-green: #00ff87;
+  --neon-cyan:  #00e5ff;
+  --neon-purp:  #b47cff;
+  --neon-amber: #ffb830;
+  --neon-coral: #ff6b6b;
+
+  --text-primary:   #e4ecf7;
+  --text-secondary: #7a8ea8;
+  --text-muted:     #3d5068;
+
+  --border:      rgba(0, 229, 255, 0.12);
+  --border-glow: rgba(0, 255, 135, 0.35);
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+
+  --font-mono: 'Share Tech Mono', monospace;
+  --font-body: 'DM Sans', sans-serif;
+
+  --transition: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ── base page ───────────────────────────────────────── */
+.browse {
+  font-family: var(--font-body);
+  background: var(--bg-base);
+  color: var(--text-primary);
+  min-height: 100vh;
+  padding: 2rem 2.5rem 4rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  position: relative;
+}
+
+.browse::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent, transparent 2px,
+    rgba(0,0,0,.06) 2px, rgba(0,0,0,.06) 4px
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── header ──────────────────────────────────────────── */
+.browse__header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+  position: relative;
+  z-index: 1;
+  animation: fadeDown .35s ease both;
+}
+
+@keyframes fadeDown {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.browse__title {
+  font-family: var(--font-mono);
+  font-size: 2rem;
+  font-weight: 400;
+  letter-spacing: .06em;
+  color: var(--text-primary);
+  margin: 0 0 .3rem;
+}
+
+.browse__sub {
+  font-size: .88rem;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.bc-back-btn {
+  font-family: var(--font-mono);
+  font-size: .78rem;
+  color: var(--text-secondary);
+  text-decoration: none;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: .45rem 1rem;
+  transition: var(--transition);
+  flex-shrink: 0;
+}
+.bc-back-btn:hover {
+  color: var(--neon-cyan);
+  border-color: var(--neon-cyan);
+}
+
+/* ── filter bar ──────────────────────────────────────── */
+.bc-filters {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: .9rem 1.25rem;
+  margin-bottom: 1.75rem;
+  position: relative;
+  z-index: 1;
+}
+
+.bc-filters__group {
+  display: flex;
+  gap: .5rem;
+  flex-wrap: wrap;
+}
+
+.bc-filters__right {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+}
+
+.bc-filters__count {
+  font-family: var(--font-mono);
+  font-size: .75rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+/* difficulty filter buttons */
+.bc-filter-btn {
+  font-family: var(--font-mono);
+  font-size: .72rem;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  padding: .35rem .9rem;
+  border-radius: 99px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: var(--transition);
+}
+.bc-filter-btn:hover { border-color: var(--neon-cyan); color: var(--neon-cyan); }
+
+.bc-filter-btn--active,
+.bc-filter-btn--easy.bc-filter-btn--active   { background: rgba(0,255,135,.1);   border-color: var(--neon-green); color: var(--neon-green); }
+.bc-filter-btn--medium.bc-filter-btn--active { background: rgba(255,184,48,.1);  border-color: var(--neon-amber); color: var(--neon-amber); }
+.bc-filter-btn--hard.bc-filter-btn--active   { background: rgba(255,107,107,.1); border-color: var(--neon-coral); color: var(--neon-coral); }
+
+/* sort select */
+.bc-select {
+  font-family: var(--font-mono);
+  font-size: .75rem;
+  background: var(--bg-raised);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  padding: .4rem .75rem;
+  cursor: pointer;
+  transition: var(--transition);
+  outline: none;
+}
+.bc-select:hover, .bc-select:focus { border-color: var(--neon-cyan); color: var(--text-primary); }
+
+/* reset button */
+.bc-reset-btn {
+  font-family: var(--font-mono);
+  font-size: .72rem;
+  letter-spacing: .06em;
+  background: transparent;
+  border: 1px solid rgba(255,107,107,.35);
+  color: var(--neon-coral);
+  border-radius: var(--radius-sm);
+  padding: .35rem .85rem;
+  cursor: pointer;
+  transition: var(--transition);
+}
+.bc-reset-btn:hover { background: rgba(255,107,107,.08); }
+
+/* ── difficulty pip ──────────────────────────────────── */
+.bc-pip {
+  font-family: var(--font-mono);
+  font-size: .65rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: 99px;
+  border: 1px solid;
+}
+.bc-pip--easy   { color: var(--neon-green); border-color: rgba(0,255,135,.3);   background: rgba(0,255,135,.07); }
+.bc-pip--medium { color: var(--neon-amber); border-color: rgba(255,184,48,.3);  background: rgba(255,184,48,.07); }
+.bc-pip--hard   { color: var(--neon-coral); border-color: rgba(255,107,107,.3); background: rgba(255,107,107,.07); }
+
+/* ── challenge grid ──────────────────────────────────── */
+.bc-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.25rem;
+  position: relative;
+  z-index: 1;
+  margin-bottom: 2rem;
+}
+
+/* ── challenge card ──────────────────────────────────── */
+.bc-card {
+  display: flex;
+  flex-direction: column;
+  gap: .75rem;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 1.4rem 1.5rem;
+  text-decoration: none;
+  color: inherit;
+  transition: var(--transition);
+  animation: fadeUp .4s ease both;
+  position: relative;
+  overflow: hidden;
+}
+
+.bc-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(0,229,255,.03), transparent);
+  opacity: 0;
+  transition: var(--transition);
+  pointer-events: none;
+}
+
+.bc-card:hover {
+  border-color: rgba(0,229,255,.35);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(0,0,0,.35);
+}
+.bc-card:hover::after { opacity: 1; }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.bc-card__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.bc-card__points {
+  font-family: var(--font-mono);
+  font-size: .8rem;
+  color: var(--neon-amber);
+  letter-spacing: .05em;
+}
+
+.bc-card__title {
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  font-weight: 400;
+  color: var(--text-primary);
+  margin: 0;
+  line-height: 1.35;
+  letter-spacing: .03em;
+}
+
+.bc-card__desc {
+  font-size: .82rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin: 0;
+  flex: 1;
+}
+
+.bc-card__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: auto;
+  padding-top: .75rem;
+  border-top: 1px solid var(--border);
+}
+
+.bc-card__cat {
+  font-family: var(--font-mono);
+  font-size: .65rem;
+  text-transform: uppercase;
+  letter-spacing: .07em;
+  color: var(--text-muted);
+  background: var(--bg-raised);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 2px 7px;
+}
+
+.bc-card__cta {
+  font-family: var(--font-mono);
+  font-size: .75rem;
+  color: var(--neon-cyan);
+  transition: var(--transition);
+}
+.bc-card:hover .bc-card__cta { color: var(--neon-green); }
+
+/* ── skeleton card ───────────────────────────────────── */
+.bc-card--skeleton {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  height: 190px;
+  animation: pulse 1.6s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: .5; }
+  50%       { opacity: 1; }
+}
+
+/* ── empty state ─────────────────────────────────────── */
+.bc-empty {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 5rem 2rem;
+  color: var(--text-secondary);
+  font-size: .9rem;
+  text-align: center;
+}
+
+.bc-empty__icon {
+  font-size: 2.5rem;
+  opacity: .6;
+}
+
+/* ── error banner ────────────────────────────────────── */
+.bc-error {
+  background: rgba(255,107,107,.08);
+  border: 1px solid rgba(255,107,107,.35);
+  border-radius: var(--radius-md);
+  padding: 1rem 1.5rem;
+  color: var(--neon-coral);
+  font-family: var(--font-mono);
+  font-size: .85rem;
+  margin-bottom: 1.5rem;
+  position: relative;
+  z-index: 1;
+}
+
+/* ── pagination ──────────────────────────────────────── */
+.bc-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .5rem;
+  position: relative;
+  z-index: 1;
+  flex-wrap: wrap;
+}
+
+.bc-page-btn {
+  font-family: var(--font-mono);
+  font-size: .8rem;
+  min-width: 36px;
+  height: 36px;
+  padding: 0 .6rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--bg-surface);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: var(--transition);
+}
+.bc-page-btn:hover:not(:disabled) {
+  border-color: var(--neon-cyan);
+  color: var(--neon-cyan);
+}
+.bc-page-btn--active {
+  background: rgba(0,255,135,.1);
+  border-color: var(--neon-green);
+  color: var(--neon-green);
+}
+.bc-page-btn:disabled {
+  opacity: .3;
+  cursor: not-allowed;
+}
+
+.bc-page-dots {
+  font-family: var(--font-mono);
+  font-size: .8rem;
+  color: var(--text-muted);
+  padding: 0 .25rem;
+}
+
+/* ── responsive ──────────────────────────────────────── */
+@media (max-width: 768px) {
+  .browse           { padding: 1.25rem; }
+  .browse__header   { flex-direction: column; align-items: flex-start; gap: 1rem; }
+  .bc-filters       { flex-direction: column; align-items: flex-start; }
+  .bc-filters__right{ width: 100%; justify-content: space-between; }
+  .bc-grid          { grid-template-columns: 1fr; }
+}

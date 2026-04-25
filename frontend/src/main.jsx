@@ -1,10 +1,14 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import './index.css'
-import App from './App.jsx'
-// import './styles/dashboard.css'
-createRoot(document.getElementById('root')).render(
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+import { AuthProvider } from "./context/AuthContext.jsx";
+import AppRouter from "./router/index.jsx";
+import "./index.css"; // vos styles globaux si vous en avez
+
+createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <App />
-  </StrictMode>,
-)
+    {/* AuthProvider en dehors du router pour que PrivateRoute ait accès au contexte */}
+    <AuthProvider>
+      <AppRouter />
+    </AuthProvider>
+  </StrictMode>
+);
