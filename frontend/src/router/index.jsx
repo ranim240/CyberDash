@@ -35,9 +35,12 @@ const AppRouter = () => {
   return (
     <BrowserRouter>
       <Routes>
+       
 
         {/* ── Racine ── */}
-        <Route path="/" element={<Navigate to="/login" replace />} />
+//         <Route path="/" element={<Navigate to="/login" replace />} />
+            <Route path="/" element={<Home />} />
+
 
         {/* ── Auth (public) ── */}
         <Route path="/login"                          element={<Login />} />
