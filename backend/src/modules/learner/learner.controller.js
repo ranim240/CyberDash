@@ -15,13 +15,20 @@ export const getDashboard = async (req, res, next) => {
       return error(res, 'Learner not found', 404);
     }
 
-    const badges = await Learner.getLearnerBadges(userId);
-    const stats = await Learner.getStats(userId);
+    // ✅ tout en parallèle pour minimiser la latence
+    const [badges, stats, enrollments, recentSessions] = await Promise.all([
+      Learner.getLearnerBadges(userId),
+      Learner.getStats(userId),
+      Learner.getEnrollments(userId),
+      Learner.getRecentSessions(userId, 5),
+    ]);
 
     return success(res, {
       profile,
       stats,
-      recentBadges: badges.slice(0, 5)
+      recentBadges   : badges.slice(0, 5),  // 5 derniers badges
+      enrollments,                           // [ { course_id, title, description, enrolled_at, completion_status } ]
+      recentSessions,                        // [ { session_id, challenge_id, challenge_title, difficulty, points, started_at, ended_at, attempt_count, status } ]
     });
 
   } catch (err) {
@@ -185,7 +192,7 @@ export const getProgress = async (req, res, next) => {
 };
 
 
-  // ==========================
+// ==========================
 // 📊 STATS
 // ==========================
 export const getStats = async (req, res, next) => {
@@ -201,7 +208,6 @@ export const getStats = async (req, res, next) => {
 };
 
 
-
 export default {
   getDashboard,
   getProfile,
@@ -211,6 +217,5 @@ export default {
   unenrollCourse,
   updateProgress,
   getProgress,
-  getStats
-
+  getStats,
 };

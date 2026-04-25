@@ -1,5 +1,9 @@
-import api from "./axios";
+import api from './axios.js';
 
-// api/sessions.js
-export const startSession = (id) =>
-  api.post(`/sessions/${id}/start`);
+// POST /learner/challenges/:challengeId/start
+export const startSession = (challengeId) =>
+  api.post(`/learner/challenges/${challengeId}/start`);
+
+// POST /learner/sessions/:sessionId/abandon
+export const abandonSession = (sessionId) =>
+  api.post(`/learner/sessions/${sessionId}/abandon`);
