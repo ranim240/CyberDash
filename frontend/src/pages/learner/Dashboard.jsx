@@ -165,6 +165,7 @@ export default function Dashboard() {
         </div>
         <div className="dash-hero__actions">
           <Link to="/learner/browse" className="dash-btn dash-btn--primary">Browse Challenges</Link>
+          <Link to="/learner/leaderboard" className="dash-btn dash-btn--ghost">Leaderboard</Link>
           <Link to="/learner/profile" className="dash-btn dash-btn--ghost">My Profile</Link>
         </div>
       </section>

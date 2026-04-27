@@ -1,7 +1,7 @@
 import React, { useContext, useMemo, useState } from 'react';
 import { AuthContext } from '../../context/AuthContext.jsx';
 import useLeaderboard from '../../hooks/useLeaderboard.js';
-import './LeaderboardPage.css';
+import '../../styles/LeaderboardPage.css';
 
 // ─── constants ────────────────────────────────────────────────────────────────
 const CATEGORIES = [

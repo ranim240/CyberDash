@@ -15,7 +15,7 @@ import ResetPassword  from "../pages/auth/resetPassword";
 //import ChallengeDetailPage from "../pages/learner/ChallengeDetailPage.jsx";
 //import SessionPage       from "../pages/learner/SessionPage.jsx";
 import LeaderboardPage       from "../pages/learner/LeaderboardPage.jsx";
-import ReportIncidentPage    from "../pages/learner/ReportIncidentPage.jsx";
+//import ReportIncidentPage    from "../pages/learner/ReportIncidentPage.jsx";
 
 // ── Guard : redirige vers /login si non authentifié ───────────────────────────
 const PrivateRoute = ({ children, role }) => {
@@ -98,6 +98,12 @@ const AppRouter = () => {
               <Dashboard />
             </PrivateRoute>
           }
+        />
+        <Route path="/learner/report-incident" element={
+            <PrivateRoute role="learner">
+              <ReportIncidentPage />
+            </PrivateRoute>
+          }
         />*/}
         <Route path="/learner/leaderboard" 
           element={
@@ -105,12 +111,7 @@ const AppRouter = () => {
           <LeaderboardPage />
           </PrivateRoute>
           } />
-        <Route path="/learner/report-incident" element={
-            <PrivateRoute role="learner">
-              <ReportIncidentPage />
-            </PrivateRoute>
-          }
-        />
+        
 
         {/* ── 404 fallback ── */}
         <Route path="*" element={<Navigate to="/login" replace />} />
