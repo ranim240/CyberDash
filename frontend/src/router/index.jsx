@@ -9,12 +9,13 @@ import ForgotPassword from "../pages/auth/forgotPassword";
 import ResetPassword  from "../pages/auth/resetPassword";
 
 // ── Learner pages ─────────────────────────────────────────────────────────────
-import Dashboard         from "../pages/learner/Dashboard.jsx";
-import Profile           from "../pages/learner/Profile.jsx";
-import BrowseChallenges  from "../pages/learner/BrowseChallenges.jsx";
-import ChallengeDetailPage from "../pages/learner/ChallengeDetailPage.jsx";
-import SessionPage       from "../pages/learner/SessionPage.jsx";
-// import LeaderboardPage       from "../pages/learner/LeaderboardPage.jsx";
+//import Dashboard         from "../pages/learner/Dashboard.jsx";
+//import Profile           from "../pages/learner/Profile.jsx";
+//import BrowseChallenges  from "../pages/learner/BrowseChallenges.jsx";
+//import ChallengeDetailPage from "../pages/learner/ChallengeDetailPage.jsx";
+//import SessionPage       from "../pages/learner/SessionPage.jsx";
+import LeaderboardPage       from "../pages/learner/LeaderboardPage.jsx";
+import ReportIncidentPage    from "../pages/learner/ReportIncidentPage.jsx";
 
 // ── Guard : redirige vers /login si non authentifié ───────────────────────────
 const PrivateRoute = ({ children, role }) => {
@@ -38,8 +39,8 @@ const AppRouter = () => {
        
 
         {/* ── Racine ── */}
-//         <Route path="/" element={<Navigate to="/login" replace />} />
-            <Route path="/" element={<Home />} />
+            <Route path="/" element={<Navigate to="/login" replace />} />
+            {/*<Route path="/" element={<Home />} />*/}
 
 
         {/* ── Auth (public) ── */}
@@ -48,7 +49,7 @@ const AppRouter = () => {
         <Route path="/forgot-password"                element={<ForgotPassword />} />
         <Route path="/reset-password/:userId/:token"  element={<ResetPassword />} />
 
-        {/* ── Learner (protégé) ── */}
+        {/* ── Learner (protégé) ── 
         <Route
           path="/learner/dashboard"
           element={
@@ -93,8 +94,20 @@ const AppRouter = () => {
           path="/learner/courses/:courseId/progress"
           element={
             <PrivateRoute role="learner">
-              {/* CourseProgressPage à créer si besoin */}
+              {/* CourseProgressPage à créer si besoin 
               <Dashboard />
+            </PrivateRoute>
+          }
+        />*/}
+        <Route path="/learner/leaderboard" 
+          element={
+          <PrivateRoute role="learner">
+          <LeaderboardPage />
+          </PrivateRoute>
+          } />
+        <Route path="/learner/report-incident" element={
+            <PrivateRoute role="learner">
+              <ReportIncidentPage />
             </PrivateRoute>
           }
         />
