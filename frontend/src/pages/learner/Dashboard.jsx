@@ -2,11 +2,12 @@ import React, { useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { useLearnerStats } from '../../hooks/useLearnerStats.js';
 import { AuthContext } from '../../context/AuthContext.jsx';
+import LearnerLayout from '../../components/learner/LearnerLayout.jsx';
 import StatsCard from '../../components/learner/StatsCard.jsx';
 import BadgeList from '../../components/learner/BadgeList.jsx';
 import './Dashboard.css';
 
-// ─── tiny helpers ────────────────────────────────────────────────────────────
+// ─── helpers ──────────────────────────────────────────────────────────────────
 function Loader() {
   return (
     <div className="dash-loader">
@@ -40,24 +41,22 @@ function StatusPip({ status }) {
   return <span className={`diff-pip diff-pip--${s.cls}`}>{s.label}</span>;
 }
 
-// ─── sub-sections ────────────────────────────────────────────────────────────
-// completion_status → pourcentage visuel
 const statusToPct = { not_started: 0, in_progress: 50, completed: 100 };
 
 function EnrollmentsSection({ enrollments = [] }) {
   if (!enrollments.length) {
     return (
-      <div className="dash-card dash-card--empty">
+      <div className="dash-empty-box">
         <p>You haven't enrolled in any courses yet.</p>
-        <Link to="/learner/browse" className="dash-btn dash-btn--ghost">Browse Challenges →</Link>
+        <Link to="/learner/browse" className="dash-btn dash-btn--ghost">
+          Browse Challenges →
+        </Link>
       </div>
     );
   }
-
   return (
     <ul className="enroll-list">
       {enrollments.map((e) => (
-        // course_id, title, description, enrolled_at, completion_status  ← vrais champs DB
         <li key={e.course_id} className="enroll-item">
           <div className="enroll-item__header">
             <span className="enroll-item__title">{e.title}</span>
@@ -92,7 +91,6 @@ function RecentSessions({ sessions = [] }) {
       {sessions.map((s) => {
         const st = statusLabel[s.status] ?? { text: s.status, cls: 'neutral' };
         return (
-          // vrais champs : session_id, challenge_title, difficulty, points, started_at, attempt_count, status
           <li key={s.session_id} className="session-item">
             <div className="session-item__info">
               <span className="session-item__challenge">{s.challenge_title}</span>
@@ -104,9 +102,9 @@ function RecentSessions({ sessions = [] }) {
               </span>
               <span>{new Date(s.started_at).toLocaleDateString()}</span>
               <span>{s.attempt_count} attempt{s.attempt_count !== 1 ? 's' : ''}</span>
-              {s.status === 'completed' && s.points > 0 &&
+              {s.status === 'completed' && s.points > 0 && (
                 <span className="session-item__xp">+{s.points} pts</span>
-              }
+              )}
             </div>
           </li>
         );
@@ -115,103 +113,104 @@ function RecentSessions({ sessions = [] }) {
   );
 }
 
-// ─── main page ───────────────────────────────────────────────────────────────
+// ─── page principale ──────────────────────────────────────────────────────────
 export default function Dashboard() {
-  const { user } = useContext(AuthContext);
+  const { user }                             = useContext(AuthContext);
   const { dashboard, stats, loading, error } = useLearnerStats();
 
-  if (loading) return <Loader />;
-  if (error) return <ErrorBanner message={error} />;
+  if (loading) return <LearnerLayout stats={null}><Loader /></LearnerLayout>;
+  if (error)   return <LearnerLayout stats={null}><ErrorBanner message={error} /></LearnerLayout>;
 
-  // ── vrais champs DB ──────────────────────────────────────────────────────
-  const s = stats ?? {};
-  const d = dashboard ?? {};
+  const s        = stats      ?? {};
+  const d        = dashboard  ?? {};
+  const profile  = d.profile  ?? {};
 
-  // profile vient de dashboard.profile (getDashboard)
-  const profile = d.profile ?? {};
-
-  // XP : on affiche xp_points / seuil du niveau suivant (100 * current_level)
-  const xpPoints  = s.xp_points      ?? profile.xp_points ?? 0;
-  const level     = s.current_level  ?? 1;
-  const xpNeeded  = level * 100;                          // seuil simple (adaptez si vous avez une vraie table levels)
-  const xpPct     = Math.min(100, Math.round((xpPoints % xpNeeded) / xpNeeded * 100));
-
-  // username : depuis AuthContext OU profile
-  const username  = user?.username ?? profile.username ?? 'Learner';
+  const xpPoints = s.xp_points     ?? profile.xp_points ?? 0;
+  const level    = s.current_level ?? 1;
+  const xpNeeded = level * 100;
+  const xpPct    = Math.min(100, Math.round((xpPoints % xpNeeded) / xpNeeded * 100));
+  const username = user?.username ?? profile.username ?? 'Learner';
 
   return (
-    <main className="dashboard">
-      {/* ── HERO ── */}
-      <section className="dash-hero">
-        <div className="dash-hero__left">
-          <div className="dash-hero__avatar">
-            {user?.avatar
-              ? <img src={user.avatar} alt={username} />
-              : <span>{username[0].toUpperCase()}</span>}
-          </div>
-          <div className="dash-hero__info">
-            <h1 className="dash-hero__name">{username}</h1>
-            {/* title et current_level viennent de getStats() — calculés backend */}
-            <p className="dash-hero__role">
-              Level {level} · {s.title ?? 'Novice'}
+    <LearnerLayout stats={s}>
+      <div className="dashboard">
+
+        {/* ── TOPBAR ── */}
+        <div className="dash-topbar">
+          <div>
+            <h1 className="dash-topbar__title">Dashboard</h1>
+            <p className="dash-topbar__sub">
+              Welcome back, <span className="dash-topbar__name">{username}</span>
             </p>
-            <div className="xp-bar-wrap">
-              <div className="xp-bar">
-                <div className="xp-bar__fill" style={{ width: `${xpPct}%` }} />
+          </div>
+          <Link to="/learner/browse" className="dash-btn dash-btn--primary">
+            ⚡ New Challenge
+          </Link>
+        </div>
+
+        {/* ── STATS ── */}
+        <section className="dash-section">
+          <h2 className="dash-section__title">Overview</h2>
+          <div className="stats-grid">
+            <StatsCard icon="🎯" label="Challenges solved" value={s.solved_challenges ?? 0}   accent="green"  />
+            <StatsCard icon="⚡" label="Total XP"          value={`${xpPoints} XP`}            accent="cyan"   />
+            <StatsCard icon="🔥" label="Streak"            value={`${s.streak ?? 0}d`}         accent="orange" sub="days in a row" />
+            <StatsCard icon="📊" label="Success rate"      value={`${s.success_rate ?? 0}%`}   accent="purple" />
+            <StatsCard icon="🏅" label="Badges earned"     value={d.recentBadges?.length ?? 0} accent="gold"   />
+            <StatsCard icon="📚" label="Courses enrolled"  value={d.enrollments?.length ?? 0}  accent="blue"   />
+          </div>
+        </section>
+
+        {/* ── XP BAR ── */}
+        <section className="dash-section">
+          <div className="dash-xp-card">
+            <div className="dash-xp-card__left">
+              <span className="dash-xp-card__level">Lv.{level}</span>
+              <span className="dash-xp-card__title-text">{s.title ?? 'Novice'}</span>
+            </div>
+            <div className="dash-xp-card__center">
+              <div className="dash-xp-card__bar">
+                <div className="dash-xp-card__fill" style={{ width: `${xpPct}%` }} />
               </div>
-              <span className="xp-bar__label">{xpPoints} / {xpNeeded} XP</span>
+              <span className="dash-xp-card__label">
+                {xpPoints} / {xpNeeded} XP — Level {level + 1} in sight
+              </span>
+            </div>
+            <div className="dash-xp-card__right">
+              <span className="dash-xp-card__pct">{xpPct}%</span>
             </div>
           </div>
-        </div>
-        <div className="dash-hero__actions">
-          <Link to="/learner/browse" className="dash-btn dash-btn--primary">Browse Challenges</Link>
-          <Link to="/learner/profile" className="dash-btn dash-btn--ghost">My Profile</Link>
-        </div>
-      </section>
-
-      {/* ── STATS GRID ── */}
-      <section className="dash-section">
-        <h2 className="dash-section__title">Overview</h2>
-        <div className="stats-grid">
-          {/* solved_challenges ← getStats() */}
-          <StatsCard icon="🎯" label="Challenges solved" value={s.solved_challenges ?? 0} accent="green" />
-          {/* xp_points ← getStats() */}
-          <StatsCard icon="⚡" label="Total XP" value={`${xpPoints} XP`} accent="cyan" />
-          {/* streak ← getStats() */}
-          <StatsCard icon="🔥" label="Current streak" value={`${s.streak ?? 0}d`} sub="days in a row" accent="orange" />
-          {/* success_rate ← getStats() calculé backend */}
-          <StatsCard icon="📊" label="Success rate" value={`${s.success_rate ?? 0}%`} accent="purple" />
-          {/* recentBadges ← getDashboard() */}
-          <StatsCard icon="🏅" label="Badges earned" value={d.recentBadges?.length ?? 0} accent="gold" />
-          {/* enrollments ← getEnrollments() */}
-          <StatsCard icon="📚" label="Enrolled courses" value={d.enrollments?.length ?? 0} accent="blue" />
-        </div>
-      </section>
-
-      {/* ── TWO-COLUMN: enrollments + badges ── */}
-      <div className="dash-cols">
-        <section className="dash-card dash-section">
-          <h2 className="dash-section__title">My Courses</h2>
-          {/* enrollments : [ { course_id, title, description, enrolled_at, completion_status } ] */}
-          <EnrollmentsSection enrollments={d.enrollments} />
         </section>
 
-        <section className="dash-card dash-section">
-          <h2 className="dash-section__title">Badges</h2>
-          {/* recentBadges : [ { badge_id, name, description, icon_url, xp_bonus, awarded_at } ] */}
-          <BadgeList badges={d.recentBadges} />
+        {/* ── DEUX COLONNES ── */}
+        <div className="dash-cols">
+          <section className="dash-card">
+            <div className="dash-card__header">
+              <h2 className="dash-section__title">My Courses</h2>
+              <Link to="/learner/courses" className="dash-link">View all →</Link>
+            </div>
+            <EnrollmentsSection enrollments={d.enrollments} />
+          </section>
+
+          <section className="dash-card">
+            <div className="dash-card__header">
+              <h2 className="dash-section__title">Recent Badges</h2>
+              <Link to="/learner/badges" className="dash-link">View all →</Link>
+            </div>
+            <BadgeList badges={d.recentBadges} />
+          </section>
+        </div>
+
+        {/* ── SESSIONS ── */}
+        <section className="dash-card">
+          <div className="dash-card__header">
+            <h2 className="dash-section__title">Recent Sessions</h2>
+            <Link to="/learner/browse" className="dash-link">View all →</Link>
+          </div>
+          <RecentSessions sessions={d.recentSessions ?? []} />
         </section>
+
       </div>
-
-      {/* ── RECENT SESSIONS ── */}
-      <section className="dash-card dash-section">
-        <div className="dash-section__header">
-          <h2 className="dash-section__title">Recent Sessions</h2>
-          <Link to="/learner/browse" className="dash-link">View all →</Link>
-        </div>
-        {/* recentSessions n'est pas encore dans getDashboard() — voir note ci-dessous */}
-        <RecentSessions sessions={d.recentSessions ?? []} />
-      </section>
-    </main>
+    </LearnerLayout>
   );
 }

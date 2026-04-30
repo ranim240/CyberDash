@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import LearnerLayout from '../../components/learner/LearnerLayout.jsx';
 import { useChallenges } from '../../hooks/useChallenges.js';
 import './BrowseChallenges.css';
 
@@ -167,6 +168,7 @@ export default function BrowseChallenges() {
   } = useChallenges();
 
   return (
+    <LearnerLayout>
     <main className="browse">
 
       {/* ── HEADER ── */}
@@ -175,7 +177,7 @@ export default function BrowseChallenges() {
           <h1 className="browse__title">Challenges</h1>
           <p className="browse__sub">Pick a challenge, start a session, capture the flag.</p>
         </div>
-        <Link to="/learner/dashboard" className="bc-back-btn">← Dashboard</Link>
+
       </div>
 
       {/* ── FILTRES ── */}
@@ -213,5 +215,6 @@ export default function BrowseChallenges() {
       />
 
     </main>
+    </LearnerLayout>
   );
 }

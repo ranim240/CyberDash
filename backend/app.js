@@ -2,6 +2,10 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import 'dotenv/config';
+import { fileURLToPath } from 'url';
+import { dirname, join }  from 'path';
+
+
 
 import authRouter    from './src/modules/auth/auth.routes.js';
 import learnerRouter from './src/modules/learner/learner.routes.js';
@@ -20,13 +24,21 @@ import learnerBadgeRoutes from './src/modules/learner_badge/learner_badge.routes
 import sessionRouter from './src/modules/session/session.routes.js';
 
 const app = express();
-
-// Middlewares globaux
+// ── __dirname pour ES modules ──────────────────────────────────────────────────
+const __filename = fileURLToPath(import.meta.url);
+const __dirname  = dirname(__filename);
+ // Middlewares globaux
 app.use(cors());
-app.use(helmet());
+app.use(helmet({
+  crossOriginResourcePolicy: { policy: 'cross-origin' }, // ✅ permet de servir les fichiers uploads
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// ── Fichiers statiques (uploads) ───────────────────────────────────────────────
+// Les fichiers sont accessibles via : http://localhost:3000/uploads/...
+// uploads/ est relatif à la racine du projet (là où multer stocke les fichiers)
+app.use('/uploads', express.static('uploads'));
 // Routes
 app.use('/api/auth',    authRouter);
 app.use('/api/learner', learnerRouter);

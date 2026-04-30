@@ -8,9 +8,15 @@ import Register       from "../pages/auth/register";
 import ForgotPassword from "../pages/auth/forgotPassword";
 import ResetPassword  from "../pages/auth/resetPassword";
 
+
+
+
+// ── Home page ───────────────────────────────────────────────────────────────
+import Home from "../pages/Home.jsx";
+
 // ── Learner pages ─────────────────────────────────────────────────────────────
 import Dashboard         from "../pages/learner/Dashboard.jsx";
-import Profile           from "../pages/learner/Profile.jsx";
+// import Profile           from "../pages/learner/Profile.jsx";
 import BrowseChallenges  from "../pages/learner/BrowseChallenges.jsx";
 import ChallengeDetailPage from "../pages/learner/ChallengeDetailPage.jsx";
 import SessionPage       from "../pages/learner/SessionPage.jsx";
@@ -38,8 +44,7 @@ const AppRouter = () => {
        
 
         {/* ── Racine ── */}
-//         <Route path="/" element={<Navigate to="/login" replace />} />
-            <Route path="/" element={<Home />} />
+        <Route path="/" element={<Home />} />
 
 
         {/* ── Auth (public) ── */}
@@ -57,14 +62,14 @@ const AppRouter = () => {
             </PrivateRoute>
           }
         />
-        <Route
+        {/* <Route
           path="/learner/profile"
           element={
             <PrivateRoute role="learner">
               <Profile />
             </PrivateRoute>
           }
-        />
+        /> */}
         <Route
           path="/learner/browse"
           element={

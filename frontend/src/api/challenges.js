@@ -1,23 +1,23 @@
 import api from './axios.js';
 
-// ── Learner ───────────────────────────────────────────────────────────────────
+// ─── Learner / Public ─────────────────────────────────────────────────────────
 
-// GET /challenges/active  → tous les challenges approuvés
+// GET /api/challenges/active
 export const getActiveChallenges = () =>
   api.get('/challenges/active');
 
-// GET /challenges/search?difficulty=&category_id=&minPoints=&maxPoints=&sortBy=&order=&page=&limit=
+// GET /api/challenges/search?difficulty=&category_id=&minPoints=&maxPoints=&sortBy=&order=&page=&limit=
 export const searchChallenges = (params = {}) =>
   api.get('/challenges/search', { params });
 
-// GET /challenges/:id  → détail d'un challenge
+// GET /api/challenges/:id
 export const getChallengeById = (id) =>
   api.get(`/challenges/${id}`);
 
-// GET /challenges/:id/files
+// GET /api/challenges/:id/files
 export const getChallengeFiles = (id) =>
   api.get(`/challenges/${id}/files`);
 
-// GET /challenges/:id/badges
+// GET /api/challenges/:id/badges
 export const getChallengeBadges = (id) =>
   api.get(`/challenges/${id}/badges`);

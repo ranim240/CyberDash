@@ -1,4 +1,4 @@
-/* StatsCard.css */
+/* StatsCard.css
 .stats-card {
   background: var(--bg-surface);
   border: 1px solid var(--border);
@@ -71,4 +71,86 @@
   font-size: 0.7rem;
   color: var(--text-muted);
   margin-top: 0.1rem;
+} */
+ /* ── StatsCard.css ───────────────────────────────────── */
+.stats-card {
+  background: var(--bg-surface, #10141c);
+  border: 1px solid var(--border, rgba(0,229,255,.10));
+  border-radius: var(--radius-md, 10px);
+  padding: 1.1rem 1.25rem;
+  display: flex;
+  align-items: flex-start;
+  gap: .85rem;
+  transition: 200ms cubic-bezier(0.4,0,0.2,1);
+  position: relative;
+  overflow: hidden;
+}
+
+.stats-card:hover {
+  border-color: rgba(0, 229, 255, 0.28);
+  transform: translateY(-2px);
+}
+
+/* barre colorée à gauche */
+.stats-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 3px;
+  height: 100%;
+  border-radius: 99px 0 0 99px;
+}
+
+.stats-card--green::before  { background: var(--neon-green, #00ff87); }
+.stats-card--cyan::before   { background: var(--neon-cyan,  #00e5ff); }
+.stats-card--orange::before { background: var(--neon-amber, #ffb830); }
+.stats-card--purple::before { background: var(--neon-purp,  #b47cff); }
+.stats-card--gold::before   { background: #ffd700; }
+.stats-card--blue::before   { background: #4d9fff; }
+
+/* icône */
+.stats-card__icon {
+  font-size: 1.2rem;
+  flex-shrink: 0;
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-raised, #161b27);
+  border-radius: var(--radius-sm, 6px);
+  border: 1px solid var(--border, rgba(0,229,255,.10));
+}
+
+/* texte */
+.stats-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: .12rem;
+  min-width: 0;
+}
+
+.stats-card__value {
+  font-family: var(--font-mono, 'Share Tech Mono', monospace);
+  font-size: 1.2rem;
+  font-weight: 400;
+  color: var(--text-primary, #e4ecf7);
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.stats-card__label {
+  font-size: .72rem;
+  color: var(--text-secondary, #7a8ea8);
+  text-transform: uppercase;
+  letter-spacing: .07em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.stats-card__sub {
+  font-size: .68rem;
+  color: var(--text-muted, #3d5068);
+  margin-top: .1rem;
 }

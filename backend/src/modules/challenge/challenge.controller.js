@@ -90,15 +90,13 @@ export const searchChallenges = async (req, res, next) => {
 
     const data = await q.getChallenges(filters);
 
-  return success(
-  res,
-  data,
-  null,
-  {
-    page: filters.page,
-    limit: filters.limit
-  }
-);
+return success(res, {
+  data       : data.data,
+  total      : data.total,
+  page       : data.page,
+  limit      : data.limit,
+  totalPages : Math.ceil(data.total / data.limit)
+});
 
   } catch (error) {
     next(error);

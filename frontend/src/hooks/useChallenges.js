@@ -10,6 +10,7 @@ const DEFAULT_FILTERS = {
   order       : 'desc',
   page        : 1,
   limit       : 12,
+  status      : 'approved',   // learners voient uniquement les challenges approuvés
 };
 
 export function useChallenges() {
@@ -30,9 +31,10 @@ export function useChallenges() {
       );
 
       const res = await searchChallenges(clean);
-      // searchChallenges retourne { data, total, page, limit }
-      setChallenges(res.data.data   ?? []);
-      setTotal(res.data.total       ?? 0);
+      // backend retourne { success: true, data: { data, total, page, limit } }
+      const payload = res.data?.data ?? res.data ?? {};
+      setChallenges(payload.data  ?? []);
+      setTotal(payload.total      ?? 0);
     } catch (err) {
       setError(err?.response?.data?.message || 'Failed to load challenges');
     } finally {

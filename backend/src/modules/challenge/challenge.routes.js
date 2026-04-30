@@ -1,24 +1,29 @@
 import express from 'express';
 import {
-    getAll,
-    getOne,
-    createChallenge,
-    modifyChallenge,
-    deleteChallenge,
-    uploadFile,
-    getFiles,
-    getBadges,
-    updateChallengeStatus,
-    fetchPendingChallenges,
-    getActiveChallenges,
-    getInstructorChallenges,
-    searchChallenges
+  getAll,
+  getOne,
+  createChallenge,
+  modifyChallenge,
+  deleteChallenge,
+  uploadFile,
+  getFiles,
+  getBadges,
+  updateChallengeStatus,
+  fetchPendingChallenges,
+  getActiveChallenges,
+  getInstructorChallenges,
+  searchChallenges
 } from './challenge.controller.js';
 
 import { isAuthenticated } from '../../middlewares/auth.js';
-import { authorize } from '../../middlewares/role.js';
+import { authorize }       from '../../middlewares/role.js';
 
 const challengeRouter = express.Router();
+
+// ============================================================
+// ⚠️  Le router est monté sur /api/challenges dans app.js
+//     donc ici on ne répète PAS /challenges — on part de /
+// ============================================================
 
 
 // ==========================
@@ -26,21 +31,21 @@ const challengeRouter = express.Router();
 // ==========================
 
 challengeRouter.get(
-  '/challenges/pending',
+  '/pending',                          // → GET /api/challenges/pending
   isAuthenticated,
   authorize(['admin']),
   fetchPendingChallenges
 );
 
 challengeRouter.put(
-  '/challenges/:id/change-status',
+  '/:id/change-status',               // → PUT /api/challenges/:id/change-status
   isAuthenticated,
   authorize(['admin']),
   updateChallengeStatus
 );
 
 challengeRouter.get(
-  '/all-challenges',
+  '/all',                              // → GET /api/challenges/all
   isAuthenticated,
   authorize(['admin']),
   getAll
@@ -52,35 +57,35 @@ challengeRouter.get(
 // ==========================
 
 challengeRouter.get(
-  '/my-challenges',
+  '/my',                               // → GET /api/challenges/my
   isAuthenticated,
   authorize(['instructor']),
   getInstructorChallenges
 );
 
 challengeRouter.post(
-  '/challenges',
+  '/',                                 // → POST /api/challenges
   isAuthenticated,
   authorize(['instructor']),
   createChallenge
 );
 
 challengeRouter.put(
-  '/challenges/:id',
+  '/:id',                              // → PUT /api/challenges/:id
   isAuthenticated,
   authorize(['instructor']),
   modifyChallenge
 );
 
 challengeRouter.delete(
-  '/challenges/:id',
+  '/:id',                              // → DELETE /api/challenges/:id
   isAuthenticated,
   authorize(['instructor']),
   deleteChallenge
 );
 
 challengeRouter.post(
-  '/challenges/:id/files',
+  '/:id/files',                        // → POST /api/challenges/:id/files
   isAuthenticated,
   authorize(['instructor']),
   uploadFile
@@ -91,32 +96,12 @@ challengeRouter.post(
 // 📌 PUBLIC / LEARNER ROUTES
 // ==========================
 
-// 🔥 IMPORTANT: keep static routes first
-challengeRouter.get(
-  '/challenges/search',
-  searchChallenges
-);
+// 🔥 IMPORTANT : routes statiques AVANT /:id pour éviter les conflits
+challengeRouter.get('/search', searchChallenges);      // → GET /api/challenges/search
+challengeRouter.get('/active', getActiveChallenges);   // → GET /api/challenges/active
 
-challengeRouter.get(
-  '/challenges/active',
-  getActiveChallenges
-);
-
-challengeRouter.get(
-  '/challenges/:id',
-  getOne
-);
-
-challengeRouter.get(
-  '/challenges/:id/files',
-  isAuthenticated,
-  getFiles
-);
-
-challengeRouter.get(
-  '/challenges/:id/badges',
-  isAuthenticated,
-  getBadges
-);
+challengeRouter.get('/:id',          getOne);          // → GET /api/challenges/:id
+challengeRouter.get('/:id/files',    isAuthenticated, getFiles);   // → GET /api/challenges/:id/files
+challengeRouter.get('/:id/badges',   isAuthenticated, getBadges);  // → GET /api/challenges/:id/badges
 
 export default challengeRouter;
