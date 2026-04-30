@@ -7,13 +7,17 @@ export default function Topbar() {
     <div className="topbar">
       <div>
         <h2>Instructor Dashboard</h2>
-        <p>// API connected</p>
+        
       </div>
 
-      <div>
-        <button className="btn btn-purple">+ Challenge</button>
-        <button className="btn btn-teal" onClick={() => navigate('/instructor/courses')}>+ Course</button>
-      </div>
+      <div style={{ display: 'flex', gap: '16px' }}>
+  <button className="btn btn-purple" onClick={() => navigate('/instructor/challenges/create')}>
+    <span style={{ fontSize: '16px', fontWeight: 'bold' }}>+</span> Challenge
+  </button>
+  <button className="btn btn-teal" onClick={() => navigate('/instructor/courses/create')}>
+    <span style={{ fontSize: '16px', fontWeight: 'bold' }}>+</span> Course
+  </button>
+</div>
     </div>
   );
 }

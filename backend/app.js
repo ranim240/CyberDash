@@ -35,7 +35,6 @@ app.use('/api/learner', learnerRouter);
 app.use('/api/categories', categoryRouter);
 app.use('/api/instructor',  instructorRouter);
 app.use('/api/instructor/profile', userRouter);
-
 app.use('/api/courses',     courseRouter);
 app.use('/api/challenges',  challengeRouter);
 app.use('/api/submissions', submissionRouter);

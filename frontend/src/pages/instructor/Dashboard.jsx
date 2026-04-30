@@ -4,6 +4,8 @@ import StatsGrid from '../../components/StatsGrid.jsx';
 import CoursesTable from '../../components/CoursesTable.jsx';
 import ChallengesTable from '../../components/ChallengesTable.jsx';
 import Analytics from '../../components/Analytics.jsx';
+import AIChat from '../../components/ai/AIChat';
+
 import './InstructorDashboard.css';
 import '../../styles/dashboard.css';
 
@@ -21,8 +23,8 @@ export default function InstructorDashboard() {
           <CoursesTable />
           <ChallengesTable />
         </div>
-
-        <Analytics />
+     <AIChat />
+        
       </div>
     </div>
   );

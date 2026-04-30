@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import api from '../services/api';
+import coursesApi from '../api/courses';
 const MOCK_COURSES = [
   {
     course_id: 'c-001',
@@ -53,19 +53,29 @@ const MOCK_COURSES = [
   },
 ];
 export function useCourses() {
-  const [courses, setCourses] = useState(MOCK_COURSES);
+  const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError]     = useState(null);
+
+  const [usingMock, setUsingMock] = useState(false);
 
   useEffect(() => {
-    api.get('/courses')
+    coursesApi.getMyCourses()              // ← was api.get('/courses')
       .then((res) => {
-        const all = Array.isArray(res.data) ? res.data : res.data.data ?? MOCK_COURSES;
-        setCourses(all); // ← no filter, show everything
+        const data = Array.isArray(res.data) ? res.data : res.data.data ?? [];
+        if (data.length === 0) {
+          setCourses(MOCK_COURSES);
+          setUsingMock(true);
+        } else {
+          setCourses(data);
+        }
+        
       })
-      .catch((err) => setError(err.message))
+      .catch(() => {
+        setCourses(MOCK_COURSES);
+        setUsingMock(true);
+      })
       .finally(() => setLoading(false));
   }, []);
 
-  return { courses, loading, error };
+  return { courses, setCourses, loading, usingMock };
 }

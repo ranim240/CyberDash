@@ -1,4 +1,5 @@
 import { useCourses } from '../hooks/useCourses';
+import { useNavigate } from 'react-router-dom';
 
 // ── Helpers ───────────────────────────────────────────────────────────
 const formatDate = (iso) =>
@@ -11,14 +12,22 @@ const formatDate = (iso) =>
 // ── Component ─────────────────────────────────────────────────────────
 export default function CoursesTable() {
   const { courses, loading, error } = useCourses();
+  const navigate = useNavigate();
+
+  // Sort by created_at (most recent first) and take first 3
+  const recentCourses = [...courses]
+    .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+    .slice(0, 3);
+
+  
 
   return (
     <div className="card">
       {/* Header */}
       <div className="card-header">
         <div>
-          <div className="api-label">// INSTRUCTOR VIEW</div>
-          <div className="card-title">My Courses</div>
+          
+          <div className="card-title">Recent Courses</div>
         </div>
         {!loading && !error && (
           <span className="status-badge status-active" style={{ fontSize: 11 }}>
@@ -65,71 +74,76 @@ export default function CoursesTable() {
         </div>
       )}
 
-      {/* Table */}
+      {/* Table – only if there are courses */}
       {!loading && !error && courses.length > 0 && (
-        <table className="data-table">
-          <thead>
-            <tr>
-              <th>Title</th>
-              <th>Status</th>
-              <th>Created</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {courses.map((course) => (
-              <tr key={course.course_id}>
-                {/* Title */}
-                <td style={{ fontWeight: 600, color: 'var(--text)', maxWidth: 200 }}>
-                  <span style={{
-                    display: 'block',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    whiteSpace: 'nowrap',
-                  }}>
-                    {course.title}
-                  </span>
-                  {course.description && (
+        <>
+          <table className="data-table">
+            <thead>
+              <tr>
+                <th>Title</th>
+                <th>Status</th>
+                <th>Created</th>
+              </tr>
+            </thead>
+            <tbody>
+              {recentCourses.map((course) => (
+                <tr key={course.course_id} onClick={() => navigate(`/instructor/courses/${course.course_id}`)}>
+                  {/* Title + description */}
+                  <td style={{ fontWeight: 600, color: 'var(--text)', maxWidth: 200 }}>
                     <span style={{
-                      display: 'block', fontSize: 12,
-                      color: 'var(--muted)', marginTop: 3,
-                      overflow: 'hidden', textOverflow: 'ellipsis',
+                      display: 'block',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
                       whiteSpace: 'nowrap',
                     }}>
-                      {course.description}
+                      {course.title}
                     </span>
-                  )}
-                </td>
+                    {course.description && (
+                      <span style={{
+                        display: 'block', fontSize: 12,
+                        color: 'var(--muted)', marginTop: 3,
+                        overflow: 'hidden', textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap',
+                      }}>
+                        {course.description}
+                      </span>
+                    )}
+                  </td>
 
-                {/* Status */}
-                <td>
-                  <span className={`status-badge ${course.is_published ? 'status-pub' : 'status-draft'}`}>
-                    {course.is_published ? 'PUBLISHED' : 'DRAFT'}
-                  </span>
-                </td>
+                  {/* Status */}
+                  <td>
+                    <span className={`status-badge ${course.is_published ? 'status-pub' : 'status-draft'}`}>
+                      {course.is_published ? 'PUBLISHED' : 'DRAFT'}
+                    </span>
+                  </td>
 
-                {/* Created */}
-                <td style={{
-                  fontFamily: 'var(--mono)', fontSize: 12,
-                  color: 'var(--muted)',
-                }}>
-                  {formatDate(course.created_at)}
-                </td>
+                  {/* Created */}
+                  <td style={{
+                    fontFamily: 'var(--mono)', fontSize: 12,
+                    color: 'var(--muted)',
+                  }}>
+                    {formatDate(course.created_at)}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
 
-                {/* Actions */}
-                <td>
-                  <div className="action-btns">
-                    <button className="act-btn act-edit">Edit</button>
-                    <button className={`act-btn ${course.is_published ? 'act-del' : 'act-pub'}`}>
-                      {course.is_published ? 'Unpublish' : 'Publish'}
-                    </button>
-                    <button className="act-btn act-del">Delete</button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+
+          {/* "View All" button – only if more than 3 courses exist */}
+          
+            <div style={{ marginTop: 24, textAlign: 'right' }}>
+               <div className="card-footer">
+              <button
+                className="btn btn-outline"
+                onClick={() => navigate('/instructor/courses')}
+                style={{ fontSize: 12, padding: '8px 16px' }}
+              >
+                VIEW ALL COURSES →
+              </button></div>
+            </div>
+          
+        </>
       )}
     </div>
   );

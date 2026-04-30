@@ -10,6 +10,7 @@ class User {
     .select(
       'u.user_id',
       'u.email',
+      'u.username',
       'u.created_at',
       'l.user_id as learner_id',
       'i.user_id as instructor_id'
@@ -20,6 +21,7 @@ class User {
 
   return {
     user_id: result.user_id,
+    username:result.username,
     email: result.email,
     created_at: result.created_at,
     role: result.learner_id
