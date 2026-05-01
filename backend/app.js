@@ -2,6 +2,8 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import 'dotenv/config';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
 import authRouter    from './src/modules/auth/auth.routes.js';
 import userRouter from './src/modules/user/user.routes.js';
@@ -20,6 +22,9 @@ import challengeFileRoutes from './src/modules/challenge_file/challenge_file.rou
 import learnerBadgeRoutes from './src/modules/learner_badge/learner_badge.routes.js';
 import sessionRouter from './src/modules/session/session.routes.js';
 
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 const app = express();
 
 // Middlewares globaux
@@ -27,7 +32,7 @@ app.use(cors());
 app.use(helmet());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 // Routes
 app.use('/api/auth',    authRouter);
 

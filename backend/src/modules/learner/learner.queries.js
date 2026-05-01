@@ -129,6 +129,50 @@ class Learner {
 
 
   // ==========================
+  // 🕓 RECENT SESSIONS (5 dernières)
+  // ==========================
+  getRecentSessions = async (learner_id, limit = 5) => {
+    const sessions = await db('challenge_session as cs')
+      .join('challenge as c', 'c.challenge_id', 'cs.challenge_id')
+      // sous-requête : y a-t-il au moins une soumission correcte pour cette session ?
+      .leftJoin(
+        db('submission')
+          .select('session_id')
+          .where('is_correct', true)
+          .groupBy('session_id')
+          .as('correct_sub'),
+        'correct_sub.session_id', 'cs.session_id'
+      )
+      .where('cs.learner_id', learner_id)
+      .select(
+        'cs.session_id',
+        'cs.challenge_id',
+        'c.title        as challenge_title',
+        'c.difficulty',
+        'c.points',
+        'cs.started_at',
+        'cs.ended_at',
+        'cs.attempt_count',
+        // statut dérivé :
+        // - ended_at NULL            → 'active'
+        // - ended_at + correct_sub   → 'completed'
+        // - ended_at + pas correct   → 'abandoned'
+        db.raw(`
+          CASE
+            WHEN cs.ended_at IS NULL                        THEN 'active'
+            WHEN correct_sub.session_id IS NOT NULL         THEN 'completed'
+            ELSE                                                 'abandoned'
+          END as status
+        `)
+      )
+      .orderBy('cs.started_at', 'desc')
+      .limit(limit);
+
+    return sessions;
+  };
+
+
+  // ==========================
   // 🔥 STATS (avec successRate + title)
   // ==========================
   getStats = async (learner_id) => {

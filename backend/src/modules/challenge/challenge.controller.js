@@ -10,55 +10,54 @@ import { CHALLENGE_STATUS } from "../constants/challengeStatus.js";
 
 // Get Challenges with different status (used by admin )  ------------
 
-export const getAll = async (req, res, next) => {
+export const getAll = async (req, res) => {
     try {
-        if (req.user.role != "admin") return error(res,"Unauthorized Access",)
-        return success(res, await challengeModel.getAll());
+        return success(res, await q.getAll());
     } catch (err) {
-        next(err);
+        return error(res, err.message, 500);
     }
 };
 
 // Get one Challenge details  ------------
 
 
-export const getOne = async (req, res, next) => {
+export const getOne = async (req, res) => {
     try {
-        const challenge = await challengeModel.getById(req.params.id);
+        const challenge = await q.getById(req.params.id);
         if (!challenge) return error(res, 'Challenge introuvable', 404);
         return success(res, challenge);
     } catch (err) {
-        next(err);
+        return error(res, err.message, 500);
     }
 };
 
 // Only Active Challenges can be seen by learners  ------------
 
-export const getActiveChallenges = async (req, res, next) => {
+export const getActiveChallenges = async (req,res) => {
     try{
-        return success(res,await challengeModel.getActiveChallenges());
+        return success(res,await q.getActiveChallenges());
     }catch(err){
-        next(err);
+        return error(res,err.message,500);
     }
 }
 
-// Challenges by instructor used for the instructor to see his own challenges and other's to see a specfic instructor's challenge the access is controlled 
+// Challenges by instructor used for the instructor to see his own challenges doesn't filter status !!! (for learner filtering status must be added) ------------
 
-export const getInstructorChallenges = async (req, res, next) => {
+export const getInstructorChallenges = async (req,res) => {
     try{
-        return success(res,await challengeModel.getByInstructor(req.user.userId));
+        return success(res,await q.getByInstructor(req.user.userId));
     }catch(err){
-        next(err);
+        return error(res,err.message,500);
     }
 }
 
 // Challenges by difficulty not really needed after filter added but gonna keep it for now ------------
 
-export const fetchByDifficulty = async (req, res, next) => {
+export const fetchByDifficulty = async (req,res) => {
     try{
-        return success(res,await challengeModel.getByDifficulty(req.params.difficulty));
+        return success(res,await q.getByDifficulty(req.params.difficulty));
     }catch(err){
-        next(err);
+        return error(res,err.message,500);
     }
 }
 // same as getchallenges but with different filters needs can be better (search to enhance later) ------------
@@ -89,25 +88,23 @@ export const searchChallenges = async (req, res, next) => {
       limit: Number(limit)
     };
 
-    const data = await challengeModel.getChallenges(filters);
+    const data = await q.getChallenges(filters);
 
-  return success(
-  res,
-  data,
-  null,
-  {
-    page: filters.page,
-    limit: filters.limit
-  }
-);
+return success(res, {
+  data       : data.data,
+  total      : data.total,
+  page       : data.page,
+  limit      : data.limit,
+  totalPages : Math.ceil(data.total / data.limit)
+});
 
-  } catch (err) {
-    next(err);
+  } catch (error) {
+    next(error);
   }
 };
 
 
-// Create a challenge req.body { "title",description","difficulty","points","flag","category_id" } status is set to pending until approved by admin------------------------------
+// Create a challenge req.body { "title",description","difficulty","points","status","flag","category_id" } ------------------------------
 
 export const createChallenge = async (req, res) => {
   try {
@@ -149,7 +146,7 @@ export const createChallenge = async (req, res) => {
       instructor_id: req.user.userId
     });
 
-    return success(res, challenge, "Challenge created successfully", null, 201);
+    return success(res, challenge,201, "Challenge created successfully");
 
   } catch (err) {
     return error(res, err.message, 500);
@@ -158,26 +155,26 @@ export const createChallenge = async (req, res) => {
 // Modify a Challenge --------------------------------------------
 
 
-export const modifyChallenge = async (req, res, next) => {
+export const modifyChallenge = async (req, res) => {
     try {
-        const [updated] = await challengeModel.update(req.params.id, req.body);
+        const [updated] = await q.update(req.params.id, req.body);
         if (!updated) return error(res, 'Challenge introuvable', 404);
         return success(res, updated);
     } catch (err) {
-        next(err);
+        return error(res, err.message, 500);
     }
 };
 
 // Delete A challenge --------------------------------------------
 
 
-export const deleteChallenge = async (req, res, next) => {
+export const deleteChallenge = async (req, res) => {
     try {
-        const deleted = await challengeModel.remove(req.params.id);
+        const deleted = await q.remove(req.params.id);
         if (!deleted) return error(res, 'Challenge introuvable', 404);
         return success(res, { message: 'Challenge supprime avec succes' });
     } catch (err) {
-        next(err);
+        return error(res, err.message, 500);
     }
 };
 
@@ -211,12 +208,12 @@ export const uploadFile = async (req, res) => {
 
 // get files of a specific challenge (Not Tested) --------------------------------------------
 
-export const getFiles = async (req, res, next) => {
+export const getFiles = async (req, res) => {
     try {
-        const files = await challengeModel.getFiles(req.params.id);
+        const files = await q.getFiles(req.params.id);
         return success(res, files);
     } catch (err) {
-        next(err);
+        return error(res, err.message, 500);
     }
 };
 
@@ -270,7 +267,7 @@ export const getBadges = async (req, res) => {
 export const fetchPendingChallenges = async (req, res, next) => { 
   try {
     console.log("We're trying");
-    const challenges = await challengeModel.getPendingChallenges();
+    const challenges = await q.getPendingChallenges();
     console.log(challenges)
     const formatted = challenges.map(c => ({
       id: c.challenge_id,
