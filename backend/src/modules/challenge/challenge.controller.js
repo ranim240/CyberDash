@@ -146,7 +146,7 @@ export const createChallenge = async (req, res) => {
       instructor_id: req.user.userId
     });
 
-    return success(res, challenge, "Challenge created successfully", null, 201);
+    return success(res, challenge,201, "Challenge created successfully");
 
   } catch (err) {
     return error(res, err.message, 500);

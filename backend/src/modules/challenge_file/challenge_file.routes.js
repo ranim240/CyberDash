@@ -2,7 +2,7 @@ import express from 'express';
 import * as challengeFileController from './challenge_file.controller.js';
 import { isAuthenticated } from '../../middlewares/auth.js';
 import { authorize } from '../../middlewares/role.js';
-
+import upload from '../../config/multer.js';
 const challengeFileRoutes = express.Router();
 
 
@@ -19,8 +19,8 @@ challengeFileRoutes.get('/file/:id', challengeFileController.getFileById);
 // ==========================
 challengeFileRoutes.use(isAuthenticated, authorize(['admin', 'instructor']));
 
-challengeFileRoutes.post('/', challengeFileController.createChallengeFile);
-challengeFileRoutes.post('/bulk', challengeFileController.createMultipleChallengeFiles);
+challengeFileRoutes.post('/',upload.single('file'), challengeFileController.createChallengeFile);
+challengeFileRoutes.post('/bulk', upload.array('files', 10), challengeFileController.createMultipleChallengeFiles);
 
 challengeFileRoutes.patch('/file/:id', challengeFileController.updateChallengeFile);
 challengeFileRoutes.delete('/file/:id', challengeFileController.deleteChallengeFile);
