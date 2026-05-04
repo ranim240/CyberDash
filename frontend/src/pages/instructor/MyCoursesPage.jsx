@@ -1,18 +1,20 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from '../../components/common/Sidebar';
-import Topbar  from '../../components/common/Navbar';
+import Navbar from '../../components/common/Navbar';
 import { useCourses } from '../../hooks/useCourses';
 import coursesApi from '../../api/courses';
 
-const formatDate = (iso) =>
-  iso
-    ? new Date(iso).toLocaleDateString('en-GB', {
-        day: '2-digit', month: 'short', year: '2-digit',
-      })
-    : '—';
+const LEVEL_COLOR = {
+  beginner:     { color: 'var(--accent3)', bg: 'rgba(16,185,129,0.15)', border: 'rgba(16,185,129,0.4)' },
+  intermediate: { color: 'var(--amber)',   bg: 'rgba(245,158,11,0.15)', border: 'rgba(245,158,11,0.4)' },
+  advanced:     { color: 'var(--danger)',  bg: 'rgba(239,68,68,0.15)',  border: 'rgba(239,68,68,0.4)'  },
+};
 
-// ── Confirm Modal (same as in CourseContentPage) ─────────────────────
+const formatDate = (iso) =>
+  iso ? new Date(iso).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: '2-digit' }) : '—';
+
+// ── Confirm Modal ─────────────────────────────────────────────────────
 function ConfirmModal({ title, message, onConfirm, onCancel, loading }) {
   return (
     <div style={{
@@ -46,17 +48,96 @@ function ConfirmModal({ title, message, onConfirm, onCancel, loading }) {
   );
 }
 
-// ── Filters bar (unchanged) ─────────────────────────────────────────
+// ── Instructor Course Card ──────────────────────────────────────────
+function InstructorCourseCard({ course, onTogglePublish, onDelete }) {
+  const navigate = useNavigate();
+  const levelStyle = LEVEL_COLOR[course.level] ?? LEVEL_COLOR.beginner;
+
+  return (
+    <div
+      className="card"
+      style={{
+        cursor: 'pointer',
+        transition: 'border-color .2s',
+        display: 'flex',
+        flexDirection: 'column',
+        padding: 0,
+        overflow: 'hidden',
+      }}
+      onClick={() => navigate(`/instructor/courses/${course.course_id}`)}
+    >
+      <div style={{ height: 3, background: levelStyle.color, opacity: 0.6 }} />
+      <div style={{ padding: '20px', flex: 1, display: 'flex', flexDirection: 'column', gap: 14 }}>
+        {/* Header: title + level badge */}
+        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8 }}>
+          <h3 style={{ fontSize: 15, fontWeight: 700, color: 'var(--text)', margin: 0, lineHeight: 1.3 }}>
+            {course.title}
+          </h3>
+          <span style={{
+            fontFamily: 'var(--mono)', fontSize: 10, padding: '3px 8px', flexShrink: 0,
+            borderRadius: 20, border: `1px solid ${levelStyle.border}`,
+            background: levelStyle.bg, color: levelStyle.color,
+          }}>
+            {course.level?.toUpperCase() ?? '—'}
+          </span>
+        </div>
+
+        {/* Description */}
+        <p style={{
+          fontSize: 13, color: 'var(--muted2)', lineHeight: 1.55, margin: 0,
+          display: '-webkit-box', WebkitLineClamp: 3,
+          WebkitBoxOrient: 'vertical', overflow: 'hidden',
+        }}>
+          {course.description || <span style={{ fontStyle: 'italic', color: 'var(--muted)' }}>No description.</span>}
+        </p>
+
+        {/* Meta row: duration + created date */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap', marginTop: 'auto' }}>
+          {course.estimated_duration && (
+            <span style={{
+              fontFamily: 'var(--mono)', fontSize: 10, padding: '2px 8px',
+              borderRadius: 20, border: '1px solid var(--border)',
+              background: 'var(--bg3)', color: 'var(--muted2)',
+            }}>
+              ⏱ {course.estimated_duration < 60 ? `${course.estimated_duration}m` : `${Math.floor(course.estimated_duration / 60)}h ${course.estimated_duration % 60}m`}
+            </span>
+          )}
+          <span style={{ fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--muted)', marginLeft: 'auto' }}>
+            {formatDate(course.created_at)}
+          </span>
+        </div>
+
+        {/* Action buttons (publish/unpublish, delete) */}
+        <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
+          <button
+            className={`btn ${course.is_published ? 'btn-outline' : 'btn-teal'}`}
+            style={{ flex: 1, justifyContent: 'center', fontSize: 11, padding: '6px 0' }}
+            onClick={(e) => { e.stopPropagation(); onTogglePublish(course); }}
+          >
+            {course.is_published ? 'Unpublish' : 'Publish'}
+          </button>
+          <button
+            className="btn btn-danger"
+            style={{ flex: 1, justifyContent: 'center', fontSize: 11, padding: '6px 0' }}
+            onClick={(e) => { e.stopPropagation(); onDelete(course); }}
+          >
+            Delete
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Filters Bar ─────────────────────────────────────────────────────
 function FiltersBar({ filter, setFilter, search, setSearch, total }) {
   return (
     <div style={{
-      display: 'flex', alignItems: 'center',
-      gap: 16, marginBottom: 28, flexWrap: 'wrap',
+      display: 'flex', alignItems: 'center', gap: 16, marginBottom: 28, flexWrap: 'wrap',
     }}>
-      <div style={{ position: 'relative', flex: 1, minWidth: 200 }}>
+      <div style={{ position: 'relative', flex: 2, minWidth: 200 }}>
         <span style={{
-          position: 'absolute', left: 12, top: '50%',
-          transform: 'translateY(-50%)',
+          position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)',
           fontFamily: 'var(--mono)', fontSize: 12, color: 'var(--muted)',
         }}>
           ⌕
@@ -67,12 +148,11 @@ function FiltersBar({ filter, setFilter, search, setSearch, total }) {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           style={{
-            width: '100%', padding: '10px 12px 10px 32px',
-            background: 'var(--card)',
-            border: '1px solid var(--border)',
+            width: '100%', padding: '9px 12px 9px 34px',
+            background: 'var(--bg3)', border: '1px solid var(--border)',
             borderRadius: 4, color: 'var(--text)',
             fontFamily: 'var(--body)', fontSize: 14,
-            outline: 'none',
+            outline: 'none', boxSizing: 'border-box',
           }}
         />
       </div>
@@ -103,47 +183,35 @@ function FiltersBar({ filter, setFilter, search, setSearch, total }) {
   );
 }
 
-// ── Main Page ────────────────────────────────────────────────────────
+// ── Main Page ───────────────────────────────────────────────────────
 export default function MyCoursesPage() {
   const navigate = useNavigate();
-  const { courses, setCourses, loading, error } = useCourses(); // note: setCourses is needed for optimistic updates
+  const { courses, setCourses, loading, error } = useCourses();
   const [filter, setFilter] = useState('all');
   const [search, setSearch] = useState('');
 
   // Modal state
   const [modal, setModal] = useState({
     open: false,
-    type: null,        // 'publish' or 'delete'
+    type: null,
     course: null,
     loading: false,
   });
 
   const closeModal = () => setModal({ open: false, type: null, course: null, loading: false });
 
-  // ── Publish / Unpublish handler ──────────────────────────────────
-  const handleTogglePublish = async (course) => {
-    setModal({
-      open: true,
-      type: 'publish',
-      course,
-      loading: false,
-    });
+  const handleTogglePublish = (course) => {
+    setModal({ open: true, type: 'publish', course, loading: false });
   };
 
   const confirmTogglePublish = async () => {
     const { course } = modal;
     setModal(prev => ({ ...prev, loading: true }));
     try {
-      // The backend toggles automatically when PATCH /courses/:id/publish is called without body
       await coursesApi.togglePublish(course.course_id);
-      // Optimistically update local state
-      setCourses(prevCourses =>
-        prevCourses.map(c =>
-          c.course_id === course.course_id
-            ? { ...c, is_published: !c.is_published }
-            : c
-        )
-      );
+      setCourses(prev => prev.map(c =>
+        c.course_id === course.course_id ? { ...c, is_published: !c.is_published } : c
+      ));
       closeModal();
     } catch {
       alert('Failed to update publish status. Please try again.');
@@ -151,14 +219,8 @@ export default function MyCoursesPage() {
     }
   };
 
-  // ── Delete handler ────────────────────────────────────────────────
-  const handleDelete = async (course) => {
-    setModal({
-      open: true,
-      type: 'delete',
-      course,
-      loading: false,
-    });
+  const handleDelete = (course) => {
+    setModal({ open: true, type: 'delete', course, loading: false });
   };
 
   const confirmDelete = async () => {
@@ -166,8 +228,7 @@ export default function MyCoursesPage() {
     setModal(prev => ({ ...prev, loading: true }));
     try {
       await coursesApi.remove(course.course_id);
-      // Remove from local state
-      setCourses(prevCourses => prevCourses.filter(c => c.course_id !== course.course_id));
+      setCourses(prev => prev.filter(c => c.course_id !== course.course_id));
       closeModal();
     } catch {
       alert('Failed to delete course. Please try again.');
@@ -175,16 +236,15 @@ export default function MyCoursesPage() {
     }
   };
 
-  // Apply filters
-  const filtered = courses.filter((c) => {
+  // Filter logic
+  const filtered = courses.filter(c => {
     const matchStatus =
-      filter === 'all'       ? true :
+      filter === 'all' ? true :
       filter === 'published' ? c.is_published : !c.is_published;
     const matchSearch = c.title?.toLowerCase().includes(search.toLowerCase());
     return matchStatus && matchSearch;
   });
 
-  // Get modal title and message
   const modalTitle = modal.type === 'publish'
     ? (modal.course?.is_published ? 'Unpublish Course' : 'Publish Course')
     : 'Delete Course';
@@ -195,144 +255,101 @@ export default function MyCoursesPage() {
     : `Are you sure you want to delete "${modal.course?.title}"? This action cannot be undone and will also delete all associated lessons.`;
 
   return (
-    <div className="layout">
-      <Sidebar />
-      <div className="main" style={{ marginLeft: 20 }}>
-        <Topbar />
-
-        {/* Modal */}
-        {modal.open && (
-          <ConfirmModal
-            title={modalTitle}
-            message={modalMessage}
-            onConfirm={modal.type === 'publish' ? confirmTogglePublish : confirmDelete}
-            onCancel={closeModal}
-            loading={modal.loading}
-          />
-        )}
-
-        {/* Page header */}
-        <div className="topbar" style={{ marginBottom: 32 }}>
-          <div>
-            <div className="page-title">My Courses</div>
-          </div>
-        </div>
-
-        {/* Stats row */}
-        {!loading && !error && (
-          <div style={{
-            display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)',
-            gap: 20, marginBottom: 32,
-          }}>
-            {[
-              { label: 'TOTAL COURSES', value: courses.length, color: 'var(--accent)' },
-              { label: 'PUBLISHED', value: courses.filter(c => c.is_published).length, color: 'var(--accent3)' },
-              { label: 'DRAFTS', value: courses.filter(c => !c.is_published).length, color: 'var(--amber)' },
-            ].map((stat) => (
-              <div key={stat.label} className="stat-card" style={{ padding: '20px 24px' }}>
-                <div className="stat-label">{stat.label}</div>
-                <div className="stat-value" style={{ fontSize: 28, color: stat.color }}>
-                  {stat.value}
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* Main card */}
-        <div className="card">
-          <FiltersBar
-            filter={filter} setFilter={setFilter}
-            search={search} setSearch={setSearch}
-            total={filtered.length}
-          />
-
-          {/* Loading / Error / Empty states */}
-          {loading && (
-            <div style={{ padding: '40px 0', textAlign: 'center' }}>
-              <p style={{ fontFamily: 'var(--mono)', fontSize: 13, color: 'var(--muted)', letterSpacing: 2 }}>
-                LOADING...
-              </p>
-            </div>
+    <>
+      <Navbar />
+      <div className="layout">
+        <Sidebar />
+        <div className="main">
+          {modal.open && (
+            <ConfirmModal
+              title={modalTitle}
+              message={modalMessage}
+              onConfirm={modal.type === 'publish' ? confirmTogglePublish : confirmDelete}
+              onCancel={closeModal}
+              loading={modal.loading}
+            />
           )}
-          {error && !loading && (
+
+          {/* Header */}
+          <div className="topbar" style={{ marginBottom: 28 }}>
+            <div>
+              <div className="page-title" style={{ fontSize: 20 }}>My Courses</div>
+            </div>
+          </div>
+
+          {/* Stats row (optional, keep for instructor overview) */}
+          {!loading && !error && (
             <div style={{
-              padding: '16px', background: 'rgba(239,68,68,0.07)',
-              border: '1px solid rgba(239,68,68,0.3)', borderRadius: 4,
-              fontFamily: 'var(--mono)', fontSize: 12, color: 'var(--danger)', letterSpacing: 1,
+              display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)',
+              gap: 20, marginBottom: 32,
             }}>
-              ✕ FETCH ERROR — {error}
-            </div>
-          )}
-          {!loading && !error && filtered.length === 0 && (
-            <div style={{ padding: '40px 0', textAlign: 'center' }}>
-              <p style={{ fontFamily: 'var(--mono)', fontSize: 13, color: 'var(--muted)', letterSpacing: 1 }}>
-                {search || filter !== 'all' ? 'NO COURSES MATCH YOUR FILTERS' : 'NO COURSES YET'}
-              </p>
+              {[
+                { label: 'TOTAL COURSES', value: courses.length, color: 'var(--accent)' },
+                { label: 'PUBLISHED', value: courses.filter(c => c.is_published).length, color: 'var(--accent3)' },
+                { label: 'DRAFTS', value: courses.filter(c => !c.is_published).length, color: 'var(--amber)' },
+              ].map(stat => (
+                <div key={stat.label} className="stat-card" style={{ padding: '20px 24px' }}>
+                  <div className="stat-label">{stat.label}</div>
+                  <div className="stat-value" style={{ fontSize: 28, color: stat.color }}>
+                    {stat.value}
+                  </div>
+                </div>
+              ))}
             </div>
           )}
 
-          {/* Table */}
-          {!loading && !error && filtered.length > 0 && (
-            <table className="data-table">
-              <thead>
-                <tr>
-                  <th>Title</th>
-                  <th>Status</th>
-                  <th>Created</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filtered.map((course) => (
-                  <tr key={course.course_id} >
-                    <td style={{ maxWidth: 300 }}>
-                      <span style={{
-                        display: 'block', fontWeight: 600, color: 'var(--text)',
-                        overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-                      }} onClick={() => navigate(`/instructor/courses/${course.course_id}`)}>
-                        {course.title}
-                      </span>
-                      {course.description && (
-                        <span style={{
-                          display: 'block', fontSize: 12, color: 'var(--muted)', marginTop: 3,
-                          overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-                        }}>
-                          {course.description}
-                        </span>
-                      )}
-                    </td>
-                    <td>
-                      <span className={`status-badge ${course.is_published ? 'status-pub' : 'status-draft'}`}>
-                        {course.is_published ? 'PUBLISHED' : 'DRAFT'}
-                      </span>
-                    </td>
-                    <td style={{ fontFamily: 'var(--mono)', fontSize: 12, color: 'var(--muted)' }}>
-                      {formatDate(course.created_at)}
-                    </td>
-                    <td>
-                      <div className="action-btns">
-                        <button
-                          className={`act-btn ${course.is_published ? 'act-del' : 'act-pub'}`}
-                          onClick={() => handleTogglePublish(course)}
-                        >
-                          {course.is_published ? 'Unpublish' : 'Publish'}
-                        </button>
-                        <button
-                          className="act-btn act-del"
-                          onClick={() => handleDelete(course)}
-                        >
-                          Delete
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
+          {/* Filters and card grid */}
+          <div className="card"style ={{background: 'transparent',border:"0px"}}>
+            <FiltersBar
+              filter={filter} setFilter={setFilter}
+              search={search} setSearch={setSearch}
+              total={filtered.length}
+            />
+
+            {loading && (
+              <div style={{ padding: '40px 0', textAlign: 'center' }}>
+                <p style={{ fontFamily: 'var(--mono)', fontSize: 13, color: 'var(--muted)', letterSpacing: 2 }}>LOADING...</p>
+              </div>
+            )}
+
+            {error && !loading && (
+              <div style={{
+                padding: '16px', background: 'rgba(239,68,68,0.07)',
+                border: '1px solid rgba(239,68,68,0.3)', borderRadius: 4,
+                fontFamily: 'var(--mono)', fontSize: 12, color: 'var(--danger)', letterSpacing: 1,
+              }}>
+                ✕ FETCH ERROR — {error}
+              </div>
+            )}
+
+            {!loading && !error && filtered.length === 0 && (
+              <div style={{ padding: '56px 0', textAlign: 'center', border: '1px dashed var(--border)', borderRadius: 6 }}>
+                <p style={{ fontFamily: 'var(--mono)', fontSize: 12, color: 'var(--muted)', letterSpacing: 1, marginBottom: 12 }}>
+                  {search || filter !== 'all' ? 'NO COURSES MATCH YOUR FILTERS' : 'NO COURSES YET'}
+                </p>
+                {courses.length === 0 && (
+                  <button className="btn btn-outline" style={{ fontSize: 11 }} onClick={() => navigate('/instructor/courses/create')}>
+                    + Create First Course
+                  </button>
+                )}
+              </div>
+            )}
+
+            {!loading && !error && filtered.length > 0 && (
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 20 }}>
+                {filtered.map(course => (
+                  <InstructorCourseCard
+                    key={course.course_id}
+                    course={course}
+                    onTogglePublish={handleTogglePublish}
+                    onDelete={handleDelete}
+                  />
                 ))}
-              </tbody>
-            </table>
-          )}
+              </div>
+            )}
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }

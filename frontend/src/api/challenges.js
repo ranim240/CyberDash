@@ -6,18 +6,26 @@ const challengesApi = {
   getAll:          ()                => api.get('/challenges'),
   getActive:       ()                => api.get('/challenges/active'),
   search:          (params)          => api.get('/challenges/search', { params }),
-  getOne:          (id)              => api.get(`/challenges/challenges/${id}`),
-  getFiles:        (id)              => api.get(`/challenges/challenges/${id}/files`),
+  getOne:          (id)              => api.get(`/challenges/${id}`),
+  getFiles:        (id)              => api.get(`/challenge-files/challenge/${id}`),
   getBadges:       (id)              => api.get(`/challenges/${id}/badges`),
 
   // ── Instructor ────────────────────────────────────────────
-  getMine:         ()                => api.get('/challenges/my-challenges'),
-  create:          (data)            => api.post('/challenges', data),
-  update:          (id, data)        => api.put(`/challenges/challenges/${id}`, data),
-  remove:          (id)              => api.delete(`/challenges/challenges/${id}`),
-  uploadFile:      (id, file)        => api.post(`/challenges/challenges/${id}/files`, file, {
+  getMine:         ()                => api.get('/challenges/my'),
+  create:          (data)            => api.post('/challenges/', data),
+  update:          (id, data)        => api.put(`/challenges/${id}`, data),
+  remove:          (id)              => api.delete(`/challenges/${id}`),
+  uploadFile: (challengeId, file) => {
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('challenge_id', challengeId);
+  
+  return api.post('/challenge-files/', formData, {
     headers: { 'Content-Type': 'multipart/form-data' },
-  }),
+  });
+},
+
+deleteFile: (fileId) => api.delete(`/challenge-files/file/${fileId}`),
 
   // ── Admin ─────────────────────────────────────────────────
   getAllAdmin:      ()                => api.get('/all-challenges'),

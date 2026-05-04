@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import Sidebar       from '../../components/common/Sidebar';
-import Topbar        from '../../components/common/Navbar';
+import Navbar from '../../components/common/Navbar';
 import coursesApi    from '../../api/courses';
 import enrollmentApi from '../../api/enrollment';
 
@@ -193,10 +193,12 @@ export default function CourseLearnerPage() {
   const publishedCount = contents.filter(c => c.is_published === true).length;
 
   return (
+    <>
+    <Navbar />
     <div className="layout">
       <Sidebar />
       <div className="main">
-        <Topbar />
+        
 
         <div className="topbar" style={{ marginBottom: 20 }}>
           <div>
@@ -314,6 +316,6 @@ export default function CourseLearnerPage() {
           </>
         )}
       </div>
-    </div>
+    </div></>
   );
 }

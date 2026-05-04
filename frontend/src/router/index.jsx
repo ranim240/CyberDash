@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import InstructorDashboard from "../pages/instructor/Dashboard";
+import { SidebarProvider } from "../context/SidebarContext";
 // import LearnerDashboard from "../pages/learner/Dashboard.jsx";
 import Login from "../pages/auth/login";
 import Register from "../pages/auth/register";
@@ -14,10 +15,12 @@ import MyChallengesPage from "../pages/instructor/MyChallengesPage";
 import ChallengeContentPage from "../pages/instructor/ChallengeContentPage";
 import CoursesListingPage from "../pages/courses/coursesListingPage";
 import CourseLearnerPage from "../pages/courses/courseLearnerPage";
+import CreateChallengePage from "../pages/instructor/CreateChallengePage";
 
 const AppRouter = () => {
   return (
     <BrowserRouter>
+    <SidebarProvider>
       <Routes>
         <Route path="/" element={<Navigate to="/login" replace />} />
         <Route path="/login" element={<Login />} />
@@ -39,8 +42,10 @@ const AppRouter = () => {
         <Route path="/instructor/courses/:id" element={<CourseContentPage />} />
         <Route path="/instructor/challenges"         element={<MyChallengesPage />} />
         <Route path="/instructor/challenges/:id"     element={<ChallengeContentPage />} />
+        <Route path="/instructor/challenges/create"     element={<CreateChallengePage />} />
         
       </Routes>
+      </SidebarProvider>
     </BrowserRouter>
   );
 };

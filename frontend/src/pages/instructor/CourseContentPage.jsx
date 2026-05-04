@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import Sidebar from '../../components/common/Sidebar';
-import Topbar  from '../../components/common/Navbar';
+import Topbar from './instructorTopBar';
+import Navbar from '../../components/common/Navbar';
 import coursesApi from '../../api/courses';
 
 // ── Mock fallback ─────────────────────────────────────────────────────
@@ -416,6 +417,8 @@ export default function CourseContentPage() {
   const drafts     = contents.length - published;
 
   return (
+    <>
+    <Navbar />
     <div className="layout">
       <Sidebar />
       <div className="main">
@@ -667,6 +670,6 @@ export default function CourseContentPage() {
           </div>
         </div>
       </div>
-    </div>
+    </div></>
   );
 }

@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import Sidebar from '../../components/common/Sidebar';
-import Topbar  from '../../components/common/Navbar';
+import Topbar from './instructorTopBar';
+import Navbar from '../../components/common/Navbar';
 import challengesApi from '../../api/challenges';
 
 // ── Mock fallback ──────────────────────────────────────────────────────
@@ -57,12 +58,19 @@ const DIFF_COLOR = {
   hard:   { color: 'var(--danger)',  bg: 'rgba(239,68,68,0.15)',   border: 'rgba(239,68,68,0.4)'   },
 };
 
-const STATUS_OPTIONS = ['active', 'draft', 'pending', 'closed'];
+// ✅ Added category list (same as CreateChallengePage)
+const CATEGORIES = [
+  { id: 'category_001_4e71cb38', name: 'Web Security' },
+  { id: 'category_002_d07228d0', name: 'Cryptography' },
+  { id: 'category_003_6eb8edcf', name: 'Network Security' },
+  { id: 'category_004_780cf6bc', name: 'System Administration' },
+  { id: 'category_005_b70e6d49', name: 'Reverse Engineering' },
+];
+
+const STATUS_OPTIONS = ['draft', 'pending'];
 const STATUS_MAP = {
-  active:  { label: 'ACTIVE',  cls: 'status-pub'  },
   draft:   { label: 'DRAFT',   cls: 'status-draft' },
   pending: { label: 'PENDING', cls: 'status-draft' },
-  closed:  { label: 'CLOSED',  cls: 'status-draft' },
 };
 
 const formatDate = (iso) =>
@@ -74,6 +82,9 @@ const formatBytes = (bytes) => {
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 };
+
+// Helper to get category name from ID
+const getCategoryName = (id) => CATEGORIES.find(c => c.id === id)?.name || id || '—';
 
 // ── Confirm modal ──────────────────────────────────────────────────────
 function ConfirmModal({ title, message, onConfirm, onCancel, loading }) {
@@ -140,14 +151,18 @@ function FileRow({ file, onDelete }) {
   const [confirmDel, setConfirmDel] = useState(false);
   const [deleting, setDeleting]     = useState(false);
 
-  // For mock files (no real delete endpoint for individual files in the API)
   const handleDelete = async () => {
     setDeleting(true);
-    setTimeout(() => {
+    try {
+      await challengesApi.deleteFile(file.file_id);
       onDelete(file.file_id);
+    } catch (err) {
+      console.error('Delete file error:', err);
+      alert('Failed to delete the file. Please try again.');
+    } finally {
       setDeleting(false);
       setConfirmDel(false);
-    }, 400);
+    }
   };
 
   const ext = file.name?.split('.').pop()?.toUpperCase() ?? 'FILE';
@@ -171,7 +186,6 @@ function FileRow({ file, onDelete }) {
         borderRadius: 6,
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          {/* Extension badge */}
           <div style={{
             width: 38, height: 38, borderRadius: 4,
             background: 'var(--bg2)',
@@ -183,9 +197,7 @@ function FileRow({ file, onDelete }) {
             {ext}
           </div>
           <div>
-            <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--text)', marginBottom: 2 }}>
-              {file.name}
-            </div>
+            <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--text)', marginBottom: 2 }}>{file.name}</div>
             <div style={{ fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--muted)', letterSpacing: 1 }}>
               {file.size ?? formatBytes(file.size_bytes)}
             </div>
@@ -223,19 +235,23 @@ function UploadZone({ challengeId, onUploaded }) {
     setUploadErr('');
     try {
       for (const file of Array.from(files)) {
-        const fd = new FormData();
-        fd.append('file', file);
-        const res = await challengesApi.uploadFile(challengeId, fd);
+        const res = await challengesApi.uploadFile(challengeId, file);
         const uploaded = res.data?.data ?? res.data;
+        
         onUploaded({
-          file_id:  uploaded?.file_id  ?? crypto.randomUUID(),
-          name:     uploaded?.name     ?? file.name,
-          url:      uploaded?.url      ?? URL.createObjectURL(file),
-          size:     formatBytes(file.size),
+          file_id:     uploaded?.file_id ?? crypto.randomUUID(),
+          name:        uploaded?.name ?? file.name,
+          url:         uploaded?.file_url ?? uploaded?.url ?? URL.createObjectURL(file),
+          file_url:    uploaded?.file_url ?? uploaded?.url ?? URL.createObjectURL(file),
+          size_bytes:  uploaded?.size_bytes ?? file.size,
+          size:        formatBytes(uploaded?.size_bytes ?? file.size),
         });
       }
-    } catch {
-      // Optimistic fallback for mock
+    } catch (err) {
+      console.error('Upload error:', err);
+      setUploadErr(err.response?.data?.message || 'Upload failed');
+      
+      // Fallback for mock/error
       Array.from(files).forEach(file => {
         onUploaded({
           file_id: crypto.randomUUID(),
@@ -301,7 +317,6 @@ export default function ChallengeContentPage() {
   const [infoErrors, setInfoErrors]     = useState({});
 
   const [togglingStatus, setTogglingStatus] = useState(false);
-  const [showFlag, setShowFlag]             = useState(false);
   const [confirmDelete, setConfirmDelete]   = useState(false);
   const [deleting, setDeleting]             = useState(false);
 
@@ -322,6 +337,7 @@ export default function ChallengeContentPage() {
           points:      c.points      ?? 0,
           flag:        c.flag        ?? '',
           category_id: c.category_id ?? '',
+          status:      c.status      ?? 'draft',
         });
         setFiles(f);
       })
@@ -336,6 +352,7 @@ export default function ChallengeContentPage() {
           points:      mock.points      ?? 0,
           flag:        mock.flag        ?? '',
           category_id: mock.category_id ?? '',
+          status:      mock.status      ?? 'draft',
         });
         setFiles(mockF);
         setUsingMock(true);
@@ -360,6 +377,7 @@ export default function ChallengeContentPage() {
         points:      Number(infoForm.points),
         flag:        infoForm.flag,
         category_id: infoForm.category_id || null,
+        status:      infoForm.status,
       });
       setChallenge(p => ({ ...p, ...infoForm }));
       setEditingInfo(false);
@@ -377,13 +395,15 @@ export default function ChallengeContentPage() {
 
   // ── Toggle status ──────────────────────────────────────────────────
   const handleToggleStatus = async () => {
-    const next = challenge.status === 'active' ? 'draft' : 'active';
+    const next = challenge.status === 'pending' ? 'draft' : 'pending';
     setTogglingStatus(true);
     try {
       await challengesApi.updateStatus(id, next);
       setChallenge(p => ({ ...p, status: next }));
+      setInfoForm(p => ({ ...p, status: next }));
     } catch {
       setChallenge(p => ({ ...p, status: next }));
+      setInfoForm(p => ({ ...p, status: next }));
     } finally {
       setTogglingStatus(false);
     }
@@ -406,7 +426,6 @@ export default function ChallengeContentPage() {
   const handleFileUploaded = (file) => setFiles(p => [...p, file]);
   const handleFileDelete   = (fileId) => setFiles(p => p.filter(f => f.file_id !== fileId));
 
-  // ── Derived ────────────────────────────────────────────────────────
   if (loading) return (
     <div className="layout">
       <Sidebar />
@@ -418,15 +437,16 @@ export default function ChallengeContentPage() {
 
   const diffStyle  = DIFF_COLOR[challenge?.difficulty?.toLowerCase()] ?? DIFF_COLOR.easy;
   const statusInfo = STATUS_MAP[challenge?.status] ?? STATUS_MAP.draft;
-  const isActive   = challenge?.status === 'active';
+  const isPending  = challenge?.status === 'pending';
 
   return (
+    <>
+    <Navbar />
     <div className="layout">
       <Sidebar />
       <div className="main">
         <Topbar />
 
-        {/* ── Confirm delete modal ─────────────────────────────────── */}
         {confirmDelete && (
           <ConfirmModal
             title="Delete Challenge"
@@ -437,24 +457,14 @@ export default function ChallengeContentPage() {
           />
         )}
 
-        {/* ── Page header ──────────────────────────────────────────── */}
+        {/* Page header */}
         <div className="topbar" style={{ marginBottom: 28 }}>
           <div>
             <div className="page-title" style={{ fontSize: 20 }}>{challenge?.title}</div>
-            <div style={{ fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--muted)', letterSpacing: 1, marginTop: 4 }}>
-              INSTRUCTOR / CHALLENGES / EDIT
-            </div>
           </div>
           <div style={{ display: 'flex', gap: 12 }}>
             <button className="btn btn-outline" onClick={() => navigate('/instructor/challenges')}>
               ← Back
-            </button>
-            <button
-              className={`btn ${isActive ? 'btn-danger' : 'btn-teal'}`}
-              onClick={handleToggleStatus}
-              disabled={togglingStatus}
-            >
-              {togglingStatus ? '...' : isActive ? 'Deactivate' : 'Activate'}
             </button>
             <button className="btn btn-danger" onClick={() => setConfirmDelete(true)}>
               ✕ Delete
@@ -474,317 +484,228 @@ export default function ChallengeContentPage() {
           </div>
         )}
 
-        {/* ── Two-column layout (identical to CourseContentPage) ────── */}
+        {/* Two‑column layout: left = details, right = files */}
         <div style={{ display: 'grid', gridTemplateColumns: '360px 1fr', gap: 28, alignItems: 'start' }}>
 
-          {/* ── LEFT COLUMN ─────────────────────────────────────────── */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
-
-            {/* Challenge Details card */}
-            <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
-              <div style={{ padding: '20px 24px 0 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div className="card-title">Challenge Details</div>
-                {!editingInfo ? (
-                  <button className="act-btn act-edit" style={{ fontSize: 11, padding: '4px 10px' }}
-                    onClick={() => setEditingInfo(true)}>
-                    Edit
+          {/* LEFT COLUMN – Challenge Details */}
+          <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
+            <div style={{ padding: '20px 24px 0 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div className="card-title">Challenge Details</div>
+              {!editingInfo ? (
+                <button className="act-btn act-edit" style={{ fontSize: 11, padding: '4px 10px' }}
+                  onClick={() => setEditingInfo(true)}>
+                  Edit
+                </button>
+              ) : (
+                <div style={{ display: 'flex', gap: 8 }}>
+                  <button className="act-btn act-pub" style={{ fontSize: 11, padding: '4px 10px' }}
+                    onClick={handleSaveInfo} disabled={savingInfo}>
+                    {savingInfo ? '...' : '✓'}
                   </button>
-                ) : (
-                  <div style={{ display: 'flex', gap: 8 }}>
-                    <button className="act-btn act-pub" style={{ fontSize: 11, padding: '4px 10px' }}
-                      onClick={handleSaveInfo} disabled={savingInfo}>
-                      {savingInfo ? '...' : '✓'}
-                    </button>
-                    <button className="act-btn" style={{ fontSize: 11, borderColor: 'var(--muted)', color: 'var(--muted)', padding: '4px 10px' }}
-                      onClick={() => {
-                        setEditingInfo(false);
-                        setInfoErrors({});
-                        setInfoForm({
-                          title: challenge.title, description: challenge.description ?? '',
-                          difficulty: challenge.difficulty ?? 'easy', points: challenge.points ?? 0,
-                          flag: challenge.flag ?? '', category_id: challenge.category_id ?? '',
-                        });
-                      }}>
-                      ✕
-                    </button>
-                  </div>
-                )}
-              </div>
-
-              {infoSaved && (
-                <div style={{
-                  margin: '12px 24px 0 24px', padding: '6px 12px',
-                  background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.3)',
-                  borderRadius: 4, fontFamily: 'var(--mono)', fontSize: 10,
-                  color: 'var(--accent3)', letterSpacing: 1,
-                }}>
-                  ✓ SAVED
+                  <button className="act-btn" style={{ fontSize: 11, borderColor: 'var(--muted)', color: 'var(--muted)', padding: '4px 10px' }}
+                    onClick={() => {
+                      setEditingInfo(false);
+                      setInfoErrors({});
+                      setInfoForm({
+                        title: challenge.title, description: challenge.description ?? '',
+                        difficulty: challenge.difficulty ?? 'easy', points: challenge.points ?? 0,
+                        flag: challenge.flag ?? '', category_id: challenge.category_id ?? '',
+                        status: challenge.status ?? 'draft',
+                      });
+                    }}>
+                    ✕
+                  </button>
                 </div>
               )}
+            </div>
 
-              <div style={{ padding: '20px 24px 24px 24px' }}>
-                {editingInfo ? (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            {infoSaved && (
+              <div style={{
+                margin: '12px 24px 0 24px', padding: '6px 12px',
+                background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.3)',
+                borderRadius: 4, fontFamily: 'var(--mono)', fontSize: 10,
+                color: 'var(--accent3)', letterSpacing: 1,
+              }}>
+                ✓ SAVED
+              </div>
+            )}
 
-                    {/* Title */}
+            <div style={{ padding: '20px 24px 24px 24px' }}>
+              {editingInfo ? (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                  <div>
+                    <label style={labelStyle}>Title *</label>
+                    <input style={{ ...inputStyle, borderColor: infoErrors.title ? 'var(--danger)' : undefined }}
+                      value={infoForm.title}
+                      onChange={(e) => setInfoForm(p => ({ ...p, title: e.target.value }))} />
+                    {infoErrors.title && <div style={{ marginTop: 4, fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--danger)', letterSpacing: 1 }}>⚠ {infoErrors.title}</div>}
+                  </div>
+
+                  <div>
+                    <label style={labelStyle}>Description</label>
+                    <textarea style={{ ...inputStyle, minHeight: 100, resize: 'vertical', lineHeight: 1.6 }}
+                      value={infoForm.description}
+                      placeholder="CTF-style description..."
+                      onChange={(e) => setInfoForm(p => ({ ...p, description: e.target.value }))} />
+                  </div>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
                     <div>
-                      <label style={labelStyle}>Title *</label>
-                      <input style={{ ...inputStyle, borderColor: infoErrors.title ? 'var(--danger)' : undefined }}
-                        value={infoForm.title}
-                        onChange={(e) => setInfoForm(p => ({ ...p, title: e.target.value }))} />
-                      {infoErrors.title && <div style={{ marginTop: 4, fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--danger)', letterSpacing: 1 }}>⚠ {infoErrors.title}</div>}
-                    </div>
-
-                    {/* Description */}
-                    <div>
-                      <label style={labelStyle}>Description</label>
-                      <textarea style={{ ...inputStyle, minHeight: 100, resize: 'vertical', lineHeight: 1.6 }}
-                        value={infoForm.description}
-                        placeholder="CTF-style description..."
-                        onChange={(e) => setInfoForm(p => ({ ...p, description: e.target.value }))} />
-                    </div>
-
-                    {/* Difficulty + Points */}
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-                      <div>
-                        <label style={labelStyle}>Difficulty</label>
-                        <select style={{ ...inputStyle, cursor: 'pointer' }}
-                          value={infoForm.difficulty}
-                          onChange={(e) => setInfoForm(p => ({ ...p, difficulty: e.target.value }))}>
-                          {DIFFICULTIES.map(d => (
-                            <option key={d} value={d} style={{ background: 'var(--bg2)' }}>
-                              {d.charAt(0).toUpperCase() + d.slice(1)}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
-                      <div>
-                        <label style={labelStyle}>Points</label>
-                        <input style={{ ...inputStyle, borderColor: infoErrors.points ? 'var(--danger)' : undefined }}
-                          type="number" min="0"
-                          value={infoForm.points}
-                          onChange={(e) => setInfoForm(p => ({ ...p, points: e.target.value }))} />
-                      </div>
-                    </div>
-
-                    {/* Category */}
-                    <div>
-                      <label style={labelStyle}>Category</label>
-                      <input style={inputStyle} placeholder="e.g. web, pwn, crypto, misc"
-                        value={infoForm.category_id}
-                        onChange={(e) => setInfoForm(p => ({ ...p, category_id: e.target.value }))} />
-                    </div>
-
-                    {/* Flag */}
-                    <div>
-                      <label style={labelStyle}>Flag</label>
-                      <FlagField
-                        value={infoForm.flag}
-                        onChange={(e) => setInfoForm(p => ({ ...p, flag: e.target.value }))}
-                      />
-                    </div>
-
-                    {/* Status */}
-                    <div>
-                      <label style={labelStyle}>Status</label>
+                      <label style={labelStyle}>Difficulty</label>
                       <select style={{ ...inputStyle, cursor: 'pointer' }}
-                        value={infoForm.status ?? challenge.status}
-                        onChange={(e) => setInfoForm(p => ({ ...p, status: e.target.value }))}>
-                        {STATUS_OPTIONS.map(s => (
-                          <option key={s} value={s} style={{ background: 'var(--bg2)' }}>
-                            {s.charAt(0).toUpperCase() + s.slice(1)}
+                        value={infoForm.difficulty}
+                        onChange={(e) => setInfoForm(p => ({ ...p, difficulty: e.target.value }))}>
+                        {DIFFICULTIES.map(d => (
+                          <option key={d} value={d} style={{ background: 'var(--bg2)' }}>
+                            {d.charAt(0).toUpperCase() + d.slice(1)}
                           </option>
                         ))}
                       </select>
                     </div>
-
+                    <div>
+                      <label style={labelStyle}>Points</label>
+                      <input style={{ ...inputStyle, borderColor: infoErrors.points ? 'var(--danger)' : undefined }}
+                        type="number" min="0"
+                        value={infoForm.points}
+                        onChange={(e) => setInfoForm(p => ({ ...p, points: e.target.value }))} />
+                    </div>
                   </div>
-                ) : (
-                  /* ── Read-only view (mirrors CourseContentPage) ── */
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
 
-                    <div>
-                      <div style={labelStyle}>Title</div>
-                      <div style={{ fontSize: 15, fontWeight: 500, color: 'var(--text)' }}>{challenge?.title}</div>
+                  {/* ✅ Category select dropdown (replaces text input) */}
+                  <div>
+                    <label style={labelStyle}>Category</label>
+                    <select
+                      style={inputStyle}
+                      value={infoForm.category_id}
+                      onChange={(e) => setInfoForm(p => ({ ...p, category_id: e.target.value }))}
+                      autoComplete="off"
+                    >
+                      <option value="">— Select a category —</option>
+                      {CATEGORIES.map(cat => (
+                        <option key={cat.id} value={cat.id}>{cat.name}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label style={labelStyle}>Flag</label>
+                    <FlagField
+                      value={infoForm.flag}
+                      onChange={(e) => setInfoForm(p => ({ ...p, flag: e.target.value }))}
+                    />
+                  </div>
+
+                  <div>
+                    <label style={labelStyle}>Status</label>
+                    <select style={{ ...inputStyle, cursor: 'pointer' }}
+                      value={infoForm.status}
+                      onChange={(e) => setInfoForm(p => ({ ...p, status: e.target.value }))}>
+                      {STATUS_OPTIONS.map(s => (
+                        <option key={s} value={s} style={{ background: 'var(--bg2)' }}>
+                          {s.charAt(0).toUpperCase() + s.slice(1)}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+              ) : (
+                // Read-only view
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+                  <div>
+                    <div style={labelStyle}>Title</div>
+                    <div style={{ fontSize: 15, fontWeight: 500, color: 'var(--text)' }}>{challenge?.title}</div>
+                  </div>
+
+                  <div>
+                    <div style={labelStyle}>Description</div>
+                    <div style={{ fontSize: 13, color: 'var(--muted2)', lineHeight: 1.6 }}>
+                      {challenge?.description || <span style={{ fontStyle: 'italic', color: 'var(--muted)' }}>No description</span>}
                     </div>
+                  </div>
 
-                    <div>
-                      <div style={labelStyle}>Description</div>
-                      <div style={{ fontSize: 13, color: 'var(--muted2)', lineHeight: 1.6 }}>
-                        {challenge?.description || <span style={{ fontStyle: 'italic', color: 'var(--muted)' }}>No description</span>}
-                      </div>
-                    </div>
-
-                    {/* Difficulty + Points badges */}
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
-                      <span style={{
-                        fontFamily: 'var(--mono)', fontSize: 11, padding: '4px 10px',
-                        borderRadius: 20, border: `1px solid ${diffStyle.border}`,
-                        background: diffStyle.bg, color: diffStyle.color,
-                      }}>
-                        {challenge?.difficulty?.toUpperCase() ?? '—'}
-                      </span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+                    <span style={{
+                      fontFamily: 'var(--mono)', fontSize: 11, padding: '4px 10px',
+                      borderRadius: 20, border: `1px solid ${diffStyle.border}`,
+                      background: diffStyle.bg, color: diffStyle.color,
+                    }}>
+                      {challenge?.difficulty?.toUpperCase() ?? '—'}
+                    </span>
+                    <span style={{
+                      fontFamily: 'var(--mono)', fontSize: 11, padding: '4px 10px',
+                      borderRadius: 20, border: '1px solid var(--border)',
+                      background: 'var(--bg3)', color: 'var(--accent)',
+                    }}>
+                      ⚑ {challenge?.points ?? 0} pts
+                    </span>
+                    {/* ✅ Display category name instead of ID */}
+                    {challenge?.category_id && (
                       <span style={{
                         fontFamily: 'var(--mono)', fontSize: 11, padding: '4px 10px',
                         borderRadius: 20, border: '1px solid var(--border)',
-                        background: 'var(--bg3)', color: 'var(--accent)',
+                        background: 'var(--bg3)', color: 'var(--muted2)',
                       }}>
-                        ⚑ {challenge?.points ?? 0} pts
+                        {getCategoryName(challenge.category_id)}
                       </span>
-                      {challenge?.category_id && (
-                        <span style={{
-                          fontFamily: 'var(--mono)', fontSize: 11, padding: '4px 10px',
-                          borderRadius: 20, border: '1px solid var(--border)',
-                          background: 'var(--bg3)', color: 'var(--muted2)',
-                        }}>
-                          {challenge.category_id}
-                        </span>
-                      )}
-                    </div>
-
-                    {/* Status + Created */}
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, alignItems: 'center' }}>
-                      <div>
-                        <div style={labelStyle}>Status</div>
-                        <span className={`status-badge ${statusInfo.cls}`}>{statusInfo.label}</span>
-                      </div>
-                      <div>
-                        <div style={labelStyle}>Created</div>
-                        <div style={{ fontFamily: 'var(--mono)', fontSize: 12, color: 'var(--muted2)' }}>
-                          {formatDate(challenge?.created_at)}
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Flag (hidden) */}
-                    <div>
-                      <div style={labelStyle}>Flag</div>
-                      <FlagField value={challenge?.flag ?? ''} readOnly />
-                    </div>
-
+                    )}
                   </div>
-                )}
-              </div>
-            </div>
 
-            {/* Stats card */}
-            <div className="card">
-              <div className="card-title" style={{ marginBottom: 20 }}>Stats</div>
-              {[
-                { label: 'Points',      value: challenge?.points ?? 0,    color: 'var(--accent)'  },
-                { label: 'Files',       value: files.length,              color: 'var(--accent3)' },
-                { label: 'Difficulty',  value: challenge?.difficulty?.toUpperCase() ?? '—', color: diffStyle.color, isText: true },
-              ].map((s) => (
-                <div key={s.label} style={{
-                  display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                  padding: '12px 0', borderBottom: '1px solid var(--border)',
-                }}>
-                  <span style={{ fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--muted)', letterSpacing: 1 }}>
-                    {s.label.toUpperCase()}
-                  </span>
-                  <span style={{
-                    fontFamily: s.isText ? 'var(--mono)' : 'var(--heading)',
-                    fontSize: s.isText ? 13 : 22,
-                    fontWeight: 700, color: s.color,
-                  }}>
-                    {s.value}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, alignItems: 'center' }}>
+                    <div>
+                      <div style={labelStyle}>Status</div>
+                      <span className={`status-badge ${statusInfo.cls}`}>{statusInfo.label}</span>
+                    </div>
+                    <div>
+                      <div style={labelStyle}>Created</div>
+                      <div style={{ fontFamily: 'var(--mono)', fontSize: 12, color: 'var(--muted2)' }}>
+                        {formatDate(challenge?.created_at)}
+                      </div>
+                    </div>
+                  </div>
 
-          {/* ── RIGHT COLUMN ────────────────────────────────────────── */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
-
-            {/* CTF Description card */}
-            <div className="card">
-              <div className="card-header" style={{ marginBottom: 20 }}>
-                <div className="card-title">Challenge Brief</div>
-                <span style={{
-                  fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--muted)',
-                  letterSpacing: 1, padding: '3px 8px',
-                  border: '1px solid var(--border)', borderRadius: 4,
-                }}>
-                  CTF STYLE
-                </span>
-              </div>
-
-              <div style={{
-                padding: '20px',
-                background: 'var(--bg3)',
-                border: '1px solid var(--border)',
-                borderRadius: 6,
-                fontFamily: 'var(--mono)', fontSize: 13,
-                color: 'var(--text)', lineHeight: 1.8,
-                whiteSpace: 'pre-wrap',
-                minHeight: 120,
-              }}>
-                {challenge?.description
-                  ? challenge.description
-                  : <span style={{ color: 'var(--muted)', fontStyle: 'italic', fontFamily: 'var(--body)' }}>
-                      No description yet. Click Edit on the left to add a CTF-style challenge brief.
-                    </span>
-                }
-              </div>
-
-              {/* Flag submit preview */}
-              <div style={{ marginTop: 16 }}>
-                <label style={labelStyle}>Flag Format Preview</label>
-                <div style={{
-                  padding: '10px 14px',
-                  background: 'rgba(16,185,129,0.05)',
-                  border: '1px solid rgba(16,185,129,0.2)',
-                  borderRadius: 4,
-                  fontFamily: 'var(--mono)', fontSize: 13,
-                  color: 'var(--accent3)', letterSpacing: 1,
-                }}>
-                  {challenge?.flag
-                    ? challenge.flag.replace(/\{.*\}/, '{...}')
-                    : 'CTF{...}'
-                  }
-                </div>
-              </div>
-            </div>
-
-            {/* Files card */}
-            <div className="card">
-              <div className="card-header" style={{ marginBottom: 20 }}>
-                <div className="card-title">Challenge Files</div>
-                <span style={{
-                  fontFamily: 'var(--mono)', fontSize: 11,
-                  color: 'var(--muted)', letterSpacing: 1,
-                }}>
-                  {files.length} FILE{files.length !== 1 ? 'S' : ''}
-                </span>
-              </div>
-
-              {/* Upload zone */}
-              <div style={{ marginBottom: files.length > 0 ? 16 : 0 }}>
-                <UploadZone challengeId={id} onUploaded={handleFileUploaded} />
-              </div>
-
-              {/* File list */}
-              {files.length === 0 ? (
-                <div style={{
-                  padding: '24px 0', textAlign: 'center',
-                  fontFamily: 'var(--mono)', fontSize: 11,
-                  color: 'var(--muted)', letterSpacing: 1, marginTop: 12,
-                }}>
-                  NO FILES ATTACHED YET
-                </div>
-              ) : (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                  {files.map(f => (
-                    <FileRow key={f.file_id} file={f} onDelete={handleFileDelete} />
-                  ))}
+                  <div>
+                    <div style={labelStyle}>Flag</div>
+                    <FlagField value={challenge?.flag ?? ''} readOnly />
+                  </div>
                 </div>
               )}
             </div>
+          </div>
 
+          {/* RIGHT COLUMN – Files */}
+          <div className="card">
+            <div className="card-header" style={{ marginBottom: 20 }}>
+              <div className="card-title">Challenge Files</div>
+              <span style={{
+                fontFamily: 'var(--mono)', fontSize: 11,
+                color: 'var(--muted)', letterSpacing: 1,
+              }}>
+                {files.length} FILE{files.length !== 1 ? 'S' : ''}
+              </span>
+            </div>
+
+            <div style={{ marginBottom: files.length > 0 ? 16 : 0 }}>
+              <UploadZone challengeId={id} onUploaded={handleFileUploaded} />
+            </div>
+
+            {files.length === 0 ? (
+              <div style={{
+                padding: '24px 0', textAlign: 'center',
+                fontFamily: 'var(--mono)', fontSize: 11,
+                color: 'var(--muted)', letterSpacing: 1, marginTop: 12,
+              }}>
+                NO FILES ATTACHED YET
+              </div>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                {files.map(f => (
+                  <FileRow key={f.file_id} file={f} onDelete={handleFileDelete} />
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>
-    </div>
+    </div></>
   );
 }
