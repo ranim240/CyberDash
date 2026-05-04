@@ -29,8 +29,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const app = express();
 // ── __dirname pour ES modules ──────────────────────────────────────────────────
-const __filename = fileURLToPath(import.meta.url);
-const __dirname  = dirname(__filename);
+
  // Middlewares globaux
 app.use(cors());
 app.use(helmet({

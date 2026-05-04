@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from '../../components/common/Sidebar';
-import Topbar  from '../../components/common/Navbar';
+import Topbar from './instructorTopBar';
+import Navbar from '../../components/common/Navbar';
 import coursesApi from '../../api/courses';
 
 // ── Shared styles (exactly as in CourseContentPage) ─────────────────
@@ -137,6 +138,8 @@ export default function CreateCoursePage() {
   const charWarn   = charCount > 100;
 
   return (
+    <>
+    <Navbar />
     <div className="layout">
       <Sidebar />
       <div className="main">
@@ -328,6 +331,6 @@ export default function CreateCoursePage() {
           </div>
         </div>
       </div>
-    </div>
+    </div></>
   );
 }

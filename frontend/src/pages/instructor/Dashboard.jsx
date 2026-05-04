@@ -1,19 +1,22 @@
 import Sidebar from '../../components/common/Sidebar.jsx';
-import Topbar from '../../components/common/Navbar.jsx';
+import Topbar from './instructorTopBar.jsx';
 import StatsGrid from '../../components/StatsGrid.jsx';
 import CoursesTable from '../../components/CoursesTable.jsx';
 import ChallengesTable from '../../components/ChallengesTable.jsx';
-import Analytics from '../../components/Analytics.jsx';
-import AIChat from '../../components/ai/AIChat';
+
 
 import './InstructorDashboard.css';
 import '../../styles/dashboard.css';
+import Navbar from '../../components/common/Navbar.jsx';
 
 export default function InstructorDashboard() {
   return (
+    <>
+    <Navbar />
     <div className="layout">
-      <Sidebar />
-
+      
+      
+    <Sidebar />
       <div className="main">
         <Topbar />
 
@@ -23,9 +26,10 @@ export default function InstructorDashboard() {
           <CoursesTable />
           <ChallengesTable />
         </div>
-     <AIChat />
+     
         
       </div>
     </div>
+    </>
   );
 }

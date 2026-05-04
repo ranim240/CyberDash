@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Sidebar    from '../../components/common/Sidebar';
-import Topbar     from '../../components/common/Navbar';
+import Navbar from '../../components/common/Navbar';
 import coursesApi from '../../api/courses';
 
 const MOCK_COURSES = [
@@ -146,10 +146,12 @@ export default function CoursesListingPage() {
   );
 
   return (
+    <>
+    <Navbar />
     <div className="layout">
       <Sidebar />
       <div className="main">
-        <Topbar />
+        
 
         {/* Header */}
         <div className="topbar" style={{ marginBottom: 28 }}>
@@ -206,6 +208,6 @@ export default function CoursesListingPage() {
           </div>
         )}
       </div>
-    </div>
+    </div></>
   );
 }
