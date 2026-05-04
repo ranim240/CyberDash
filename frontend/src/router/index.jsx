@@ -3,7 +3,9 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext.jsx";
 import InstructorDashboard from "../pages/instructor/Dashboard";
 import { SidebarProvider } from "../context/SidebarContext";
-// import LearnerDashboard from "../pages/learner/Dashboard.jsx";
+import Dashboard from "../pages/learner/Dashboard.jsx";
+import SessionPage from "../pages/learner/SessionPage.jsx";
+import CreateChallengePage from "../pages/instructor/CreateChallengePage.jsx";
 import Login from "../pages/auth/login";
 import Register from "../pages/auth/register";
 import ForgotPassword from "../pages/auth/forgotPassword";
@@ -23,14 +25,14 @@ const AppRouter = () => {
     <SidebarProvider>
       <Routes>
         {/* ── Racine ── */}
-        <Route path="/" element={<Home />} />
+        <Route path="/" element={<login />} />
         {/* ── Learner (protégé) ── */}
         <Route
           path="/learner/dashboard"
           element={
-            <PrivateRoute role="learner">
+            //<PrivateRoute role="learner">
               <Dashboard />
-            </PrivateRoute>
+           // </PrivateRoute>
           }
         />
         {/* <Route
@@ -44,35 +46,35 @@ const AppRouter = () => {
         <Route
           path="/learner/browse"
           element={
-            <PrivateRoute role="learner">
+            //<PrivateRoute role="learner">
               <BrowseChallenges />
-            </PrivateRoute>
+            //</PrivateRoute>
           }
         />
         <Route
           path="/learner/challenges/:id"
           element={
-            <PrivateRoute role="learner">
+            //<PrivateRoute role="learner">
               <ChallengeDetailPage />
-            </PrivateRoute>
+            //</PrivateRoute>
           }
         />
         <Route
           path="/learner/sessions/:sessionId"
           element={
-            <PrivateRoute role="learner">
+            //<PrivateRoute role="learner">
               <SessionPage />
-            </PrivateRoute>
+            //</PrivateRoute>
           }
         />
         <Route
           path="/learner/courses/:courseId/progress"
           element={
-            <PrivateRoute role="learner">
-              {/* CourseProgressPage à créer si besoin */}
-              <Dashboard />
-            </PrivateRoute>
-          }
+            //<PrivateRoute role="learner">
+              //{/* CourseProgressPage à créer si besoin */}
+              <Dashboard />}
+            //</PrivateRoute>
+          
         />
 
         {/* ── 404 fallback ── */}
