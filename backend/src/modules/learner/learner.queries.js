@@ -71,13 +71,39 @@ class Learner {
   // ==========================
   // ➕ ENROLL
   // ==========================
-  enroll = async (data) => {
-    return db('enrollment')
-      .insert({
-        ...data,
-        enrolled_at: new Date()
-      });
-  };
+enroll = async (data) => {
+  const { learner_id, course_id } = data;
+  
+  console.log('Attempting to enroll:', { learner_id, course_id });
+  console.log('Types:', typeof learner_id, typeof course_id);
+  
+  // First, check what enrollments exist for this learner
+  const existingEnrollments = await db('enrollment')
+    .where({ learner_id: learner_id.toString() })
+    .select('*');
+  
+  console.log('Existing enrollments:', existingEnrollments);
+  
+  // Check specifically for this course
+  const existing = await db('enrollment')
+    .where({ 
+      learner_id: learner_id.toString(), 
+      course_id: course_id.toString() 
+    })
+    .first();
+  
+  if (existing) {
+    console.log('Already enrolled, skipping insert');
+    return existing;
+  }
+  
+  console.log('Inserting new enrollment');
+  return db('enrollment').insert({
+    learner_id: learner_id.toString(),
+    course_id: course_id.toString(),
+    enrolled_at: new Date()
+  });
+};
 
 
   // ==========================

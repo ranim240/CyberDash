@@ -23,6 +23,20 @@ export const getOne = async (req, res, next) => {
         next(err);
     }
 };
+// ================= GET Instructor's Courses =================
+export const getMyCourses = async (req, res, next) => {
+    
+    try {
+        
+        const course = await Course.getByInstructorId(req.user.userId);
+        
+        if (!course) return error(res, 'Course not found', 404);
+
+        return success(res, course);
+    } catch (err) {
+        next(err);
+    }
+};
 
 // ================= CREATE =================
 export const createCourse = async (req, res, next) => {
@@ -99,12 +113,13 @@ export const togglePublish = async (req, res, next) => {
         const isOwner = await Course.isOwner(req.user.userId, req.params.id);
         if (!isOwner) return error(res, 'You do not own this course', 403);
 
-        const { published } = req.body;
-
-        await Course.setPublished(req.params.id, published);
+        // ✅ Toggle the current status (no body needed)
+        const updated = await Course.togglePublish(req.params.id);
+        if (!updated) return error(res, 'Failed to toggle publish status', 500);
 
         return success(res, {
-            message: `Course ${published ? 'published' : 'unpublished'}`
+            message: updated.is_published ? 'Course published' : 'Course unpublished',
+            is_published: updated.is_published
         });
     } catch (err) {
         next(err);
@@ -175,13 +190,13 @@ export const addContent = async (req, res, next) => {
 // Update a specific content item : Only the course owner
 export const updateContent = async (req, res, next) => {
     try {
-        const isOwner = await courseRepository.isOwner(req.user.userId, req.params.id);
+        const isOwner = await Course.isOwner(req.user.userId, req.params.id);
         if (!isOwner) {
             return error(res, 'You do not own this course', 403);
         }
 
         const { title, data, is_published } = req.body;
-        const [content] = await courseRepository.updateContent(req.params.contentId, {
+        const [content] = await Course.updateContent(req.params.contentId, {
             title, data, is_published
         });
 
@@ -195,12 +210,12 @@ export const updateContent = async (req, res, next) => {
 // Delete a specific content item : Only the course owner
 export const removeContent = async (req, res, next) => {
     try {
-        const isOwner = await courseRepository.isOwner(req.user.userId, req.params.id);
+        const isOwner = await Course.isOwner(req.user.userId, req.params.id);
         if (!isOwner) {
             return error(res, 'You do not own this course', 403);
         }
 
-        const deleted = await courseRepository.removeContent(req.params.contentId);
+        const deleted = await Course.removeContent(req.params.contentId);
         if (!deleted) return error(res, 'Content not found', 404);
         return success(res, { message: 'Content deleted successfully' });
     } catch (err) {
@@ -213,6 +228,7 @@ export const removeContent = async (req, res, next) => {
 export default {
     getAll,
     getOne,
+    getMyCourses,
     createCourse,
     updateCourse,
     deleteCourse,

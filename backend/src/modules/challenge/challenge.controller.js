@@ -90,15 +90,13 @@ export const searchChallenges = async (req, res, next) => {
 
     const data = await q.getChallenges(filters);
 
-  return success(
-  res,
-  data,
-  null,
-  {
-    page: filters.page,
-    limit: filters.limit
-  }
-);
+return success(res, {
+  data       : data.data,
+  total      : data.total,
+  page       : data.page,
+  limit      : data.limit,
+  totalPages : Math.ceil(data.total / data.limit)
+});
 
   } catch (error) {
     next(error);
@@ -148,7 +146,7 @@ export const createChallenge = async (req, res) => {
       instructor_id: req.user.userId
     });
 
-    return success(res, challenge, "Challenge created successfully", null, 201);
+    return success(res, challenge,201, "Challenge created successfully");
 
   } catch (err) {
     return error(res, err.message, 500);

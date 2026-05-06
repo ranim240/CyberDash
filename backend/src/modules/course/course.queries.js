@@ -9,6 +9,10 @@ class Course {
     getById = (course_id) => {
         return db('course').where({ course_id }).first();
     };
+    getByInstructorId = (instructor_id) => {
+        
+        return db('course').where({instructor_id});
+    };
 
     getContents = (course_id, publishedOnly = false) => {
         if (publishedOnly) {

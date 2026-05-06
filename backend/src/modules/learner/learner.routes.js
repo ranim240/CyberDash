@@ -7,7 +7,6 @@ import { submitFlag } from '../submission/submission.controller.js';
 import { isAuthenticated } from '../../middlewares/auth.js';
 import { authorize } from '../../middlewares/role.js';
 
-// ✅ création correcte du router
 const learnerRouter = express.Router();
 
 
@@ -21,21 +20,21 @@ learnerRouter.use(isAuthenticated, authorize(['learner']));
 // 📊 DASHBOARD
 // ==========================
 learnerRouter.get('/dashboard', learnerController.getDashboard);
-learnerRouter.get('/stats', learnerController.getStats);
+learnerRouter.get('/stats',     learnerController.getStats);
 
 
 // ==========================
 // 👤 PROFILE + BADGES
 // ==========================
 learnerRouter.get('/profile', learnerController.getProfile);
-learnerRouter.get('/badges', learnerController.getBadges);
+learnerRouter.get('/badges',  learnerController.getBadges);
 
 
 // ==========================
 // 📚 COURSES
 // ==========================
-learnerRouter.get('/enrollments', learnerController.getEnrollments);
-learnerRouter.post('/courses/:courseId/enroll', learnerController.enrollCourse);
+learnerRouter.get('/enrollments',              learnerController.getEnrollments);
+learnerRouter.post('/courses/:courseId/enroll',  learnerController.enrollCourse);
 learnerRouter.delete('/courses/:courseId/enroll', learnerController.unenrollCourse);
 
 
@@ -50,7 +49,7 @@ learnerRouter.put('/courses/:courseId/progress', learnerController.updateProgres
 // 🎯 CHALLENGE SESSIONS
 // ==========================
 learnerRouter.post('/challenges/:challengeId/start', startSession);
-learnerRouter.post('/sessions/:sessionId/abandon', abandonSession);
+learnerRouter.post('/sessions/:sessionId/abandon',   abandonSession);
 
 
 // ==========================
@@ -59,7 +58,4 @@ learnerRouter.post('/sessions/:sessionId/abandon', abandonSession);
 learnerRouter.post('/submissions', submitFlag);
 
 
-// ==========================
-// 📤 EXPORT ROUTER (IMPORTANT)
-// ==========================
 export default learnerRouter;

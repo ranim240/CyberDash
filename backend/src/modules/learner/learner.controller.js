@@ -95,7 +95,7 @@ export const enrollCourse = async (req, res, next) => {
     if (existing) {
       return error(res, 'Already enrolled in this course', 400);
     }
-
+    console.log("inside enrollCourse");
     await Learner.enroll({
       learner_id: userId,
       course_id: courseId

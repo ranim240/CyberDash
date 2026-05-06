@@ -2,11 +2,16 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import 'dotenv/config';
+import { dirname, join }  from 'path';
+
+import path from 'path';
+import { fileURLToPath } from 'url';
 
 import authRouter    from './src/modules/auth/auth.routes.js';
+import userRouter from './src/modules/user/user.routes.js';
 import learnerRouter from './src/modules/learner/learner.routes.js';
 import categoryRouter from './src/modules/category/category.routes.js';
-//import instructorRouter  from './src/modules/instructor/instructor.routes.js';
+import instructorRouter  from './src/modules/instructor/instructor.routes.js';
 import courseRouter      from './src/modules/course/course.routes.js';
 import challengeRouter   from './src/modules/challenge/challenge.routes.js';
 import submissionRouter  from './src/modules/submission/submission.routes.js';
@@ -19,19 +24,28 @@ import challengeFileRoutes from './src/modules/challenge_file/challenge_file.rou
 import learnerBadgeRoutes from './src/modules/learner_badge/learner_badge.routes.js';
 import sessionRouter from './src/modules/session/session.routes.js';
 
-const app = express();
 
-// Middlewares globaux
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const app = express();
+// ── __dirname pour ES modules ──────────────────────────────────────────────────
+
+ // Middlewares globaux
 app.use(cors());
-app.use(helmet());
+app.use(helmet({
+  crossOriginResourcePolicy: { policy: 'cross-origin' }, // ✅ permet de servir les fichiers uploads
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 // Routes
 app.use('/api/auth',    authRouter);
+
 app.use('/api/learner', learnerRouter);
 app.use('/api/categories', categoryRouter);
-//app.use('/api/instructor',  instructorRouter);
+app.use('/api/instructor',  instructorRouter);
+app.use('/api/instructor/profile', userRouter);
 app.use('/api/courses',     courseRouter);
 app.use('/api/challenges',  challengeRouter);
 app.use('/api/submissions', submissionRouter);

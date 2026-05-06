@@ -3,6 +3,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { getChallengeById, getChallengeFiles } from '../../api/challenges.js';
 import { startSession } from '../../api/sessions.js';
 import './ChallengeDetailPage.css';
+import LearnerLayout from '../../components/learner/LearnerLayout.jsx';
 
 // ─── helpers ──────────────────────────────────────────────────────────────────
 const DIFF_CONFIG = {
@@ -98,12 +99,19 @@ export default function ChallengeDetailPage() {
       setStarting(true);
       setStartError(null);
 
-      // POST /learner/challenges/:challengeId/start
-      const res = await startSession(id);
-      const sessionId = res.data?.session_id ?? res.data?.data?.session_id;
+      const res        = await startSession(id);
+      const sessionData = res.data?.data ?? res.data;
+      const sessionId  = sessionData?.session_id;
+      const duration   = sessionData?.duration   ?? null;
+      const timeLeft   = sessionData?.time_left  ?? duration;
 
-      // rediriger vers la page de session
-      navigate(`/learner/sessions/${sessionId}`, { state: { challengeId: id } });
+      navigate(`/learner/sessions/${sessionId}`, {
+        state: {
+          challengeId : id,
+          duration    : duration,
+          timeLeft    : timeLeft,
+        }
+      });
     } catch (err) {
       setStartError(err?.response?.data?.message || 'Failed to start session');
       setStarting(false);
@@ -111,17 +119,20 @@ export default function ChallengeDetailPage() {
   };
 
   // ── render ────────────────────────────────────────────────────────────────
-  if (loading)  return <Loader />;
+  if (loading)  return <LearnerLayout><Loader /></LearnerLayout>;
   if (error)    return (
+    <LearnerLayout>
     <main className="cd-page">
       <ErrorBanner message={error} />
       <Link to="/learner/browse" className="cd-back">← Back to challenges</Link>
     </main>
+    </LearnerLayout>
   );
 
   const c = challenge?.data ?? challenge; // gère { success, data: {...} } ou direct
 
   return (
+    <LearnerLayout>
     <main className="cd-page">
 
       {/* ── BREADCRUMB ── */}
@@ -201,6 +212,12 @@ export default function ChallengeDetailPage() {
               <span className="cd-info-row__label">Status</span>
               <span className="cd-info-row__value cd-info-row__value--green">Active</span>
             </div>
+            <div className="cd-info-row">
+              <span className="cd-info-row__label">Time limit</span>
+              <span className="cd-info-row__value cd-info-row__value--cyan">
+                {{ easy: '30 min', medium: '60 min', hard: '90 min' }[c.difficulty?.toLowerCase()] ?? '60 min'}
+              </span>
+            </div>
             {c.created_at && (
               <div className="cd-info-row">
                 <span className="cd-info-row__label">Added</span>
@@ -233,5 +250,6 @@ export default function ChallengeDetailPage() {
       </div>
 
     </main>
+    </LearnerLayout>
   );
 }

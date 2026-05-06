@@ -2,11 +2,11 @@ import express from 'express';
 import courseController from './course.controller.js';
 import { isAuthenticated } from '../../middlewares/auth.js';
 import { authorize } from '../../middlewares/role.js';
-
 const courseRouter = express.Router();
 
 // Public routes
 courseRouter.get('/', courseController.getAll);
+courseRouter.get('/my-courses',isAuthenticated, authorize(['instructor']), courseController.getMyCourses);
 courseRouter.get('/:id', courseController.getOne);
 
 // Protected routes

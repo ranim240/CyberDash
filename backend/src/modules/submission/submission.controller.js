@@ -1,10 +1,16 @@
-import { v4 as uuid } from 'uuid';
-import { success, error } from '../../utils/response.js';
-import db from '../../config/db.js';
+import { v4 as uuid }          from 'uuid';
+import { success, error }       from '../../utils/response.js';
+import db                       from '../../config/db.js';
 
-import * as sessionQ from '../session/session.queries.js';
-import * as challengeQ from '../challenge/challenge.queries.js';
-import * as submissionQ from './submission.queries.js';
+// ✅ session.queries.js utilise export default new SessionRepository()
+//    → import par défaut, PAS import *
+import sessionQ                 from '../session/session.queries.js';
+
+// ✅ challenge.queries.js utilise des named exports
+//    → import * est correct
+import * as challengeQ          from '../challenge/challenge.queries.js';
+
+import submissionQ              from './submission.queries.js';
 
 
 // ==========================
@@ -17,7 +23,6 @@ export const submitFlag = async (req, res) => {
 
     // 🔎 1. Get session
     const session = await sessionQ.getSessionById(session_id);
-
     if (!session) {
       return error(res, 'Session introuvable', 404);
     }
@@ -34,21 +39,20 @@ export const submitFlag = async (req, res) => {
 
     // 🔎 4. Get challenge
     const challenge = await challengeQ.getById(session.challenge_id);
-
     if (!challenge) {
       return error(res, 'Challenge introuvable', 404);
     }
 
-    // 🧠 5. Normalize answer (IMPORTANT)
+    // 🧠 5. Normalize + compare flag
     const normalizedAnswer = answer.trim();
     const is_correct =
       challenge.flag.trim().toLowerCase() === normalizedAnswer.toLowerCase();
 
     // ➕ 6. Create submission
-    const [submission] = await submissionQ.create({
-      submission_id: uuid(),
+    const [submission] = await submissionQ.createSubmission({
+      submission_id : uuid(),
       session_id,
-      answer: normalizedAnswer,
+      answer        : normalizedAnswer,
       is_correct
     });
 
@@ -59,22 +63,19 @@ export const submitFlag = async (req, res) => {
 
     let pointsEarned = 0;
 
-    // 🎯 8. If correct
+    // 🎯 8. If correct → add XP + end session
     if (is_correct) {
       pointsEarned = challenge.points;
 
-      // 💰 add XP
       await db('learner')
         .where({ user_id: userId })
         .increment('xp_points', pointsEarned);
 
-      // 🔚 end session
       await sessionQ.updateSession(session_id, {
         ended_at: new Date()
       });
     }
 
-    // 📦 RESPONSE
     return success(res, {
       submission,
       is_correct,
