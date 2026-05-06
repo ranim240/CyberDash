@@ -99,114 +99,195 @@ export default function Sidebar() {
         </div>
       </aside>
 
-      <style>{`
-        /* ... (all the CSS remains the same as in your previous version) ... */
-        .sidebar {
-          position: fixed;
-          top: 0;
-          left: 0;
-          height: 100vh;
-          width: 260px;
-          background: var(--bg2);
-          border-right: 1px solid var(--border);
-          display: flex;
-          flex-direction: column;
-          z-index: 1000;
-          transform: translateX(-100%);
-          transition: transform 0.3s ease;
-        }
-        .sidebar.sidebar-open {
-          transform: translateX(0);
-        }
-        .sidebar-overlay {
-          position: fixed;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          background: rgba(0, 0, 0, 0.5);
-          z-index: 999;
-        }
-        .logo-wrap {
-          display: flex;
-          align-items: center;
-          gap: 10px;
-          padding: 24px 20px;
-          border-bottom: 1px solid var(--border);
-          margin-bottom: 20px;
-        }
-        .logo-hex {
-          font-size: 28px;
-          color: var(--accent);
-        }
-        .logo-txt {
-          font-weight: 700;
-          font-size: 18px;
-          font-family: var(--mono);
-        }
-        .nav-sect {
-          display: flex;
-          flex-direction: column;
-          gap: 6px;
-          padding: 0 16px;
-        }
-        .nav-item {
-          display: flex;
-          align-items: center;
-          gap: 12px;
-          padding: 10px 14px;
-          border-radius: 8px;
-          font-size: 14px;
-          font-weight: 500;
-          cursor: pointer;
-          color: var(--text);
-          transition: all 0.2s;
-        }
-        .nav-item:hover {
-          background: var(--bg3);
-        }
-        .nav-item.active {
-          background: rgba(99, 102, 241, 0.1);
-          color: var(--accent);
-        }
-        .nav-ico {
-          font-size: 18px;
-          width: 24px;
-          text-align: center;
-        }
-        .sb-footer {
-          padding: 16px 20px;
-          border-top: 1px solid var(--border);
-          margin-top: 16px;
-        }
-        .user-wrap {
-          display: flex;
-          align-items: center;
-          gap: 12px;
-        }
-        .av {
-          width: 36px;
-          height: 36px;
-          border-radius: 50%;
-          background: var(--accent2);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-weight: bold;
-          font-size: 16px;
-          color: white;
-        }
-        .u-name {
-          font-size: 14px;
-          font-weight: 600;
-          color: var(--text);
-        }
-        .u-role {
-          font-size: 11px;
-          color: var(--muted);
-          font-family: var(--mono);
-        }
-      `}</style>
+<style>{`
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 250px;
+    background: var(--bg2);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    z-index: 1000;
+    transform: translateX(-100%);
+    transition: transform 0.25s ease-in-out;
+  }
+  
+  .sidebar.sidebar-open {
+    transform: translateX(0);
+  }
+  
+  .sidebar-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 999;
+    animation: fadeIn 0.2s ease;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  
+  .logo-wrap {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 20px 16px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 24px;
+  }
+  
+  .logo-hex {
+    width: 32px;
+    height: 32px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    color: white;
+    font-weight: bold;
+  }
+  
+  .logo-txt {
+    font-weight: 700;
+    font-size: 18px;
+    font-family: var(--head);
+    letter-spacing: 2px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  
+  .nav-sect {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 0 12px;
+  }
+  
+  .nav-sect:first-of-type {
+    margin-bottom: 24px;
+  }
+  
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    color: var(--text);
+    transition: all 0.2s;
+  }
+  
+  .nav-item:hover {
+    background: rgba(176, 110, 255, 0.08);
+    color: var(--accent);
+  }
+  
+  .nav-item.active {
+    background: rgba(176, 110, 255, 0.12);
+    color: var(--accent);
+    font-weight: 600;
+  }
+  
+  .nav-ico {
+    font-size: 18px;
+    width: 24px;
+    text-align: center;
+    opacity: 0.8;
+  }
+  
+  .sb-footer {
+    padding: 16px 16px 20px;
+    border-top: 1px solid var(--border);
+    margin-top: auto;
+  }
+  
+  .user-wrap {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  
+  .av {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 14px;
+    color: white;
+  }
+  
+  .u-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 2px;
+    line-height: 1.4;
+  }
+  
+  .u-role {
+    font-size: 11px;
+    color: var(--muted);
+    font-family: var(--mono);
+    letter-spacing: 0.3px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  
+  /* Scrollbar */
+  .sidebar::-webkit-scrollbar {
+    width: 3px;
+  }
+  
+  .sidebar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  .sidebar::-webkit-scrollbar-thumb {
+    background: var(--accent);
+    border-radius: 3px;
+  }
+  
+  /* Responsive */
+  @media (max-width: 768px) {
+    .sidebar {
+      width: 100%;
+      max-width: 280px;
+    }
+    
+    .logo-wrap {
+      padding: 16px;
+    }
+    
+    .logo-txt {
+      font-size: 16px;
+    }
+    
+    .nav-item {
+      padding: 10px 12px;
+      font-size: 14px;
+    }
+  }
+`}</style>
     </>
   );
 }

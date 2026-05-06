@@ -20,6 +20,8 @@ import ChallengeContentPage from "../pages/instructor/ChallengeContentPage";
 import CoursesListingPage from "../pages/courses/coursesListingPage";
 import CourseLearnerPage from "../pages/courses/courseLearnerPage";
 import LeaderboardPage       from "../pages/learner/LeaderboardPage.jsx";
+import ReportIncidentPage    from "../pages/learner/ReportIncidentPage.jsx";
+import Home from "../pages/Home.jsx";
 
 const AppRouter = () => {
   return (
@@ -27,7 +29,7 @@ const AppRouter = () => {
     <SidebarProvider>
       <Routes>
         {/* ── Racine ── */}
-        <Route path="/" element={<login />} />
+        <Route path="/" element={<Home />} />
         {/* ── Learner (protégé) ── */}
         <Route
           path="/learner/dashboard"
@@ -108,6 +110,11 @@ const AppRouter = () => {
           <LeaderboardPage />
           //</PrivateRoute>
           } />
+          <Route path="/learner/report-incident" element={
+            //<PrivateRoute role="learner">
+              <ReportIncidentPage />
+            //</PrivateRoute>
+          }/>
       </Routes>
       </SidebarProvider>
     </BrowserRouter>
