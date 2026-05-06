@@ -19,6 +19,8 @@ import MyChallengesPage from "../pages/instructor/MyChallengesPage";
 import ChallengeContentPage from "../pages/instructor/ChallengeContentPage";
 import CoursesListingPage from "../pages/courses/coursesListingPage";
 import CourseLearnerPage from "../pages/courses/courseLearnerPage";
+import LeaderboardPage       from "../pages/learner/LeaderboardPage.jsx";
+
 const AppRouter = () => {
   return (
     <BrowserRouter>
@@ -100,7 +102,12 @@ const AppRouter = () => {
         <Route path="/instructor/challenges"         element={<MyChallengesPage />} />
         <Route path="/instructor/challenges/:id"     element={<ChallengeContentPage />} />
         <Route path="/instructor/challenges/create"     element={<CreateChallengePage />} />
-        
+                <Route path="/learner/leaderboard" 
+          element={
+          //<PrivateRoute role="learner">
+          <LeaderboardPage />
+          //</PrivateRoute>
+          } />
       </Routes>
       </SidebarProvider>
     </BrowserRouter>

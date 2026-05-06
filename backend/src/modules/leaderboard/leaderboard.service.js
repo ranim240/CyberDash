@@ -1,5 +1,6 @@
 import leaderboardService from "./xp_history.queries.js";
 
+
 const format = async (leaderboard) => {
   console.log(leaderboard);
   if (!leaderboard) return [];

@@ -4,15 +4,13 @@ import {getLeaderboard,getLeaderboardByCategory,getMonthlyLeaderboard,getWeeklyL
 const leaderboardRouter = express.Router();
 
 // global leaderboard 
-leaderboardRouter.get("/leaderboard",getLeaderboard);
+leaderboardRouter.get("/",getLeaderboard);
 // weekly 
-leaderboardRouter.get("/leaderboard/weekly",getWeeklyLeaderboard);
+leaderboardRouter.get("/weekly",getWeeklyLeaderboard);
 // monthly 
-leaderboardRouter.get("/leaderboard/monthly",getMonthlyLeaderboard) ;
+leaderboardRouter.get("/monthly",getMonthlyLeaderboard) ;
 // per category
-leaderboardRouter.get("/leaderboard/:category_id",getLeaderboardByCategory) ;
+leaderboardRouter.get("/:category_id",getLeaderboardByCategory) ;
 export default leaderboardRouter;
-
-
 
  
