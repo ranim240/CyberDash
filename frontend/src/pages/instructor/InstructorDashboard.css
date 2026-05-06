@@ -273,8 +273,10 @@ body::before {
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 24px;
-  margin-bottom: 40px;
+  gap: 50px;
+  margin-bottom: 32px;
+  width: 100%;
+  min-width: 100%;
 }
 .stat-card {
   background: var(--card);
@@ -286,6 +288,7 @@ body::before {
   transition: all 0.3s ease;
   backdrop-filter: blur(2px);
   box-shadow: var(--shadow);
+
 }
 .stat-card:hover {
   border-color: var(--border2);
@@ -656,4 +659,5 @@ body::before {
     padding: 20px;
     overflow-x: auto;
   }
+  
 }

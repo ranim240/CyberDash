@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from '../../components/common/Sidebar';
 import Navbar from '../../components/common/Navbar';
+import Topbar from './instructorTopBar.jsx';
 import { useCourses } from '../../hooks/useCourses';
 import coursesApi from '../../api/courses';
 
@@ -260,6 +261,7 @@ export default function MyCoursesPage() {
       <div className="layout">
         <Sidebar />
         <div className="main">
+          <Topbar/ >
           {modal.open && (
             <ConfirmModal
               title={modalTitle}
@@ -336,7 +338,7 @@ export default function MyCoursesPage() {
             )}
 
             {!loading && !error && filtered.length > 0 && (
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 20 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 20, }}>
                 {filtered.map(course => (
                   <InstructorCourseCard
                     key={course.course_id}

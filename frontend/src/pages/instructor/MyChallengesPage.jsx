@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import Sidebar  from '../../components/common/Sidebar';
 import Navbar from '../../components/common/Navbar';
 import challengesApi from '../../api/challenges';
+import Topbar from './instructorTopBar.jsx';
 import { useChallenges } from '../../hooks/useChallengesInstructor';
 
 // ── Difficulty colours (mirrors LEVEL_COLOR from courses) ─────────────
@@ -306,6 +307,7 @@ export default function MyChallengesPage() {
       <div className="layout">
         <Sidebar />
         <div className="main">
+          <Topbar/ >
           {/* Page header */}
           <div className="topbar" style={{ marginBottom: 28 }}>
             <div>

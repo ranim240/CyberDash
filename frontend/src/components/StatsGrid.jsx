@@ -9,7 +9,10 @@ export default function StatsGrid() {
   const active    = challenges.filter(c => c.status === 'active').length;
   
   return (
-    <div className="stats-grid">
+    <div className="stats-grid"style={{
+              display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)',
+              gap: 20, marginBottom: 32,
+            }}>
       <div className="stat-card teal">
         <div className="stat-label">Created Courses</div>
         <div className="stat-value">{loadingCourses    ? '…' : courses.length}</div>
