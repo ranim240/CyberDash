@@ -2,6 +2,9 @@ import React, { useContext, useMemo, useState } from 'react';
 import { AuthContext } from '../../context/AuthContext.jsx';
 import useLeaderboard from '../../hooks/useLeaderboard.js';
 import '../../styles/LeaderboardPage.css';
+import LearnerLayout from '../../components/learner/LearnerLayout.jsx';
+import { useLearnerStats } from '../../hooks/useLearnerStats.js';
+
 
 // ─── constants ────────────────────────────────────────────────────────────────
 const CATEGORIES = [
@@ -56,12 +59,12 @@ function rankTierLabel(rank) {
 function HeroRankCard({ user, data }) {
   const entry = useMemo(() => {
     if (!user || !data?.length) return null;
-    return data.find((e) => e.user_id === user.user_id) || null;
+    return data.find((e) => e.user_name === user.username) || null;
   }, [user, data]);
 
   const position = useMemo(() => {
     if (!user || !data?.length) return null;
-    const idx = data.findIndex((e) => e.user_id === user.user_id);
+    const idx = data.findIndex((e) => e.user_name === user.username);
     return idx >= 0 ? idx + 1 : null;
   }, [user, data]);
 
@@ -74,13 +77,13 @@ function HeroRankCard({ user, data }) {
       <div className="lb-hero__bg-glow" />
 
       <div className="lb-hero__avatar">
-        {user.user_name?.charAt(0).toUpperCase()}
+        {user.username?.charAt(0).toUpperCase()}
         <div className="lb-hero__avatar-ring" />
       </div>
 
       <div className="lb-hero__info">
         <div className="lb-hero__name">
-          {user.user_name}
+          {user.username}
           <span className="lb-hero__you">YOU</span>
         </div>
         <div className={`lb-hero__tier ${tier?.cls}`}>{tier?.label}</div>
@@ -109,6 +112,7 @@ function HeroRankCard({ user, data }) {
 // ─── main component ───────────────────────────────────────────────────────────
 export default function LeaderboardPage() {
   const { user } = useContext(AuthContext);
+  const { stats } = useLearnerStats();
   const [leaderboardType, setLeaderboardType] = useState('global');
   const [categoryId, setCategoryId]           = useState(CATEGORIES[0].id);
   const [searchTerm, setSearchTerm]           = useState('');
@@ -141,6 +145,7 @@ export default function LeaderboardPage() {
   if (loading && !data.length) return <Loader />;
 
   return (
+    <LearnerLayout stats={stats}>
     <div className="leaderboard">
       {/* decorative layers */}
       <div className="leaderboard__scanline" />
@@ -231,9 +236,12 @@ export default function LeaderboardPage() {
             </thead>
             <tbody>
               {paginatedData.map((entry, idx) => {
-                const isCurrentUser = user && entry.user_id === user.user_id;
+                const isCurrentUser = user && entry.user_name === user.username;
                 return (
-                  <UserRowHighlight key={entry.user_id} rank={entry.rank} isCurrentUser={isCurrentUser}>
+                  <UserRowHighlight key={`${entry.user_id ?? entry.user_name}-${entry.rank}-${idx}`}
+                    rank={entry.rank}
+                    isCurrentUser={isCurrentUser}
+                  >
                     {/* Rank */}
                     <td className="lb-col lb-col--rank">
                       <div className={`rank-bar rank-bar--${
@@ -323,5 +331,6 @@ export default function LeaderboardPage() {
         </div>
       )}
     </div>
+    </LearnerLayout>
   );
 }
