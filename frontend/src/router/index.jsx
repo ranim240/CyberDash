@@ -96,15 +96,7 @@ const AppRouter = () => {
         <Route path="/learner/dashboard" element={<Navigate to="/challenges" replace />} />
         <Route path="/challenges" element={<BrowseChallenges />} />
         <Route path="/challenges/:id" element={<ChallengeDetailPage />} />
-        {/* Instructor Routes */}
-        <Route path="/instructor/dashboard" element={<InstructorDashboard />} />
-        <Route path="/instructor/courses" element={<MyCoursesPage />} />
-        <Route path="/instructor/courses/create" element={<CreateCoursePage />} />
-        <Route path="/instructor/courses/:id" element={<CourseContentPage />} />
-        <Route path="/instructor/challenges"         element={<MyChallengesPage />} />
-        <Route path="/instructor/challenges/:id"     element={<ChallengeContentPage />} />
-        <Route path="/instructor/challenges/create"     element={<CreateChallengePage />} />
-                <Route path="/learner/leaderboard" 
+        <Route path="/learner/leaderboard" 
           element={
           //<PrivateRoute role="learner">
           <LeaderboardPage />
@@ -115,6 +107,15 @@ const AppRouter = () => {
               <ReportIncidentPage />
             //</PrivateRoute>
           }/>
+        {/* Instructor Routes */}
+        <Route path="/instructor/dashboard" element={<InstructorDashboard />} />
+        <Route path="/instructor/courses" element={<MyCoursesPage />} />
+        <Route path="/instructor/courses/create" element={<CreateCoursePage />} />
+        <Route path="/instructor/courses/:id" element={<CourseContentPage />} />
+        <Route path="/instructor/challenges"         element={<MyChallengesPage />} />
+        <Route path="/instructor/challenges/:id"     element={<ChallengeContentPage />} />
+        <Route path="/instructor/challenges/create"     element={<CreateChallengePage />} />
+                
       </Routes>
       </SidebarProvider>
     </BrowserRouter>

@@ -9,7 +9,7 @@ import {
 export const createReport = async (req, res, next) => {
   try {
     const { title, description, type } = req.body;
-    const learner_id = req.user.user_id; // From auth middleware
+    const learner_id = req.user.userId; // From auth middleware
 
     // Validate input
     const errors = validateCreateReport(req.body);
@@ -56,7 +56,7 @@ export const getReports = async (req, res, next) => {
 
     // If learner or instructor, only show their own reports
     if (user.role === 'learner' || user.role === 'instructor') {
-      const reports = await queries.getReportsByUser(user.user_id);
+      const reports = await queries.getReportsByUser(user.userId);
       result = {
         data: reports,
         total: reports.length
@@ -102,7 +102,7 @@ export const getReportById = async (req, res, next) => {
     }
 
     // Learners and instructors can only view their own reports
-    if ((user.role === 'learner' || user.role === 'instructor') && report.learner_id !== user.user_id) {
+    if ((user.role === 'learner' || user.role === 'instructor') && report.learner_id !== user.userId) {
       return res.status(403).json({
         success: false,
         message: 'You do not have permission to view this report'
@@ -123,7 +123,7 @@ export const updateReportStatus = async (req, res, next) => {
   try {
     const { id } = req.params;
     const { status } = req.body;
-    const admin_id = req.user.user_id; // Admin who is updating
+    const admin_id = req.user.userId; // Admin who is updating
 
     // Validate input
     const errors = validateUpdateReportStatus(req.body);
