@@ -6,8 +6,8 @@
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js",
-    "migrate": "knex migrate:latest --knexfile knexfile.cjs",
-    "migrate:rollback": "knex migrate:rollback --knexfile knexfile.cjs",
+    "migrate": "knex migrate:latest --knexfile knexfile.js",
+    "migrate:rollback": "knex migrate:rollback --knexfile knexfile.js",
     "seed:all": "node src/seeds/runSeeds.js"
   },
   "keywords": [],
@@ -15,6 +15,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "axios": "^1.16.0",
     "bcrypt": "^5.1.1",
     "cors": "^2.8.6",
     "dotenv": "^17.3.1",

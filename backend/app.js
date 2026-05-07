@@ -23,6 +23,7 @@ import adminRouter       from './src/modules/admin/admin.routes.js';
 import challengeFileRoutes from './src/modules/challenge_file/challenge_file.routes.js';
 import learnerBadgeRoutes from './src/modules/learner_badge/learner_badge.routes.js';
 import sessionRouter from './src/modules/session/session.routes.js';
+import chatRouter from './src/modules/chat/chat.routes.js';
 
 
 const __filename = fileURLToPath(import.meta.url);
@@ -57,6 +58,7 @@ app.use('/api/admin',       adminRouter);
 app.use('/api/challenge-files', challengeFileRoutes);
 app.use('/api/learner-badges', learnerBadgeRoutes);
 app.use('/api/sessions', sessionRouter);
+app.use('/api/chat', chatRouter);
 
 // Route de test
 app.get('/api/health', (req, res) => {

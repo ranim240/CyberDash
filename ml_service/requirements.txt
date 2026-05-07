@@ -1,0 +1,11 @@
+fastapi
+uvicorn
+xgboost
+scikit-learn
+pandas
+numpy
+psycopg2-binary
+joblib
+python-dotenv
+matplotlib
+seaborn
