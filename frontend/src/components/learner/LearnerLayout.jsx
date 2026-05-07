@@ -11,6 +11,7 @@ const NAV_ITEMS = [
   { to: '/learner/badges',      icon: '◎',  label: 'Badges'       },
   { to: '/learner/profile',     icon: '◯',  label: 'Profile'      },
   { to: '/learner/settings',    icon: '⊙',  label: 'Settings'     },
+  { to: '/learner/report-incident', icon: 'Ⓡ', label: 'Report Incident' },
 ];
 
 const getLevelTitle = (level = 1) => {
