@@ -47,8 +47,6 @@ const Login = () => {
 
   return (
     <div className="auth-layout">
-      <div className="orb orb1"></div>
-      <div className="orb orb2"></div>
 
       <div className="auth-container">
         {/* Left panel */}
@@ -64,11 +62,11 @@ const Login = () => {
           <div className="auth-left-content">
             <div className="auth-badge">
               <div className="auth-badge-dot"></div>
-              CTF PLATFORM ACTIVE
+              PLATEFORME CTF ACTIVE
             </div>
-            <div className="auth-left-title">Master<br />Cybersecurity</div>
+            <div className="auth-left-title">Maîtrisez<br />la Cybersécurité</div>
             <div className="auth-left-desc">
-              Learn by doing with real CTF challenges, an XP progression system, and an AI that guides you at every step.
+              Apprenez par la pratique avec des challenges CTF réels, un système de progression XP et une IA qui vous guide à chaque étape.
             </div>
             <div className="auth-stats-row">
               <div className="auth-stat">
@@ -91,8 +89,8 @@ const Login = () => {
 
         {/* Right panel */}
         <div className="auth-right-panel">
-          <div className="auth-form-title">LOGIN</div>
-          <div className="auth-form-sub">// Secure access to the platform</div>
+          <div className="auth-form-title">CONNEXION</div>
+          <div className="auth-form-sub">// Accès sécurisé à la plateforme</div>
 
           {successMessage && (
             <div className="auth-success-msg" style={{ marginBottom: '16px' }}>{successMessage}</div>
@@ -113,7 +111,7 @@ const Login = () => {
             </div>
 
             <div className="auth-field">
-              <label className="auth-field-label">Password</label>
+              <label className="auth-field-label">Mot de passe</label>
               <input
                 id="login-password"
                 className={`auth-field-input ${password ? 'active' : ''}`}
@@ -127,15 +125,18 @@ const Login = () => {
 
             {error && <div className="auth-error-msg" style={{ marginBottom: '16px' }}>{error}</div>}
 
-            <button id="login-submit" type="submit" className="auth-btn-primary" disabled={isLoading} style={{ marginTop: '16px' }}>
-              {isLoading ? 'CONNECTING...' : 'LOGIN →'}
+            <div style={{ textAlign: 'center', marginBottom: '8px', marginTop: '16px', fontFamily: 'var(--mono)', fontSize: '10px', color: 'var(--muted)' }}>
+              POST /api/auth/login
+            </div>
+            <button id="login-submit" type="submit" className="auth-btn-primary" disabled={isLoading} style={{ marginTop: '0px' }}>
+              {isLoading ? 'CONNEXION...' : 'SE CONNECTER →'}
             </button>
           </form>
 
-          <div className="auth-form-footer">
-            <Link to="/forgot-password">Forgot password?</Link>
+          <div className="auth-form-footer" style={{ marginTop: '16px' }}>
+            <Link to="/forgot-password">Mot de passe oublié ?</Link>
             &nbsp;·&nbsp;
-            <Link to="/register">Create account</Link>
+            <Link to="/register">Créer un compte</Link>
           </div>
         </div>
       </div>

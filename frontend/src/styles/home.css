@@ -4,8 +4,8 @@
   --bg: #05070f;
   --bg2: #080c18;
   --card: #0d1120;
-  --accent: #b06eff;
-  --accent2: #00d4ff;
+  --accent: #00d4ff; /* Cyan as primary */
+  --accent2: #b06eff; /* Purple as secondary */
   --accent3: #10e88a;
   --danger: #ff4f6b;
   --amber: #f0a000;
@@ -75,7 +75,7 @@ nav {
   backdrop-filter: blur(12px);
 }
 
-.logo { display: flex; align-items: center; gap: 12px; }
+.logo { display: flex; align-items: center; gap: 12px; margin-top: 28px; }
 .logo-hex {
   width: 44px;
   height: 44px;
@@ -97,6 +97,7 @@ nav {
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
+  margin-top: 4px;
 }
 
 .nav-links { display: flex; gap: 48px; }
