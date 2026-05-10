@@ -5,10 +5,32 @@
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=DM+Sans:wght@400;500;600&display=swap');
 
 /* ── base ────────────────────────────────────────────── */
+:root {
+  --bg-base:    #060910;
+  --bg-surface: #0f1629;
+  --bg-raised:  #0d1524;
+  --bg-hover:   #101726;
+
+  --neon-green: #10b981;
+  --neon-cyan:  #00d4ff;
+  --neon-amber: #f59e0b;
+  --neon-coral: #ef4444;
+
+  --text-primary:   #e2e8f0;
+  --text-secondary: #94a3b8;
+  --text-muted:     #64748b;
+
+  --border:      rgba(30, 58, 95, 0.5);
+  --border-glow: rgba(0, 212, 255, 0.25);
+
+  --font-mono: 'Share Tech Mono', monospace;
+  --font-body: 'Rajdhani', sans-serif;
+}
+
 .cd-page {
-  font-family: var(--font-body, 'DM Sans', sans-serif);
-  background: var(--bg-base, #0a0c10);
-  color: var(--text-primary, #e4ecf7);
+  font-family: var(--font-body, 'Rajdhani', sans-serif);
+  background: var(--bg-base, #060910);
+  color: var(--text-primary, #e2e8f0);
   min-height: 100vh;
   padding: 2rem 2.5rem 4rem;
   max-width: 1100px;

@@ -6,19 +6,26 @@ import { AuthContext } from "../context/AuthContext.jsx";
 import Login          from "../pages/auth/login";
 import Register       from "../pages/auth/register";
 import ForgotPassword from "../pages/auth/forgotPassword";
-import ResetPassword  from "../pages/auth/resetPassword";
 
-
-
-
-// ── Home page ───────────────────────────────────────────────────────────────
+import ResetPassword from "../pages/auth/resetPassword";
+import BrowseChallenges from "../pages/learner/BrowseChallenges";
+import ChallengeDetailPage from "../pages/learner/ChallengeDetailPage";
+import MyCoursesPage from "../pages/instructor/MyCoursesPage";
+import CourseContentPage from "../pages/instructor/CourseContentPage";
+import CreateCoursePage from "../pages/instructor/CreateCoursePage";
+import MyChallengesPage from "../pages/instructor/MyChallengesPage";
+import ChallengeContentPage from "../pages/instructor/ChallengeContentPage";
+import CoursesListingPage from "../pages/courses/coursesListingPage";
+import CourseLearnerPage from "../pages/courses/courseLearnerPage";
+import CoursesPage from "../pages/learner/CoursesPage.jsx";
+import CourseProgressPage from "../pages/learner/CourseProgressPage.jsx";
+import LeaderboardPage       from "../pages/learner/LeaderboardPage.jsx";
+import ReportIncidentPage    from "../pages/learner/ReportIncidentPage.jsx";
 import Home from "../pages/Home.jsx";
 
 // ── Learner pages ─────────────────────────────────────────────────────────────
 import Dashboard         from "../pages/learner/Dashboard.jsx";
 // import Profile           from "../pages/learner/Profile.jsx";
-import BrowseChallenges  from "../pages/learner/BrowseChallenges.jsx";
-import ChallengeDetailPage from "../pages/learner/ChallengeDetailPage.jsx";
 import SessionPage       from "../pages/learner/SessionPage.jsx";
 // import LeaderboardPage       from "../pages/learner/LeaderboardPage.jsx";
 
@@ -95,12 +102,20 @@ const AppRouter = () => {
           }
         />
         <Route
+          path="/learner/courses"
+          element={
+            //<PrivateRoute role="learner">
+              <CoursesPage />
+            //</PrivateRoute>
+          }
+        />
+        <Route
           path="/learner/courses/:courseId/progress"
           element={
-            <PrivateRoute role="learner">
-              {/* CourseProgressPage à créer si besoin */}
-              <Dashboard />
-            </PrivateRoute>
+
+            //<PrivateRoute role="learner">
+              <CourseProgressPage />
+            //</PrivateRoute>
           }
         />
 

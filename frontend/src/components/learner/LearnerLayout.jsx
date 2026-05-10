@@ -46,7 +46,7 @@ export default function LearnerLayout({ children, stats }) {
         <div className="ll-sidebar__top">
           <div className="ll-logo">
             <span className="ll-logo__icon">⬡</span>
-            {!collapsed && <span className="ll-logo__name">CTF<em>Lab</em></span>}
+            {!collapsed && <span className="ll-logo__name">Cyber<em>Dash</em></span>}
           </div>
           <button
             className="ll-toggle"
