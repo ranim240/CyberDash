@@ -20,7 +20,7 @@ export const getIncidentReports = (filters = {}) => {
   if (filters.type) params.append("type", filters.type);
   if (filters.page) params.append("page", filters.page);
   if (filters.limit) params.append("limit", filters.limit);
-
+ 
   return api.get(`/incidents?${params.toString()}`);
 };
 
