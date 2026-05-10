@@ -4,13 +4,14 @@ import { AuthContext } from '../../context/AuthContext.jsx';
 import './LearnerLayout.css';
 
 const NAV_ITEMS = [
-  { to: '/learner/dashboard',   icon: '▦',  label: 'Dashboard'    },
-  { to: '/learner/courses',     icon: '◈',  label: 'Courses'      },
-  { to: '/learner/browse',      icon: '◉',  label: 'Challenges'   },
-  { to: '/learner/leaderboard', icon: '◆',  label: 'Leaderboard'  },
-  { to: '/learner/badges',      icon: '◎',  label: 'Badges'       },
-  { to: '/learner/profile',     icon: '◯',  label: 'Profile'      },
-  { to: '/learner/settings',    icon: '⊙',  label: 'Settings'     },
+  { to: '/learner/dashboard',          icon: '▦',  label: 'Dashboard'      },
+  { to: '/learner/courses',            icon: '◈',  label: 'Courses'        },
+  { to: '/learner/browse',             icon: '◉',  label: 'Challenges'     },
+  { to: '/learner/ai-dashboard',       icon: '🧠', label: 'AI Assistant'   },
+  { to: '/learner/leaderboard',        icon: '◆',  label: 'Leaderboard'    },
+  { to: '/learner/badges',             icon: '◎',  label: 'Badges'         },
+  { to: '/learner/profile',            icon: '◯',  label: 'Profile'        },
+  { to: '/learner/settings',           icon: '⊙',  label: 'Settings'       },
 ];
 
 const getLevelTitle = (level = 1) => {

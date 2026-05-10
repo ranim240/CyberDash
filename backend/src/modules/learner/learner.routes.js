@@ -24,10 +24,11 @@ learnerRouter.get('/stats',     learnerController.getStats);
 
 
 // ==========================
-// 👤 PROFILE + BADGES
+// 👤 PROFILE + BADGES + SKILLS
 // ==========================
 learnerRouter.get('/profile', learnerController.getProfile);
 learnerRouter.get('/badges',  learnerController.getBadges);
+learnerRouter.get('/skills',  learnerController.getSkills);
 
 
 // ==========================

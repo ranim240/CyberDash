@@ -9,3 +9,4 @@ export const enrollCourse = (courseId) => api.post(`/learner/courses/${courseId}
 export const unenrollCourse = (courseId) => api.delete(`/learner/courses/${courseId}/enroll`);
 export const getProgress = (courseId) => api.get(`/learner/courses/${courseId}/progress`);
 export const updateProgress = (courseId, data) => api.put(`/learner/courses/${courseId}/progress`, data);
+export const getSkills = () => api.get('/learner/skills');

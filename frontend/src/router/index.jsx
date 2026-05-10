@@ -21,6 +21,9 @@ import CoursesListingPage from "../pages/courses/coursesListingPage";
 import CourseLearnerPage from "../pages/courses/courseLearnerPage";
 import LeaderboardPage       from "../pages/learner/LeaderboardPage.jsx";
 import ReportIncidentPage    from "../pages/learner/ReportIncidentPage.jsx";
+import AIDashboardPage       from "../pages/learner/AIDashboardPage.jsx";
+import AIRecommendationsPage from "../pages/learner/AIRecommendationsPage.jsx";
+import AIChatPage            from "../pages/learner/AIChatPage.jsx";
 import Home from "../pages/Home.jsx";
 
 const AppRouter = () => {
@@ -115,6 +118,10 @@ const AppRouter = () => {
               <ReportIncidentPage />
             //</PrivateRoute>
           }/>
+          {/* ── AI Mock Pages ── */}
+          <Route path="/learner/ai-dashboard" element={<AIDashboardPage />} />
+          <Route path="/learner/ai-recommendations" element={<AIRecommendationsPage />} />
+          <Route path="/learner/ai-chat" element={<AIChatPage />} />
       </Routes>
       </SidebarProvider>
     </BrowserRouter>

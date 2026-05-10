@@ -240,6 +240,17 @@ enroll = async (data) => {
     };
   };
 
+  // ==========================
+  // 🧠 SKILLS
+  // ==========================
+  getSkills = async (learner_id) => {
+    return db('skill_profile as sp')
+      .join('skill as s', 's.skill_id', 'sp.skill_id')
+      .where('sp.learner_id', learner_id)
+      .select('s.name', 'sp.score')
+      .orderBy('sp.score', 'desc');
+  };
+
 }
 
 export default new Learner();
