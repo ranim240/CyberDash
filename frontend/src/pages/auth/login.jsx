@@ -62,11 +62,11 @@ const Login = () => {
           <div className="auth-left-content">
             <div className="auth-badge">
               <div className="auth-badge-dot"></div>
-              PLATEFORME CTF ACTIVE
+              CTF PLATFORM ACTIVE
             </div>
-            <div className="auth-left-title">Maîtrisez<br />la Cybersécurité</div>
+            <div className="auth-left-title">Master<br />Cybersecurity</div>
             <div className="auth-left-desc">
-              Apprenez par la pratique avec des challenges CTF réels, un système de progression XP et une IA qui vous guide à chaque étape.
+              Learn by doing with real CTF challenges, an XP progression system, and an AI that guides you at every step.
             </div>
             <div className="auth-stats-row">
               <div className="auth-stat">
@@ -89,8 +89,8 @@ const Login = () => {
 
         {/* Right panel */}
         <div className="auth-right-panel">
-          <div className="auth-form-title">CONNEXION</div>
-          <div className="auth-form-sub">// Accès sécurisé à la plateforme</div>
+          <div className="auth-form-title">LOGIN</div>
+          <div className="auth-form-sub">// Secure access to the platform</div>
 
           {successMessage && (
             <div className="auth-success-msg" style={{ marginBottom: '16px' }}>{successMessage}</div>
@@ -111,7 +111,7 @@ const Login = () => {
             </div>
 
             <div className="auth-field">
-              <label className="auth-field-label">Mot de passe</label>
+              <label className="auth-field-label">Password</label>
               <input
                 id="login-password"
                 className={`auth-field-input ${password ? 'active' : ''}`}
@@ -129,14 +129,14 @@ const Login = () => {
               POST /api/auth/login
             </div>
             <button id="login-submit" type="submit" className="auth-btn-primary" disabled={isLoading} style={{ marginTop: '0px' }}>
-              {isLoading ? 'CONNEXION...' : 'SE CONNECTER →'}
+              {isLoading ? 'CONNECTING...' : 'LOGIN →'}
             </button>
           </form>
 
           <div className="auth-form-footer" style={{ marginTop: '16px' }}>
-            <Link to="/forgot-password">Mot de passe oublié ?</Link>
+            <Link to="/forgot-password">Forgot password?</Link>
             &nbsp;·&nbsp;
-            <Link to="/register">Créer un compte</Link>
+            <Link to="/register">Create account</Link>
           </div>
         </div>
       </div>
