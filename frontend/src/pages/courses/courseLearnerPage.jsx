@@ -36,7 +36,7 @@ const formatDuration = (min) => {
 };
 
 // ── Lesson row with inline expansion ──────────────────────────────────
-function LessonRow({ item, index, enrolled, courseId }) {
+function LessonRow({ item, index, enrolled }) {
   const [expanded, setExpanded] = useState(false);
   const isLocked = !enrolled;
   const canOpen = enrolled && item.is_published;
@@ -153,9 +153,13 @@ export default function CourseLearnerPage() {
     Promise.all([loadCourse, loadContents, loadEnrollment])
       .then(([c, ct, isEnrolled]) => {
         setCourse(c);
-        const normalized = ct.map(item => ({
+        const normalized = ct.map((item) => ({
           ...item,
-          is_published: item.is_published !== undefined ? item.is_published : true,
+          // Robust normalization: backend/DB may return booleans or strings ("true"/"false").
+          is_published:
+            item.is_published === undefined
+              ? true
+              : item.is_published === true || item.is_published === 'true',
         }));
         setContents(normalized);
         setEnrolled(isEnrolled);
@@ -273,7 +277,7 @@ export default function CourseLearnerPage() {
               <div className="card-title" style={{ fontSize: 15, marginBottom: 14 }}>Course Content Preview</div>
               <div style={{ filter: 'blur(2px)', pointerEvents: 'none', userSelect: 'none' }}>
                 {contents.map((item, idx) => (
-                  <LessonRow key={item.content_id} item={item} index={idx} enrolled={false} courseId={courseId} />
+                  <LessonRow key={item.content_id} item={item} index={idx} enrolled={false} />
                 ))}
               </div>
             </div>
@@ -303,7 +307,7 @@ export default function CourseLearnerPage() {
               <div className="card-title" style={{ fontSize: 15, marginBottom: 14 }}>Course Content</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                 {contents.map((item, idx) => (
-                  <LessonRow key={item.content_id} item={item} index={idx} enrolled={true} courseId={courseId} />
+                  <LessonRow key={item.content_id} item={item} index={idx} enrolled={true} />
                 ))}
               </div>
               <div style={{ marginTop: 24, textAlign: 'right' }}>

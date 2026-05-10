@@ -6,30 +6,30 @@
 
 /* ── tokens (repris du Dashboard) ───────────────────────────────────────────── */
 :root {
-  --bg-base:    #0a0c10;
-  --bg-surface: #10141c;
-  --bg-raised:  #161b27;
-  --bg-hover:   #1c2233;
+  --bg-base:    #060910;
+  --bg-surface: #0f1629;
+  --bg-raised:  #0d1524;
+  --bg-hover:   #101726;
 
-  --neon-green: #00ff87;
-  --neon-cyan:  #00e5ff;
-  --neon-purp:  #b47cff;
-  --neon-amber: #ffb830;
-  --neon-coral: #ff6b6b;
+  --neon-green: #10b981;
+  --neon-cyan:  #00d4ff;
+  --neon-purp:  #7c3aed;
+  --neon-amber: #f59e0b;
+  --neon-coral: #ef4444;
 
-  --text-primary:   #e4ecf7;
-  --text-secondary: #7a8ea8;
-  --text-muted:     #3d5068;
+  --text-primary:   #e2e8f0;
+  --text-secondary: #94a3b8;
+  --text-muted:     #64748b;
 
-  --border:      rgba(0, 229, 255, 0.12);
-  --border-glow: rgba(0, 255, 135, 0.35);
+  --border:      rgba(30, 58, 95, 0.5);
+  --border-glow: rgba(0, 212, 255, 0.25);
 
   --radius-sm: 6px;
   --radius-md: 10px;
   --radius-lg: 16px;
 
   --font-mono: 'Share Tech Mono', monospace;
-  --font-body: 'DM Sans', sans-serif;
+  --font-body: 'Rajdhani', sans-serif;
 
   --transition: 200ms cubic-bezier(0.4, 0, 0.2, 1);
 }

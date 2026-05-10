@@ -19,6 +19,8 @@ import MyChallengesPage from "../pages/instructor/MyChallengesPage";
 import ChallengeContentPage from "../pages/instructor/ChallengeContentPage";
 import CoursesListingPage from "../pages/courses/coursesListingPage";
 import CourseLearnerPage from "../pages/courses/courseLearnerPage";
+import CoursesPage from "../pages/learner/CoursesPage.jsx";
+import CourseProgressPage from "../pages/learner/CourseProgressPage.jsx";
 import LeaderboardPage       from "../pages/learner/LeaderboardPage.jsx";
 import ReportIncidentPage    from "../pages/learner/ReportIncidentPage.jsx";
 import Home from "../pages/Home.jsx";
@@ -72,13 +74,20 @@ const AppRouter = () => {
           }
         />
         <Route
+          path="/learner/courses"
+          element={
+            //<PrivateRoute role="learner">
+              <CoursesPage />
+            //</PrivateRoute>
+          }
+        />
+        <Route
           path="/learner/courses/:courseId/progress"
           element={
             //<PrivateRoute role="learner">
-              //{/* CourseProgressPage à créer si besoin */}
-              <Dashboard />}
+              <CourseProgressPage />
             //</PrivateRoute>
-          
+          }
         />
 
         {/* ── 404 fallback ── */}
