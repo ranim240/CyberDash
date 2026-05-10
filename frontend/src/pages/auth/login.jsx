@@ -47,8 +47,6 @@ const Login = () => {
 
   return (
     <div className="auth-layout">
-      <div className="orb orb1"></div>
-      <div className="orb orb2"></div>
 
       <div className="auth-container">
         {/* Left panel */}
@@ -127,12 +125,15 @@ const Login = () => {
 
             {error && <div className="auth-error-msg" style={{ marginBottom: '16px' }}>{error}</div>}
 
-            <button id="login-submit" type="submit" className="auth-btn-primary" disabled={isLoading} style={{ marginTop: '16px' }}>
+            <div style={{ textAlign: 'center', marginBottom: '8px', marginTop: '16px', fontFamily: 'var(--mono)', fontSize: '10px', color: 'var(--muted)' }}>
+              POST /api/auth/login
+            </div>
+            <button id="login-submit" type="submit" className="auth-btn-primary" disabled={isLoading} style={{ marginTop: '0px' }}>
               {isLoading ? 'CONNECTING...' : 'LOGIN →'}
             </button>
           </form>
 
-          <div className="auth-form-footer">
+          <div className="auth-form-footer" style={{ marginTop: '16px' }}>
             <Link to="/forgot-password">Forgot password?</Link>
             &nbsp;·&nbsp;
             <Link to="/register">Create account</Link>
