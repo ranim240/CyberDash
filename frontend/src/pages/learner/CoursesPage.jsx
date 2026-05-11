@@ -185,7 +185,7 @@ export default function CoursesPage() {
                       : item.is_published === true || item.is_published === 'true',
                 }));
                 contentMap[enrollment.course_id] = normalizedContents;
-              } catch (err) {
+              } catch {
                 contentMap[enrollment.course_id] = [];
               }
             })

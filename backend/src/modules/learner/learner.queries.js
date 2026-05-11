@@ -8,6 +8,10 @@ export const getLevelTitle = (level) => {
   return 'Novice';
 };
 
+export const getLevelFromXP = (xp) => {
+  return Math.floor(xp / 500) + 1;
+};
+
 class Learner {
 
   // ==========================
@@ -23,6 +27,7 @@ class Learner {
         'l.xp_points',
         'l.current_level',
         'l.streak',
+        'l.solved_challenges',
         'u.created_at'
       )
       .first();
@@ -203,28 +208,28 @@ enroll = async (data) => {
   // ==========================
   getStats = async (learner_id) => {
 
-    // nombre de soumissions correctes
-    const [correct] = await db('submission as s')
-      .join('challenge_session as cs', 'cs.session_id', 's.session_id')
-      .where({ 'cs.learner_id': learner_id, 's.is_correct': true })
-      .count('s.submission_id as count');
-
     // total de soumissions
     const [total] = await db('submission as s')
       .join('challenge_session as cs', 'cs.session_id', 's.session_id')
       .where('cs.learner_id', learner_id)
       .count('s.submission_id as count');
 
-    // infos learner (xp, level, streak)
+    // nombre de soumissions correctes pour success_rate
+    const [correct] = await db('submission as s')
+      .join('challenge_session as cs', 'cs.session_id', 's.session_id')
+      .where({ 'cs.learner_id': learner_id, 's.is_correct': true })
+      .count('s.submission_id as count');
+
+    // infos learner (xp, level, streak, solved_challenges)
     const learner = await db('learner')
       .where({ user_id: learner_id })
-      .select('xp_points', 'current_level', 'streak')
+      .select('xp_points', 'current_level', 'streak', 'solved_challenges')
       .first();
 
-    const solvedCount  = Number(correct.count || 0);
+    const solvedCount  = Number(learner?.solved_challenges || 0);
     const totalCount   = Number(total.count   || 0);
     const successRate  = totalCount > 0
-      ? Math.round((solvedCount / totalCount) * 100)
+      ? Math.round((Number(correct.count || 0) / totalCount) * 100)
       : 0;
 
     const level = learner?.current_level ?? 1;

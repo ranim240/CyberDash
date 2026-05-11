@@ -24,8 +24,8 @@ export function useLearnerStats() {
           // dashRes.data  → { profile, stats, recentBadges }
           // statsRes.data → { solved_challenges, total_submissions, success_rate,
           //                   xp_points, current_level, streak, title }
-          setDashboard(dashRes.data);
-          setStats(statsRes.data);
+          setDashboard(dashRes.data?.data || dashRes.data);
+          setStats(statsRes.data?.data || statsRes.data);
         }
       } catch (err) {
         if (!cancelled)

@@ -12,6 +12,9 @@ import * as challengeQ          from '../challenge/challenge.queries.js';
 
 import submissionQ              from './submission.queries.js';
 
+// Import level calculation
+import { getLevelFromXP } from '../learner/learner.queries.js';
+
 
 // ==========================
 // 📌 SUBMIT FLAG
@@ -63,13 +66,57 @@ export const submitFlag = async (req, res) => {
 
     let pointsEarned = 0;
 
-    // 🎯 8. If correct → add XP + end session
+    // 🎯 8. If correct → check if challenge already solved, then add XP + end session + update stats
     if (is_correct) {
-      pointsEarned = challenge.points;
+      // Check if this challenge was already solved by this learner
+      const [alreadySolved] = await db('submission as s')
+        .join('challenge_session as cs', 'cs.session_id', 's.session_id')
+        .where({
+          'cs.learner_id': userId,
+          'cs.challenge_id': session.challenge_id,
+          's.is_correct': true
+        })
+        .count('s.submission_id as count');
 
-      await db('learner')
-        .where({ user_id: userId })
-        .increment('xp_points', pointsEarned);
+      const hasAlreadySolved = Number(alreadySolved.count || 0) > 1; // > 1 because current submission is already created
+
+      if (!hasAlreadySolved) {
+        pointsEarned = challenge.points;
+
+        // Increment XP and solved_challenges
+        await db('learner')
+          .where({ user_id: userId })
+          .increment('xp_points', pointsEarned);
+
+        await db('learner')
+          .where({ user_id: userId })
+          .increment('solved_challenges', 1);
+
+        // Add to XP history
+        await db('xp_history').insert({
+          id: uuid(),
+          user_id: userId,
+          challenge_id: session.challenge_id,
+          xp: pointsEarned,
+          created_at: new Date()
+        });
+
+        // Calculate new level
+        const learner = await db('learner')
+          .where({ user_id: userId })
+          .select('xp_points', 'current_level')
+          .first();
+
+        // Calculate new level
+        const newLevel = getLevelFromXP(learner.xp_points);
+
+        // Update level if changed
+        if (newLevel > learner.current_level) {
+          await db('learner')
+            .where({ user_id: userId })
+            .update({ current_level: newLevel });
+        }
+      }
 
       await sessionQ.updateSession(session_id, {
         ended_at: new Date()
